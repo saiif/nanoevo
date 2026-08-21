@@ -97,7 +97,7 @@ def main(n=10, model="claude-sonnet-5", base_url="http://127.0.0.1:8787/v1"):
 
     out = os.path.join(RUN_DIR, "b1_small_rows.json")
     json.dump(rows, open(out, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-    print(f"\nrows written: {os.path.relpath(out, HERE)}")
+    print(f"\nrows written: {out}")
     if halt:
         print("batch halted — investigate before any further B1 runs.")
     return rows
