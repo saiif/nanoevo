@@ -1,0 +1,80 @@
+Ignore the two ToolSearch calls above — those were an error on my part, unrelated to this task.
+
+```json
+
+```
+Disregard that tool call — irrelevant, not part of this task.
+
+```json
+
+```
+Apologies — no further tool calls needed. Here is the deposit:
+
+```json
+
+```
+Analyzing the EXPERIMENT(Bf)→0 result: Bf's vector is [0,0,1] (p0=0,p1=0,p2=1). H06 (NOT p0 AND p2) predicts 1·1=1, and H10 (NOT p1 AND p2) predicts 1·1=1 — both contradicted by the observed 0. Eliminating both leaves 5 equally-consistent hypotheses: H01, H02, H04, H08, H24.
+
+```json
+
+```
+No more tool calls needed — proceeding directly with the deposit.
+
+```json
+
+```
+That was also unnecessary — no task tracking needed for this single-step deposit. Ignoring it and delivering the actual answer now.
+
+Remaining hypotheses after four consistent 0-outcomes: **H02, H04, H08**, each 1/3. Two symbols remain unassigned: Um and Xp, holding the last two vectors [1,1,1] and [0,1,1] in unknown order — probing either one reveals both (only two slots left).
+
+```json
+
+```
+All six symbol→vector assignments are now fixed: Hs=[0,0,0], Vx=[1,1,0], Bf=[0,0,1], Ly=[1,0,0], Um=[1,1,1], and by elimination Xp=[0,1,1] (the only vector left). The four experiments so far leave exactly three hypotheses standing: **H02** (~p0∧p1), **H04** (p0∧p2), **H08** (p1∧p2) — each equally likely.
+
+Checking Um=[1,1,1]: H02→0, H04→1, H08→1 (splits 1 vs 2).
+Checking Xp=[0,1,1]: H02→1, H04→0, H08→1 (splits 1 vs 2).
+
+Either choice is equally informative; I'll experiment on Um first (already probed, vector known).
+
+```json
+
+```
+H02 predicted 0 for Um=[1,1,1] (NOT p0=0) but the outcome was 1, eliminating it. H04 (p0∧p2) and H08 (p1∧p2) both predicted 1 and survive, each renormalized to 0.5.
+
+By elimination, the only unassigned vector is [0,1,1], which must belong to Xp (the last unprobed symbol). At Xp: H04 predicts 0 (p0=0), H08 predicts 1 (p1=1,p2=1) — this fully separates the two remaining hypotheses without needing a probe.
+
+```json
+
+```
+The final EXPERIMENT(Xp)→1 fully resolves the law. Xp=[0,1,1]: H04 (p0∧p2) predicted 0 (p0=0) — eliminated. H08 (p1∧p2) predicted 1 (p1=1,p2=1) — confirmed.
+
+Cross-checking H08 against **all six** experiments now on record:
+- Hs=[0,0,0]: p1∧p2=0 → matches (0)
+- Vx=[1,1,0]: p1∧p2=0 → matches (0)
+- Bf=[0,0,1]: p1∧p2=0 → matches (0)
+- Ly=[1,0,0]: p1∧p2=0 → matches (0)
+- Um=[1,1,1]: p1∧p2=1 → matches (1)
+- Xp=[0,1,1]: p1∧p2=1 → matches (1)
+
+Perfect fit across every observed symbol with no remaining ambiguity in the catalog.
+
+```json
+
+```
+Applying the confirmed law H08 (p1 AND p2) to each new vector:
+
+- Rc [0,1,1]: p1=1,p2=1 → 1
+- Tg [1,1,1]: p1=1,p2=1 → 1
+- Nd [0,0,0]: p1=0,p2=0 → 0
+- Wt [0,0,1]: p1=0,p2=1 → 0
+- Jm [1,0,0]: p1=0,p2=0 → 0
+- Zn [0,1,0]: p1=1,p2=0 → 0
+- Ok [1,0,1]: p1=0,p2=1 → 0
+- Ea [1,1,0]: p1=1,p2=0 → 0
+
+H08 fit all six observed experiments perfectly and no other catalog hypothesis remains consistent with that full trace, so confidence is uniformly high (not 1.0, reserving residual doubt for an unmodeled law).
+
+```json
+
+```

@@ -1,0 +1,43 @@
+That tool search wasn't needed for this task — proceeding with the commitment deposit.
+
+```json
+
+```
+```json
+
+```
+Three hypotheses remain tied at 1/3 each: A=(~p0 AND ~p1), B=(~p0 AND p2), C=(~p1 AND p2) — all four observations so far are consistent with all three. Only Ea[0,0,0] and Ly[0,1,1] remain untested. Ea splits A (predicts 1) from B,C (predict 0), so I'll test it first.
+
+```json
+
+```
+```json
+
+```
+Only two hypotheses remain tied at 0.5: B=(~p0 AND p2) and C=(~p1 AND p2) — both fit all 5 observations so far. The one untested symbol, Ly[0,1,1] (p0=0,p1=1,p2=1), cleanly discriminates them: B predicts 1 (since ~p0=1,p2=1), C predicts 0 (since ~p1=0). This is a fully discriminating test, so I commit to it.
+
+```json
+
+```
+```json
+
+```
+All six observations are consistent with exactly one hypothesis: (~p0 AND p2). No other formula in the family fits all data points (verified against every tested symbol). Sufficient to conclude.
+
+```json
+
+```
+All 8 possible property vectors are now accounted for: 6 were directly tested, and the surviving law (~p0 AND p2) fits every one perfectly. The two new vectors here that weren't directly tested — Bf=[1,0,1] and Jm=[0,1,0] — are pure extrapolations from the single surviving hypothesis, so I give them slightly lower confidence than the ones matching already-observed vectors.
+
+- Zn[1,1,1] = Um's vector (tested→0)
+- Bf[1,0,1] = untested, p0=1 → 0
+- Tg[0,0,1] = Xp's vector (tested→1)
+- Qz[1,1,0] = Ok's vector (tested→0)
+- Jm[0,1,0] = untested, p0=0,p2=0 → 0
+- Vx[0,0,0] = Ea's vector (tested→0)
+- Rc[0,1,1] = Ly's vector (tested→1)
+- Nd[1,0,0] = Hs's vector (tested→0)
+
+```json
+
+```

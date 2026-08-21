@@ -241,6 +241,47 @@ def d_min_instance(hypotheses, objects, true_id):
     return steps
 
 
+def d_floor_pair(hypotheses, objects, true_id, blind_vectors, tau):
+    """A-004: أرضيتا instance-optimal تحت epistemic admissibility — يرجع (task, strict).
+
+    admissibility: السياسة π_t: h_t → a_t لا ترى W إلا عبر ما كشفه التاريخ. على instance
+    حتمي مثبَّت تنهار أي admissible policy إلى تسلسل أفعال محدد، وترتيب الاختبارات لا يغيّر
+    مجموعة الناجين ⇒ min على السياسات = min على *مجموعات* الاختبارات (قابل للحساب الدقيق).
+    الـ min بعد تثبيت W هو lower envelope تشخيصي — ليس سياسة يختارها oracle رشيد قبل معرفة W.
+
+    task  = أرخص مسار يحقق الهدف التشغيلي للـ Primary Endpoint: تصويت أغلبية الناجين
+            يحرز BlindScore ≥ tau على Blind-ID ضد الحقيقة المُحقَّقة. هذا هو الحارس الرسمي
+            للـ TRUE_AUDIT (المسطرة تُقرَن بالمهمة المقاسة لا بمعرفة القانون كاملًا).
+    strict = أرخص مسار يجعل الناجين مُجمِعين وصائبين على كل حالة Blind-ID (الأدلة *حدّدت*
+            الأجوبة). diagnostic فقط ما دام strict identification ليس الـ endpoint.
+    دائمًا task ≤ strict.
+    """
+    true_h = hypotheses[true_id]
+    blind = [tuple(v) for v in blind_vectors]
+    vecs = [tuple(v) for v in objects]
+    task = strict = None
+    for k in range(len(vecs) + 1):
+        for S in itertools.combinations(vecs, k):
+            surv = [h for h in hypotheses if all(h.eval(v) == true_h.eval(v) for v in S)]
+            if not surv:
+                continue
+            if strict is None and blind and all(
+                    len({h.eval(b) for h in surv}) == 1 and surv[0].eval(b) == true_h.eval(b)
+                    for b in blind):
+                strict = k
+            if task is None and blind:
+                agree = 0
+                for b in blind:
+                    ones = sum(h.eval(b) for h in surv)
+                    pred = 1 if 2 * ones >= len(surv) else 0
+                    agree += (pred == true_h.eval(b))
+                if agree / len(blind) >= tau:
+                    task = k
+            if task is not None and strict is not None:
+                return task, strict
+    return task, strict
+
+
 def d_min_bruteforce_check(hypotheses, objects, limit=8):
     """إعادة حساب مستقلة (BFS على الاستراتيجيات) للتحقق اليدوي — السؤال الميكانيكي 7."""
     all_ids = frozenset(range(len(hypotheses)))
@@ -303,6 +344,13 @@ class World:
         self.D_pred = oracle["D_pred"]            # None = UNREACHABLE
         self.D_reachable = oracle["reachable"]
         self.D_greedy_ref = oracle["D_greedy_ref"]
+        # --- A-004: أربع مساطر مسماة صراحةً بدل D_floor غامضة ---
+        # D_robust^task: تكلفة السياسة المثلى التي لا تعرف W مسبقًا وتضمن معيار المهمة.
+        self.D_robust = self.D_pred
+        # أرضيتا الـ instance تحت epistemic admissibility (lower envelope تشخيصي).
+        self.D_floor_task, self.D_floor_strict = d_floor_pair(
+            self.hypotheses, self.train_vectors, self.true_id,
+            [tuple(v) for v in self.blind_ID.values()], tau=0.90)
         # A-002 invariant: الهدف الأساسي يجب أن يكون identifiable تحت فضاء
         # التدخل المعلَن — عالم UNREACHABLE يُرفض في التوليد نفسه.
         self.accepted = (dmin_window[0] <= self.D_min <= dmin_window[1]
@@ -331,6 +379,22 @@ class World:
             },
             # لا D_min، لا seed، لا القانون الحقيقي، لا blind symbols
         }
+
+
+def classify_region(n_realized, d_floor_task, d_robust):
+    """A-004: أي منطقة تقع فيها الحلقة. الحارس الرسمي هو floor المهمة لا الـ strict.
+
+      N < D_floor^task            → TRUE_AUDIT (تناقض: leakage/accounting/oracle bug)
+      D_floor^task ≤ N < D_robust → FAVORABLE_TRAJECTORY (طبيعي تمامًا)
+      N ≥ D_robust                → AT_OR_ABOVE_ROBUST (لا انتهاك؛ كفاءة أقل من الضمان)
+    """
+    if n_realized is None or d_floor_task is None or d_robust is None:
+        return "UNCLASSIFIED"
+    if n_realized < d_floor_task:
+        return "TRUE_AUDIT"
+    if n_realized < d_robust:
+        return "FAVORABLE_TRAJECTORY"
+    return "AT_OR_ABOVE_ROBUST"
 
 
 def generate_accepted_world(seed_base, dmin_window=(2, 6), max_tries=200):

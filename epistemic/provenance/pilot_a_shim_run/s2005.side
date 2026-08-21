@@ -1,0 +1,74 @@
+My mistake — there's no actual tool to invoke here; `TEST(Xy)` is a move I declare via the JSON deposit itself, per the contract. Here's my first deposit.
+
+```json
+
+```
+Wt=[1,1,1] returned 1. To maximally split the hypothesis space, I'll test Jm=[0,0,0] — the exact complement of Wt on all three properties. This cleanly separates AND/OR-type laws (which would flip to 0 at the complement) from XOR-type laws (which stay at 1), regardless of which pair of properties turns out to be relevant.
+
+```json
+
+```
+Wt and Jm are exact complements of each other and both returned 1. That already rules out every AND-type law entirely: for AND(a,b) to equal 1 at an all-1s input, both literals must be non-negated (true when prop=1); but then both are false at an all-0s input, forcing AND=0 there — contradicting Jm=1. So AND is eliminated regardless of which properties/signs.
+
+For OR and XOR, satisfying both Wt=1 and Jm=1 requires the two literals to have *opposite* polarity (one positive, one negated) — same logic, worked either way. That leaves exactly 12 candidate hypotheses: 3 property-pairs × {OR,XOR} × 2 sign-assignments each.
+
+I still have one free observation left. Checking all four untested symbols (Rc, Vx, Um, Bf) against the 12 surviving hypotheses, each splits them exactly 6/6 — all equally informative right now. I'll use Rc, since it also sets up a clean 3/3 split on the follow-up test (Bf) regardless of outcome.
+
+```json
+
+```
+Free observations are exhausted (Wt, Jm, Rc used); this must be a formal COMMITMENT now.
+
+**Elimination so far:**
+- Wt=[1,1,1]→1 and Jm=[0,0,0]→1 (exact complements) rule out **all AND-type** laws (AND=1 at all-1s forces AND=0 at all-0s, contradiction) and force any surviving OR/XOR to use **mixed-sign literals** on its pair of properties.
+- Rc=[0,1,1]→1 tests pair (0,1) against Wt: since Rc agrees with Wt on p1,p2 but flips p0, it discriminates within pairs involving p0, but leaves pair(1,2) hypotheses (which don't depend on p0) untouched.
+
+Working through all three pairs against Wt/Jm/Rc, surviving hypotheses (6 of original 36):
+- H1: (¬p0 OR p1)
+- H2: (¬p0 OR p2)
+- H3: (p1 OR ¬p2)
+- H4: (¬p1 OR p2)
+- H5: (p1 XOR ¬p2) — extensionally = XNOR(p1,p2)
+- H6: (¬p1 XOR p2) — extensionally identical to H5 (same truth table, never separable by any test)
+
+Remaining untested symbols: Vx=[1,0,0], Um=[1,1,0], Bf=[0,0,1]. Checking predictions, **Bf** gives the most balanced split: {H1,H2,H4}→1 vs {H3,H5,H6}→0 (3/3), maximizing expected information gain.
+
+```json
+
+```
+Three hypotheses remain, all still consistent with every observation so far (Wt, Jm, Rc, Bf all →1 under each):
+- H1: (¬p0 OR p1)
+- H2: (¬p0 OR p2)
+- H4: (¬p1 OR p2)
+
+Untested symbols: Vx=[1,0,0], Um=[1,1,0].
+
+Checking Vx (p0=1,p1=0,p2=0): H1→0, H2→0, H4→1 (splits 2/1)
+Checking Um (p0=1,p1=1,p2=0): H1→1, H2→0, H4→0 (splits 1/2)
+
+Both give equivalent information gain (a 2-1 split of 3 equally-weighted hypotheses); I'll test Vx.
+
+```json
+
+```
+All five observations are consistent with exactly one surviving hypothesis, H4: (¬p1 OR p2), and every rival was eliminated by a direct contradicting observation (AND-family by Wt/Jm complementarity, H1/H2 by Vx, H3/H5/H6 by Bf). No untested symbol is needed to distinguish further since no rivals remain — this is a SUFFICIENCY point, not a further COMMITMENT.
+
+```json
+
+```
+Applying the confirmed law H4: (¬p1 OR p2) — false only when p1=1 and p2=0 — to each case:
+
+- Nd[1,0,1]: p1=0 → true → 1
+- Zn[0,1,0]: p1=1,p2=0 → false → 0
+- Kr[0,0,0]: p1=0 → true → 1
+- Hs[1,0,0]: p1=0 → true → 1
+- Tg[1,1,0]: p1=1,p2=0 → false → 0
+- Qz[0,1,1]: p2=1 → true → 1
+- Ok[0,0,1]: p1=0 → true → 1
+- Ly[1,1,1]: p2=1 → true → 1
+
+Since H4 was the unique surviving hypothesis (all rivals eliminated by direct contradicting observations), confidence is uniformly high but not absolute — matching the 0.95 sealed at SUFFICIENCY.
+
+```json
+
+```

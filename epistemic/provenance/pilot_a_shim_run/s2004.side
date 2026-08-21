@@ -1,0 +1,15 @@
+Ignoring that unrelated tool noise — back to the puzzle. All six symbols are now tested, and (NOT p0) OR p2 fits every observation with no surviving rival:
+All six observations are consistent with exactly one surviving hypothesis, (NOT p0) OR p2, i.e. outcome=0 only when p0=1 AND p2=0, else outcome=1. Applying it:
+
+- Um[1,0,0]: p0=1,p2=0 → 0
+- Ly[0,1,0]: p0=0 → 1
+- Ok[1,1,0]: p0=1,p2=0 → 0
+- Ea[0,0,1]: p0=0 → 1
+- Zn[0,1,1]: p0=0 → 1
+- Vx[0,0,0]: p0=0 → 1
+- Qz[1,1,1]: p0=1,p2=1 → 1
+- Wt[1,0,1]: p0=1,p2=1 → 1
+
+```json
+
+```
