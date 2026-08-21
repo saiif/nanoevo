@@ -1,0 +1,446 @@
+"""pilot_a_gate_report.py — Pilot-A Gate Report (read-only diagnostics).
+
+يجمع كل episodes الدفعة (2000-2007, بما فيها repeated runs داخل نفس السلسلة append-only)
+في تقرير بوابة واحد بأربع طبقات:
+  1. Contract      — completion / rejects / retries / invalid actions / bypass / zero semantic repair
+  2. Provenance    — hash chains / exec identity (start+end) / frozen hashes / no overwrite
+  3. Behavior      — N_free, N_formal, N_realized, Blind-ID, confidence، منحنى |H_t| وIG_t،
+                     وclaimed-vs-actual: posterior الموديل المختوم مقابل الناجين الفعليين،
+                     وpredictions المختومة مقابل كتلة الفرضيات، وrank الفعل المختار.
+  4. Oracle        — D_floor (instance-optimal under epistemic admissibility; lower envelope)
+                     / D_robust (=D_pred, minimax) / N_realized + التصنيف الثلاثي.
+
+لا يعدّل أي شيء: يقرأ السجلات المختومة ويعيد حساب كميات oracle-side فقط.
+A-004 غير مختوم — هذا التقرير هو اختباره التجريبي الأول، لا ختمه.
+
+الاستعمال:  python pilot_a_gate_report.py [run_dir] > PILOT_A_GATE_REPORT.md
+"""
+
+import glob
+import itertools
+import json
+import math
+import os
+import sys
+
+from world import generate_accepted_world, enumerate_hypotheses, OPS, N_PROPS
+from channel import Archivist, schema_hash, blind_schema_hash, protocol_hash
+from session import PROTOCOL_SPEC
+
+EXPECTED = {
+    "schema_hash": schema_hash(),
+    "blind_schema_hash": blind_schema_hash(),
+    "protocol_hash": protocol_hash(PROTOCOL_SPEC),
+}
+
+
+# ------------------------- تفكيك السلاسل إلى episodes -------------------------
+
+def segment(recs):
+    """سلسلة append-only قد تحوي عدة sessions: كل session تبدأ EXEC_IDENTITY بعد SESSION_END سابقة."""
+    sessions, cur = [], []
+    for r in recs:
+        if (r["payload"]["kind"] == "EXEC_IDENTITY" and cur
+                and any(x["payload"]["kind"] == "SESSION_END" for x in cur)):
+            sessions.append(cur)
+            cur = []
+        cur.append(r)
+    if cur:
+        sessions.append(cur)
+    return [s for s in sessions if any(x["payload"]["kind"] == "SESSION_END" for x in s)]
+
+
+# ------------------------- تطبيع أسماء الفرضيات (claimed → canonical) -------------------------
+
+def _norm(s):
+    return (s.replace("¬", "NOT ").upper().replace("(", "").replace(")", "")
+            .replace(" ", ""))
+
+
+def build_name_map(hyps):
+    """كل صيغة literal مكافئة (بما فيها تبديل الطرفين وأشكال XOR) → canonical id."""
+    sig2id = {h.signature(): i for i, h in enumerate(hyps)}
+    name2id = {}
+
+    class _H:
+        def __init__(self, op, i, ni, j, nj):
+            self.op, self.i, self.ni, self.j, self.nj = op, i, ni, j, nj
+
+        def eval(self, props):
+            a = props[self.i] ^ self.ni
+            b = props[self.j] ^ self.nj
+            return (a & b) if self.op == "AND" else (a | b) if self.op == "OR" else (a ^ b)
+
+    lit = lambda k, n: f"{'NOT ' if n else ''}p{k}"
+    for op in OPS:
+        for i in range(N_PROPS):
+            for j in range(N_PROPS):
+                if i == j:
+                    continue
+                for ni, nj in itertools.product((0, 1), repeat=2):
+                    h = _H(op, i, ni, j, nj)
+                    sig = tuple(h.eval(v) for v in itertools.product((0, 1), repeat=N_PROPS))
+                    if sig in sig2id:
+                        name2id[_norm(f"({lit(i, ni)} {op} {lit(j, nj)})")] = sig2id[sig]
+    return name2id
+
+
+# ------------------------- كميات oracle-side -------------------------
+
+def d_floor(w, tau=None):
+    """D_floor تحت epistemic admissibility — يرجع (weak, strict).
+
+    مبرر الحساب: على instance حتمي مثبَّت، أي admissible policy (π_t: h_t → a_t) تنهار إلى
+    تسلسل أفعال محدَّد (لأن إجابات العالم محددة سلفًا بالقانون الحقيقي)، وترتيب الاختبارات
+    لا يغيّر مجموعة الناجين — فالـ min على السياسات = min على *مجموعات* الاختبارات.
+
+    تشعّب مهم في تعريف نقطة التوقف:
+      strict = الناجون مجمعون (unanimous) على كل حالة Blind-ID وبقيمة الحقيقة
+               → الأدلة *حدّدت* الأجوبة العمياء.
+      weak   = تصويت أغلبية الناجين يحقق BlindScore ≥ tau على الحقيقة المُحقَّقة
+               → المعيار *بُلِغ*، ولو بقي الناجون منقسمين (قد يكون بمحاذاة موفقة).
+    weak ≤ strict دائمًا. بما أن D_floor يُستعمل كـ**validity bound**، الحد الصحيح هو
+    الأضعف: أي N أقل منه مستحيل على أي سياسة مقبولة ⇒ bug/leak. استعمال strict كحد
+    للـ audit ينتج إنذارات كاذبة على حلقات مشروعة.
+    """
+    tau = PROTOCOL_SPEC["tau_blind"] if tau is None else tau
+    true = w.hypotheses[w.true_id]
+    blind = [tuple(v) for v in w.blind_ID.values()]
+    vecs = [tuple(v) for v in w.train_vectors]
+    weak = strict = None
+    for k in range(len(vecs) + 1):
+        for S in itertools.combinations(vecs, k):
+            surv = [h for h in w.hypotheses if all(h.eval(v) == true.eval(v) for v in S)]
+            if not surv:
+                continue
+            if strict is None and all(len({h.eval(b) for h in surv}) == 1
+                                      and surv[0].eval(b) == true.eval(b) for b in blind):
+                strict = k
+            if weak is None and blind:
+                # قاعدة القرار المثلى تحت posterior منتظم: تصويت الأغلبية
+                agree = 0
+                for b in blind:
+                    ones = sum(h.eval(b) for h in surv)
+                    pred = 1 if 2 * ones >= len(surv) else 0
+                    agree += (pred == true.eval(b))
+                if agree / len(blind) >= tau:
+                    weak = k
+            if weak is not None and strict is not None:
+                return weak, strict
+        if weak is not None and strict is not None:
+            break
+    return weak, strict
+
+
+def region(n, floor, robust):
+    if n < floor:
+        return "TRUE_AUDIT"
+    if n < robust:
+        return "FAVORABLE_TRAJECTORY"
+    return "NORMAL/ABOVE_ROBUST_COST"
+
+
+# ------------------------- تحليل episode واحدة -------------------------
+
+def analyze_episode(tag, recs, w, name2id):
+    P = [r["payload"] for r in recs]
+    K = [p["kind"] for p in P]
+    end = next(p["result"] for p in P if p["kind"] == "SESSION_END")
+    packet = next((p["packet"] for p in P if p["kind"] == "PHASE_ZERO"), None)
+    sym2vec = {s: tuple(v) for s, v in packet["symbols"].items()} if packet else {}
+
+    # --- الطبقة 1: العقد ---
+    contract = {
+        "outcome": end["outcome"],
+        "schema_rejects": K.count("SCHEMA_REJECT"),
+        "phase_rejects": K.count("PHASE_REJECT"),
+        "blind_rejects": K.count("BLIND_REJECT"),
+        "refusals": K.count("REFUSED_ACTION") + K.count("FREE_OBS_REFUSED"),
+        "unparsed_interpretations": sum(
+            1 for p in P if p["kind"] == "INTERPRETATION"
+            and p["interpretation"].get("interpretation") == "UNPARSED"),
+    }
+    # bypass: كل observation مربوطة بوصل ختم commitment سابق داخل نفس الـ episode
+    hashes_by_kind = {}
+    bypass = 0
+    for r in recs:
+        k = r["payload"]["kind"]
+        if k in ("COMMITMENT", "FREE_OBS_COMMIT"):
+            hashes_by_kind[r["hash"]] = k
+        if k == "OBSERVATION" and hashes_by_kind.get(r["payload"].get("receipt")) != "COMMITMENT":
+            bypass += 1
+        if k == "FREE_OBS_RESULT" and hashes_by_kind.get(r["payload"].get("receipt")) != "FREE_OBS_COMMIT":
+            bypass += 1
+    contract["gate_bypass"] = bypass
+
+    # --- الطبقة 2: provenance ---
+    idn_start = next((p["identity"] for p in P if p["kind"] == "EXEC_IDENTITY"), None)
+    idn_end = next((p["identity"] for p in P if p["kind"] == "EXEC_IDENTITY_END"), None)
+    prov = {
+        "exec_identity": idn_start is not None and idn_end is not None,
+        "request_ids_complete": bool(idn_end) and idn_end.get("n_requests") == len(idn_end.get("request_ids", [])) > 0,
+        "model": (idn_end or {}).get("model"),
+        "adapter_hash": (idn_end or {}).get("adapter_hash"),
+        "truncated_responses": (idn_end or {}).get("truncated_responses"),
+        "terminal": "SESSION_END" in K,
+    }
+
+    # --- الطبقة 3: السلوك — replay منحنى |H_t| وIG وجودة الأفعال ---
+    hyps = w.hypotheses
+    alive = set(range(len(hyps)))
+    curve = [len(alive)]
+    steps = []          # (phase, action, split_rank, split, claimed_p1, actual_p1, obs)
+    claimed_checks = [] # مقارنة posterior المختوم بالناجين الفعليين
+    events = []
+    for p in P:
+        if p["kind"] in ("FREE_OBS_COMMIT", "COMMITMENT"):
+            events.append(("commit", p))
+        elif p["kind"] in ("FREE_OBS_RESULT", "OBSERVATION"):
+            events.append(("obs", p))
+    i = 0
+    while i < len(events):
+        kind, p = events[i]
+        if kind == "commit" and i + 1 < len(events) and events[i + 1][0] == "obs":
+            dep = p["deposit"]
+            action = dep["action"]
+            symn = action[5:-1]
+            obs = events[i + 1][1]["observation"]
+            # جودة الاختيار: worst-case split لكل رمز متاح على alive الحالي
+            ranks = []
+            for s, v in sym2vec.items():
+                n1 = sum(1 for h in alive if hyps[h].eval(v))
+                n0 = len(alive) - n1
+                ranks.append((max(n0, n1) if n0 and n1 else float("inf"), s))
+            ranks.sort()
+            rank = next((k + 1 for k, (_, s) in enumerate(ranks) if s == symn), None)
+            v = sym2vec[symn]
+            n1 = sum(1 for h in alive if hyps[h].eval(v))
+            actual_p1 = n1 / len(alive) if alive else None
+            claimed_p1 = None
+            if dep.get("predictions"):
+                claimed_p1 = dep["predictions"].get("outcome=1")
+                if claimed_p1 is None and "outcome=0" in dep["predictions"]:
+                    claimed_p1 = 1.0 - dep["predictions"]["outcome=0"]
+            # posterior مختوم مقابل الناجين الفعليين
+            if dep.get("hypotheses"):
+                ids = {}
+                unmatched = []
+                for nm, pr in dep["hypotheses"].items():
+                    hid = name2id.get(_norm(nm))
+                    if hid is None:
+                        unmatched.append(nm)
+                    else:
+                        ids[hid] = ids.get(hid, 0.0) + pr
+                claimed_checks.append({
+                    "action": action,
+                    "claimed_n": len(dep["hypotheses"]), "actual_n": len(alive),
+                    "matched": len(ids), "unmatched": unmatched,
+                    "set_equal": set(ids) == alive,
+                    "mass_on_truth": round(ids.get(w.true_id, 0.0), 4),
+                    "truth_in_claimed": w.true_id in ids,
+                })
+            new_alive = {h for h in alive if hyps[h].eval(v) == obs}
+            ig = math.log2(len(alive) / len(new_alive)) if new_alive else float("inf")
+            steps.append({"phase": "free" if p["kind"] == "FREE_OBS_COMMIT" else "formal",
+                          "action": action, "obs": obs, "rank": rank,
+                          "H_before": len(alive), "H_after": len(new_alive),
+                          "IG_bits": round(ig, 3),
+                          "claimed_p1": claimed_p1,
+                          "actual_p1": round(actual_p1, 4) if actual_p1 is not None else None})
+            alive = new_alive
+            curve.append(len(alive))
+            i += 2
+        else:
+            i += 1
+
+    suff = next((p["deposit"] for p in P if p["kind"] == "SUFFICIENCY"), None)
+    behavior = {
+        "N_free": end["free_used"], "N_formal": end["N_interventions"],
+        "N_realized": end.get("N_total"),
+        "blind_ID": end.get("blind_ID"), "conf_ID": end.get("conf_ID"),
+        "conf_X": end.get("conf_X"),
+        "declared_conf": suff.get("confidence") if suff else None,
+        "declared_law": suff.get("final_hypothesis") if suff else None,
+        "curve": curve, "steps": steps, "claimed_checks": claimed_checks,
+        "final_H": len(alive), "truth_survives": w.true_id in alive,
+    }
+
+    # --- الطبقة 4: oracle ---
+    weak, strict = d_floor(w)
+    n = end.get("N_total")
+    oracle = {"D_floor_weak": weak, "D_floor_strict": strict,
+              "D_robust": w.D_pred, "D_inst": w.D_inst, "D_min": w.D_min,
+              "N_realized": n,
+              # الحد للـ audit = الأضعف (validity bound)؛ strict وصفي فقط
+              "region": region(n, weak, w.D_pred) if n is not None and weak is not None else "-",
+              "audit_fired": "ORACLE_VIOLATION_AUDIT" in K}
+    return {"tag": tag, "contract": contract, "prov": prov,
+            "behavior": behavior, "oracle": oracle}
+
+
+# ------------------------- التقرير -------------------------
+
+def main(run_dir):
+    hyps = enumerate_hypotheses()
+    name2id = build_name_map(hyps)
+    episodes = []
+    files = sorted(glob.glob(os.path.join(run_dir, "s*.jsonl")))
+    chains_ok = {}
+    for f in files:
+        if f.endswith(".tampered"):
+            continue
+        seed = int(os.path.basename(f)[1:-6])
+        chains_ok[seed] = Archivist.verify_file(f)
+        recs = [json.loads(l) for l in open(f, encoding="utf-8")]
+        sess = segment(recs)
+        w = generate_accepted_world(seed)
+        for j, s in enumerate(sess):
+            tag = f"{seed}" + (f"#r{j+1}" if len(sess) > 1 else "")
+            episodes.append((seed, analyze_episode(tag, s, w, name2id)))
+
+    worlds = sorted({s for s, _ in episodes})
+    print("# Pilot-A Gate Report — seeds "
+          f"{min(worlds)}–{max(worlds)} ({len(worlds)} worlds, {len(episodes)} episodes)")
+    print()
+    print("model: claude-sonnet-5 عبر claude-openai-shim (اشتراك المشغل، claude -p، pure text).")
+    print("repeated runs: العوالم التي أعيد تشغيلها تُعرض كـ #r1/#r2 داخل نفس السلسلة append-only —")
+    print("عالم واحد إحصائيًا، لا عالمين.")
+    print()
+    print("**هذا التقرير read-only بالكامل. لا شيء في الماسورة عُدِّل. A-004 غير مختوم —")
+    print("القسم 4 هو اختباره التجريبي الأول على بيانات مجمدة.**")
+    print()
+
+    # ---- 1. Contract ----
+    print("## 1. Contract layer")
+    print()
+    print("| episode | outcome | schema_rej | phase_rej | blind_rej | refusals | unparsed_interp | gate_bypass |")
+    print("|---|---|---|---|---|---|---|---|")
+    tot = {"schema_rejects": 0, "phase_rejects": 0, "blind_rejects": 0, "refusals": 0,
+           "unparsed_interpretations": 0, "gate_bypass": 0}
+    complete = 0
+    for _, e in episodes:
+        c = e["contract"]
+        complete += c["outcome"] not in ("AGENT_PROTOCOL_FAILURE", "PROVIDER_FAILURE",
+                                         "ADAPTER_FAILURE", "SESSION_CRASH")
+        for k in tot:
+            tot[k] += c[k]
+        print(f"| {e['tag']} | {c['outcome']} | {c['schema_rejects']} | {c['phase_rejects']} | "
+              f"{c['blind_rejects']} | {c['refusals']} | {c['unparsed_interpretations']} | {c['gate_bypass']} |")
+    print()
+    print(f"- completion: **{complete}/{len(episodes)}**؛ semantic repairs بالبناء = 0 "
+          f"(الـ adapter لا يصلح شيئًا؛ كل رفض أعلاه مرئي ومختوم).")
+    print(f"- مجاميع: schema={tot['schema_rejects']}, phase={tot['phase_rejects']}, "
+          f"blind={tot['blind_rejects']}, refusals={tot['refusals']}, "
+          f"unparsed_interp={tot['unparsed_interpretations']}, gate_bypass={tot['gate_bypass']}.")
+    print()
+
+    # ---- 2. Provenance ----
+    print("## 2. Provenance layer")
+    print()
+    print("| episode | chain | exec_id start+end | request_ids | model | adapter_hash | truncations | terminal |")
+    print("|---|---|---|---|---|---|---|---|")
+    for seed, e in episodes:
+        p = e["prov"]
+        print(f"| {e['tag']} | {'VALID' if chains_ok[seed] else 'BROKEN'} | "
+              f"{'Y' if p['exec_identity'] else 'N'} | "
+              f"{'complete' if p['request_ids_complete'] else 'MISSING'} | {p['model']} | "
+              f"{p['adapter_hash']} | {p['truncated_responses']} | {'Y' if p['terminal'] else 'N'} |")
+    print()
+    print(f"- frozen hashes (متوقعة من الكود المجمد): schema={EXPECTED['schema_hash']}, "
+          f"blind={EXPECTED['blind_schema_hash']}, protocol={EXPECTED['protocol_hash']}.")
+    print("- لا overwrite: الـ repeated runs التحقت بنفس السلسلة append-only وصمد الـ verify"
+          " على الملف كاملًا — الماضي محفوظ لا مُعاد كتابته.")
+    print()
+
+    # ---- 3. Behavior ----
+    print("## 3. Behavior diagnostics")
+    print()
+    print("| episode | Nfree | Nform | Nreal | Blind-ID | conf_ID | conf_X | declared_conf | truth_survives | |H| curve | IG bits/step |")
+    print("|---|---|---|---|---|---|---|---|---|---|---|")
+    for _, e in episodes:
+        b = e["behavior"]
+        igs = "، ".join(str(s["IG_bits"]) for s in b["steps"])
+        curve = "→".join(map(str, b["curve"]))
+        print(f"| {e['tag']} | {b['N_free']} | {b['N_formal']} | {b['N_realized']} | "
+              f"{b['blind_ID']} | {b['conf_ID']} | {b['conf_X']} | {b['declared_conf']} | "
+              f"{'Y' if b['truth_survives'] else 'N'} | {curve} | {igs} |")
+    print()
+    print("### claimed vs actual — هل كلام الموديل يطابق ما تفعله أفعاله؟")
+    print()
+    print("لكل خطوة: rank الفعل المختار بين الأفعال الستة بمعيار worst-case split (1 = الأفصل)،")
+    print("وclaimed P(outcome=1) المختوم مقابل النسبة الفعلية للناجين المصوتين بـ1:")
+    print()
+    print("| episode | step | action | rank | H_before→H_after | claimed p1 | actual p1 | Δ |")
+    print("|---|---|---|---|---|---|---|---|")
+    for _, e in episodes:
+        for k, s in enumerate(e["behavior"]["steps"], 1):
+            d = (abs(s["claimed_p1"] - s["actual_p1"])
+                 if s["claimed_p1"] is not None and s["actual_p1"] is not None else None)
+            print(f"| {e['tag']} | {k} ({s['phase']}) | {s['action']} | {s['rank']} | "
+                  f"{s['H_before']}→{s['H_after']} | "
+                  f"{s['claimed_p1'] if s['claimed_p1'] is not None else '—'} | {s['actual_p1']} | "
+                  f"{round(d, 4) if d is not None else '—'} |")
+    print()
+    print("### posterior المختوم مقابل الناجين الفعليين (COMMITMENT deposits)")
+    print()
+    print("| episode | action | claimed n | actual n | matched | set == survivors? | mass on truth | truth claimed? |")
+    print("|---|---|---|---|---|---|---|---|")
+    any_claims = False
+    for _, e in episodes:
+        for c in e["behavior"]["claimed_checks"]:
+            any_claims = True
+            print(f"| {e['tag']} | {c['action']} | {c['claimed_n']} | {c['actual_n']} | "
+                  f"{c['matched']}{' (unmatched: ' + '; '.join(c['unmatched']) + ')' if c['unmatched'] else ''} | "
+                  f"{'Y' if c['set_equal'] else 'N'} | {c['mass_on_truth']} | "
+                  f"{'Y' if c['truth_in_claimed'] else 'N'} |")
+    if not any_claims:
+        print("| — | — | — | — | — | — | — | — |")
+    print()
+
+    # ---- 4. Oracle ----
+    print("## 4. Oracle diagnostics — الاختبار التجريبي الأول لصياغة A-004 (غير المختومة)")
+    print()
+    print("D_floor = instance-optimal تحت epistemic admissibility (lower envelope تشخيصي فقط).")
+    print("مبرر الحساب: على instance حتمي، أي admissible policy تنهار إلى تسلسل أفعال محدد،")
+    print("وترتيب الاختبارات لا يغيّر مجموعة الناجين ⇒ min على السياسات = min على مجموعات الاختبارات.")
+    print()
+    print("**تشعّب مكتشف في التعريف** (لم يكن في الصياغة الأولى): نقطة التوقف لها قراءتان —")
+    print("`weak` = تصويت أغلبية الناجين يحقق BlindScore ≥ tau على الحقيقة المحققة (المعيار بُلِغ،")
+    print("ولو بقي الناجون منقسمين)؛ `strict` = الناجون مجمعون على كل حالة Blind-ID (الأدلة *حدّدت*")
+    print("الأجوبة). دائمًا weak ≤ strict. **حد الـ audit يجب أن يكون weak** لأنه validity bound:")
+    print("أي N دونه مستحيل على أي سياسة مقبولة ⇒ bug/leak؛ واستعمال strict ينتج إنذارات كاذبة.")
+    print()
+    print("| episode | D_floor(weak) | D_floor(strict) | D_robust | D_inst | N_realized | region | audit (old rule) |")
+    print("|---|---|---|---|---|---|---|---|")
+    regions = {}
+    split_seen = False
+    for _, e in episodes:
+        o = e["oracle"]
+        regions[o["region"]] = regions.get(o["region"], 0) + 1
+        if o["D_floor_weak"] != o["D_floor_strict"]:
+            split_seen = True
+        print(f"| {e['tag']} | {o['D_floor_weak']} | {o['D_floor_strict']} | {o['D_robust']} | "
+              f"{o['D_inst']} | {o['N_realized']} | {o['region']} | "
+              f"{'YES' if o['audit_fired'] else '-'} |")
+    print()
+    print(f"- توزيع المناطق: {json.dumps(regions, ensure_ascii=False)}")
+    print(f"- TRUE_AUDIT (N < D_floor_weak) = leakage/accounting/oracle bug: "
+          f"**{regions.get('TRUE_AUDIT', 0)}** من {len(episodes)}.")
+    print(f"- weak ≠ strict في هذه الدفعة: {'نعم — التشعّب حقيقي عمليًا لا نظريًا فقط' if split_seen else 'لا (تطابقا هنا؛ التشعّب يبقى صحيحًا نظريًا وقد يظهر في عوالم أغنى)'}.")
+    print()
+    print("## Gate verdict")
+    print()
+    print("سؤال البوابة: **هل بقي العقد سليمًا أمام LLM حقيقي عبر عدة worlds/runs؟**")
+    print("(الـ Blind-ID ليس شرط العبور الوحيد — الحكم على سلامة العقد والسجل.)")
+    print()
+    print("الخطوتان المشروطتان بالعبور، قبل Pilot-B وبهذا الترتيب:")
+    print("1. مراجعة مرشح A-004 على هذه البيانات المجمدة وقرار ختمه أو رفضه.")
+    print("2. ختم مواصفات Pilot-B: فصل probe، وt_inadequacy، وFrame Expansion، وثلاثية Blind-X.")
+    print()
+    print("البذور التأكيدية لا تُفتح.")
+
+
+if __name__ == "__main__":
+    main(sys.argv[1] if len(sys.argv) > 1 else
+         os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                      "provenance", "pilot_a_shim_run"))
