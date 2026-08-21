@@ -1,0 +1,7 @@
+# Sealed hashes (adapter_hash, chain records) are computed over raw bytes — never let Git rewrite line endings.
+* text=auto eol=lf
+*.py text eol=lf
+*.md text eol=lf
+*.jsonl text eol=lf
+*.side text eol=lf
+*.json text eol=lf

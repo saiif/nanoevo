@@ -1,0 +1,56 @@
+```json
+
+```
+```json
+
+```
+```json
+
+```
+Analysis of the 3 free observations:
+
+- Bf=[1,0,0]→1, Xp=[0,1,0]→0, Zn=[1,1,0]→0
+
+Testing all ±p_i OP ±p_j formulas against these three points, four survive:
+- H1: (p0 AND ¬p1)
+- H2: (¬p1 OR p2)
+- H3: (¬p1 XOR p2)  [≡ p1 XNOR p2]
+- H5: (¬p1 AND ¬p2)
+
+(pair (p0,p2) is fully eliminated — no sign/OP combo fits all three).
+
+Checking untested symbols, Nd=[1,0,1] predicts: H1=1, H2=1, H3=0, H5=0 — a clean 2-2 split. Following up with Wt=[0,1,1] (H1=0,H2=1,H3=1,H5=0) would then fully disambiguate all four regardless of Nd's result. So committing to TEST(Nd) first.
+
+```json
+
+```
+```json
+
+```
+Both surviving hypotheses (H3: ¬p1 XOR p2, H5: ¬p1 AND ¬p2) fit all four data points identically — they only diverge when p1=p2=1. Symbol Wt=[0,1,1] has p1=1,p2=1: H3 predicts 1, H5 predicts 0. This is a clean discriminator, so committing to TEST(Wt).
+
+```json
+
+```
+```json
+
+```
+All five observations are consistent with H3 (¬p1 XOR p2, i.e., p1 XNOR p2) and no other hypothesis in the family survives. The law is determined — declaring sufficiency rather than testing further.
+
+```json
+
+```
+All predictions follow directly from H3 (¬p1 XOR p2, i.e. outcome=1 iff p1==p2), the sole surviving hypothesis:
+
+- Qz=[0,1,1]: p1=1,p2=1 → equal → 1
+- Rc=[1,0,0]: p1=0,p2=0 → equal → 1
+- Ok=[1,1,1]: p1=1,p2=1 → equal → 1
+- Ly=[0,1,0]: p1=1,p2=0 → unequal → 0
+- Um=[1,1,0]: p1=1,p2=0 → unequal → 0
+- Vx=[0,0,1]: p1=0,p2=1 → unequal → 0
+- Ea=[1,0,1]: p1=0,p2=1 → unequal → 0
+- Hs=[0,0,0]: p1=0,p2=0 → equal → 1
+
+```json
+
+```
