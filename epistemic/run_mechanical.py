@@ -19,7 +19,7 @@ from session import Session, Verifier, PROTOCOL_SPEC, PROTOCOL_VERSION
 from agents import (LearnerAgent, ControlAgent, MalformedOnceAgent,
                     MalformedTwiceAgent, LeakProbeAgent, BadActionAgent,
                     ExtraFreeObsAgent, InadequacyLoopAgent, BlindMalformedAgent,
-                    IncompleteClaimAgent)
+                    IncompleteClaimAgent, EarlyStopAgent)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 PROV_DIR = os.path.join(HERE, "provenance")
@@ -216,6 +216,61 @@ def main():
     check("A-003 Verifier accepts a genuinely non-identifiable remaining set",
           correct_case is True)
 
+    # ---------- A-004: المساطر الأربع وقاعدة الـ audit ----------
+    print("\n[A-004] Four rulers and the task-aligned audit rule")
+    ordering_ok, floors_ok = True, True
+    for seed in range(1, 13):
+        w = generate_accepted_world(seed)
+        # الترتيب البنيوي: floor^task ≤ floor^strict، و floor^task ≤ D_robust
+        if not (w.D_floor_task is not None and w.D_floor_strict is not None):
+            floors_ok = False
+            continue
+        ordering_ok &= (w.D_floor_task <= w.D_floor_strict)
+        ordering_ok &= (w.D_floor_task <= w.D_robust)
+    check("A-004 D_floor^task <= D_floor^strict and <= D_robust on every accepted world",
+          ordering_ok and floors_ok)
+
+    # التصنيف الثلاثي حتمي وشامل
+    from world import classify_region
+    reg_ok = (classify_region(2, 3, 5) == "TRUE_AUDIT"
+              and classify_region(3, 3, 5) == "FAVORABLE_TRAJECTORY"
+              and classify_region(4, 3, 5) == "FAVORABLE_TRAJECTORY"
+              and classify_region(5, 3, 5) == "AT_OR_ABOVE_ROBUST"
+              and classify_region(9, 3, 5) == "AT_OR_ABOVE_ROBUST"
+              and classify_region(None, 3, 5) == "UNCLASSIFIED")
+    check("A-004 region classification exhaustive and boundary-correct", reg_ok)
+
+    # الأرضية المهمّية أضعف من الـ strict فعليًا في مكان ما (وإلا التفريق بلا أثر)
+    sep = [s for s in range(1, 40)
+           if (lambda w: w.D_floor_task is not None and w.D_floor_task < w.D_floor_strict)
+           (generate_accepted_world(s))]
+    check("A-004 task floor is strictly weaker than strict floor on some world",
+          bool(sep), f"worlds: {sep[:6]}")
+
+    # الوكيل المرجعي لا يقع تحت الأرضية المهمّية (وإلا فالخلل في المسطرة أو في الحساب)
+    audit_free = True
+    for seed in (1, 7, 8, 9, 10, 11):
+        _, s_a, r_a, _, _ = run_one(LearnerAgent(seed), seed, f"a004_{seed}")
+        if r_a.get("true_audit"):
+            audit_free = False
+    check("A-004 scripted Learner never falls below the task floor (TRUE_AUDIT=0)", audit_free)
+
+    # E غير مسقوفة: مسار أقصر من الضمان يعطي E>1 بدل أن يُخفى بـ min(1,·).
+    # الـ Learner المرجعي لا يهبط تحت D_robust (يسعى للتعريف الكامل)، فنستعمل بوت التوقف المبكر.
+    e_unc, fav_audit_free = None, True
+    for seed in range(1, 40):
+        w = generate_accepted_world(seed)
+        _, _, r_u, _, _ = run_one(EarlyStopAgent(seed), seed, f"a004_early_{seed}")
+        if r_u.get("region") == "FAVORABLE_TRAJECTORY":
+            fav_audit_free &= (r_u.get("true_audit") == 0)
+            if r_u.get("success") and e_unc is None:
+                e_unc = (seed, r_u["E"], w.D_robust, r_u["N_total"], w.D_floor_task)
+    check("A-004 E_robust uncapped (E>1 recorded, not clipped by min(1,.))",
+          e_unc is not None and e_unc[1] > 1.0,
+          f"seed {e_unc[0]}: E={e_unc[1]:.3f} = D_robust {e_unc[2]}/N {e_unc[3]} "
+          f"(floor^task={e_unc[4]})" if e_unc else "no favorable-trajectory success found")
+    check("A-004 FAVORABLE_TRAJECTORY never raises TRUE_AUDIT", fav_audit_free)
+
     # ---------- عرض Learner vs Control (بلا إحصاء — ماسورة فقط) ----------
     print("\n[DEMO] Learner vs Control on mechanical seeds (no statistical claims)")
     print(f"    {'seed':>4} {'Dpred':>5} {'nID/nX':>6} | "
@@ -224,7 +279,7 @@ def main():
     for seed in (7, 8, 9, 10, 11):
         wl, _, rl, _, _ = run_one(LearnerAgent(seed), seed, "L")
         wc, _, rc, _, _ = run_one(ControlAgent(seed), seed, "C")
-        ov = "  <AUDIT>" if rl.get("oracle_violation") or rc.get("oracle_violation") else ""
+        ov = "  <AUDIT>" if rl.get("true_audit") or rc.get("true_audit") else ""
         fmt = lambda x: "  - " if x is None else f"{x:4.2f}"
         print(f"    {seed:>4} {str(wl.D_pred):>5} {len(wl.blind_ID)}/{len(wl.blind_X):<4} | "
               f"{fmt(rl.get('E'))} {fmt(rl.get('blind_ID'))} {fmt(rl.get('blind_X'))} "

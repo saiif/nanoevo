@@ -142,7 +142,44 @@ Blind-ID = 8/8 في كل episode، provenance كامل 4/4. الـ parser وال
 عبر كل القوانين الممكنة)، بينما مسار الوكيل المُحقَّق على قانون مُواتٍ قد يقصر عنها. التباين
 realized-path لا عيب في المسطرة: نفس العالم 2000 اشتعل في r1 (4) ولم يشتعل في r2 (5).
 
-**مرشّح A-004 (لم يُختم — يُجمَّد رسميًا عند بوابة Pilot-A → Pilot-B وفق P-001):**
+## بوابة Pilot-A: **PASSED** — وAmendment A-004 (مختوم)
+سؤال البوابة كان محددًا مسبقًا: *هل يستطيع LLM حقيقي العمل داخل العقد المجمد بلا semantic
+repair ولا bypass؟* الجواب من 9 episodes على 8 عوالم: **9/9 completion، 9/9 Blind-ID=8/8،
+صفر schema/phase/blind rejects، صفر refusals، صفر gate bypass، 9/9 provenance**.
+التقرير الكامل: `PILOT_A_GATE_REPORT.md`. الادعاء الملتزم:
+
+> **Exact survivor-set tracking in Pilot-A (19/19)، مع عيبين موثقين في وزن الـ posterior (17/19).**
+
+ولم يُرفع إلى "calibrated Bayesian behavior" لأن 17/19 ≠ 19/19. العيبان بقيا ظاهرين ولم
+يُنظَّفا بعديًا: (أ) `2005` تكرار منطقي — اسمان لنفس جدول الحقيقة فأخذت فئة التكافؤ حصتين
+(0.333 بدل 0.2)؛ (ب) `2006` ترجيح 0.4/0.2/0.2/0.2 على أربع فرضيات متساوية التوافق مع
+الأدلة، والوزن الأدنى على القانون الحقيقي. الأول عيب تمثيل، والثاني عيب اعتقاد — لا يُدمجان.
+
+**A-004 (مختوم، `1.0-mech-A003` → `1.0-mech-A004`)** — أربع مساطر مسماة بدل D_floor غامضة:
+
+| المسطرة | التعريف | الدور |
+|---|---|---|
+| `D_floor^task(W)` | أرخص مسار admissible يحقق **معيار المهمة** (أغلبية الناجين تحرز BlindScore ≥ τ_ID) | **حارس الـ audit** |
+| `D_floor^strict(W)` | نفسه لمعيار أقوى: إجماع الناجين وصوابهم على كل حالة | diagnostic |
+| `D_robust^task` | تكلفة السياسة المثلى التي لا تعرف W مسبقًا وتضمن معيار المهمة (كان D_pred) | **مقام E** |
+| `N_realized` | ما استهلكه الوكيل فعلًا | — |
+
+- **`TRUE_AUDIT ⇔ N_realized < D_floor^task(W)`** — المسطرة تُقرَن بالمهمة المقاسة لا بمعرفة
+  القانون كاملًا؛ استعمال الـ strict كان سينتج إنذارات كاذبة (weak=3 مقابل strict=4 في 2002 و2005).
+- المناطق: `N < floor^task` → TRUE_AUDIT؛ `floor^task ≤ N < D_robust` → **FAVORABLE_TRAJECTORY**
+  (طبيعي تمامًا)؛ `N ≥ D_robust` → AT_OR_ABOVE_ROBUST.
+- **مقام E لم يتغير** (يبقى D_robust^task — الأرضية bound صلاحية لا baseline سلوكي)، لكن
+  **السقف أُزيل**: `E_robust = D_robust^task / N_realized` غير مسقوفة، وE>1 تعني ببساطة
+  مسارًا أقصر من الضمان. الجذر: مقياس واحد كان يؤدي وظيفتين — أداء وصلاحية — ففُصلا.
+- **لا أثر رجعي**: سجلات Pilot-A وبروتوكول A-003 تبقى كما هي.
+- **28/28** فحصًا ميكانيكيًا (22 + 6 لـ A-004)، منها `EarlyStopAgent` يُظهر E=1.250 = 5/4
+  في FAVORABLE_TRAJECTORY بلا audit — نفس شكل `2000#r1` لكن بقاعدة لا باستثناء.
+- **دليل داعم لـ A-001:** في `2005` انفصل D_robust=5 عن D_inst=6 لأول مرة — برهان تشغيلي أن
+  *Prediction sufficiency ≠ Full identification*، أي أن **الاكتفاء المعرفي نسبي بالمهمة**.
+
+<details><summary>الصياغة المرشحة قبل الختم (محفوظة للسجل)</summary>
+
+**مرشّح A-004 (كان غير مختوم — خُتم لاحقًا كما أعلاه):**
 التشخيص: ما يسمى OracleViolation حاليًا ليس انتهاكًا رياضيًا بل mismatch بين
 realized trajectory ومرجع robust. الصياغة المرشحة تفصل **ثلاث مساطر** بدل رقم واحد:
 
@@ -165,6 +202,8 @@ denominator الـ E **لا** يتغير تلقائيًا إلى D_floor (baseli
 seeds 2000/2001/2002 → D_floor=4/4/4 مقابل D_robust=5/5/4 وD_min=6. التصنيف:
 2000#r1: N=4 **= D_floor بالضبط** < D_robust → favorable trajectory لا true audit؛
 البقية N ≥ D_robust. لا episode تحت D_floor → الحسابات والماسورة سليمة.
+
+</details>
 خلاصة Pilot-A الأدق: **Real LLM contract compatibility demonstrated in this pilot batch** —
 لا ادعاء قدرة معرفية عامة؛ و2000#r1 = ملاحظة عن بنية العالم والـ oracle (سياسة غير minimax
 سلكت فرعًا مواتيًا إلى singleton في 4)، لا تفوقًا على optimum. **لم يُعدَّل شيء في الماسورة.**

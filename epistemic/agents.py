@@ -256,6 +256,28 @@ class BlindMalformedAgent(LearnerAgent):
         return super().blind_predict(blind_cases)
 
 
+class EarlyStopAgent(LearnerAgent):
+    """يعلن الاكتفاء قبل التعريف الكامل (عند بقاء ≤ stop_at فرضية) ويتنبأ بالأغلبية.
+
+    وجوده ضروري لاختبار A-004: الـ Learner المرجعي يسعى إلى identification كامل فلا يهبط
+    أبدًا تحت D_robust، بينما الـ LLM فعلها (2000#r1). هذا البوت ينتج مسارًا أقصر من الضمان
+    فيختبر: منطقة FAVORABLE_TRAJECTORY، وE_robust > 1 غير مسقوفة، وأن الـ audit لا يشتعل
+    ما دام N ≥ D_floor^task. قد ينتهي أحيانًا FALSE_CERTAINTY — وهذا سلوك مشروع للتوقف المبكر.
+    """
+
+    def __init__(self, seed=0, stop_at=2):
+        super().__init__(seed)
+        self.stop_at = stop_at
+
+    def deposit(self):
+        if self.alive and len(self.alive) <= self.stop_at:
+            return ({"type": "SUFFICIENCY",
+                     "final_hypothesis": self.hyps[min(self.alive)].name(),
+                     "confidence": round(1.0 / len(self.alive), 4)},
+                    "early task-aligned stop (A-004 ruler test)")
+        return super().deposit()
+
+
 class IncompleteClaimAgent(LearnerAgent):
     """بعد الاستطلاع الحر يدّعي أن الأدلة لا تكفي بينما توجد تجربة فاصلة →
     INCOMPLETENESS_VERIFIED correct=False → INCORRECT_INCOMPLETENESS_CLAIMED، E=0."""

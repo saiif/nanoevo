@@ -14,9 +14,10 @@ import re
 
 from channel import (Archivist, SchemaError, validate, validate_blind, schema_hash,
                      blind_schema_hash, protocol_hash, SCHEMA_VERSION)
-from world import grammar_hash, GRAMMAR_VERSION, equivalence_classes
+from world import (grammar_hash, GRAMMAR_VERSION, equivalence_classes,
+                   classify_region)
 
-PROTOCOL_VERSION = "1.0-mech-A003"
+PROTOCOL_VERSION = "1.0-mech-A004"
 
 PROTOCOL_SPEC = {
     "version": PROTOCOL_VERSION,
@@ -24,6 +25,11 @@ PROTOCOL_SPEC = {
         "A-001: primary endpoint denominator = task-aligned D_pred-inst; N_total includes free obs",
         "A-002: Blind-ID decides Success/E; Blind-X secondary; UNREACHABLE worlds ineligible",
         "A-003: Pilot-A hardening — phase/blind/action/inadequacy/incompleteness rules below",
+        "A-004: four named rulers — D_floor^task (instance-optimal under epistemic "
+        "admissibility, guards the audit) / D_floor^strict (diagnostic, full identification) / "
+        "D_robust^task (frozen-criterion optimum, E denominator) / N_realized. "
+        "TRUE_AUDIT iff N_realized < D_floor^task. E_robust = D_robust^task / N_realized, "
+        "UNCAPPED (E>1 means a shorter realized path than the guarantee, not a violation).",
     ],
     "free_observations": 3,
     "intervention_budget": 10,
@@ -290,15 +296,23 @@ class Session:
                             "disposition": "ineligible_for_primary_endpoint"})
             return self._finish("INELIGIBLE_FOR_E", E="INELIGIBLE",
                                 identifiability_report=True, **common)
-        D_ref = max(self.world.D_pred, 1)
-        E = min(1.0, D_ref / N_total) if success else 0.0
-        oracle_violation = 1 if (success and N_total < self.world.D_pred) else 0
-        if oracle_violation:
-            self.arch.seal("ORACLE_VIOLATION_AUDIT",
-                           {"N_total": N_total, "D_pred": self.world.D_pred,
-                            "note": "audit the measuring device before praising the agent"})
+        # A-004: المسطرة الأدائية = D_robust^task؛ والـ E غير مسقوفة —
+        # E_robust > 1 معناها ببساطة أن المسار المحقق كان أقصر من تكلفة الضمان، لا خرقًا.
+        D_ref = max(self.world.D_robust, 1)
+        E = (D_ref / N_total) if success else 0.0
+        region = classify_region(N_total, self.world.D_floor_task, self.world.D_robust)
+        # A-004: الـ audit الحقيقي يُقرن بالمهمة المقاسة لا بمعرفة القانون كاملًا.
+        true_audit = 1 if region == "TRUE_AUDIT" else 0
+        if true_audit:
+            self.arch.seal("TRUE_AUDIT",
+                           {"N_total": N_total,
+                            "D_floor_task": self.world.D_floor_task,
+                            "D_robust": self.world.D_robust,
+                            "note": "N below the task-aligned instance floor: "
+                                    "leakage / accounting / oracle bug — audit the "
+                                    "measuring device before praising the agent"})
         return self._finish("SOLVED" if success else "FALSE_CERTAINTY",
-                            E=E, oracle_violation=oracle_violation, **common)
+                            E=E, true_audit=true_audit, region=region, **common)
 
     def _protocol_failure(self, stage="deposit"):
         return self._finish("AGENT_PROTOCOL_FAILURE", E=0.0, included_in_analysis=True,
@@ -329,6 +343,10 @@ class Session:
                   "N_inadequacy": self.N_inadequacy, "N_refused": self.N_refused,
                   "D_min_oracle_side": self.world.D_min,
                   "D_pred_oracle_side": self.world.D_pred,
+                  "D_robust": self.world.D_robust,              # A-004
+                  "D_floor_task": self.world.D_floor_task,      # A-004 (audit guard)
+                  "D_floor_strict": self.world.D_floor_strict,  # A-004 (diagnostic)
+                  "D_inst_full_identification": self.world.D_inst,
                   "D_greedy_ref": self.world.D_greedy_ref,
                   "n_blind_ID": len(self.world.blind_ID),
                   "n_blind_X": len(self.world.blind_X), **kw}
