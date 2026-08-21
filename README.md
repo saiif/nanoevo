@@ -10,22 +10,22 @@ depth-2 grammar، ذراعان، Verifier/Archivist حتميان، بلا LLM و
 
 - `epistemic/world.py` — grammar depth-2 (صيغ منطقية على خصائص) + oracle + D_min (minimax) + D_inst + D_pred
 - `epistemic/channel.py` — Schema validator (COMMIT_SCHEMA + BLIND_SCHEMA) + Archivist append-only بسلسلة hash
-- `epistemic/session.py` — بوابة الـ Experimenter، جدول الانتهاكات أ.3 + A-003، الاختبار الأعمى، E/Success/OracleViolation
+- `epistemic/session.py` — بوابة الـ Experimenter، جدول الانتهاكات أ.3 + A-003، الاختبار الأعمى، E/Success/TRUE_AUDIT
 - `epistemic/agents.py` — Learner (اختيار فاصل) / Control (عشوائي) + bots اختبار الانتهاكات والتسريب
 - `epistemic/llm_agent.py` — Pilot-A adapter
 - `epistemic/run_mechanical.py` — الأسئلة الميكانيكية السبعة + أ.3 + A-003 + عرض توضيحي
 - `epistemic/run_pilot_a.py` — Pilot-A (يحتاج اعتماد Anthropic)
 - `epistemic/ledger.py` — `verify` / `append` / `show` للـ amendments ledger
-- `epistemic/amendments.jsonl` — الـ ledger المختوم (رأس السلسلة الحالي: `32dd35b1f14ab8a7`)
+- `epistemic/amendments.jsonl` — الـ ledger المختوم (رأس السلسلة الحالي: `db80fade46477b04`)
 
 ## التشغيل
     cd epistemic
-    python run_mechanical.py        # النتيجة: 22/22 checks passed  → provenance/mech_run/
-    python ledger.py verify         # VALID  entries=7  head=32dd35b1f14ab8a7
+    python run_mechanical.py        # النتيجة: 28/28 checks passed  → provenance/mech_run/
+    python ledger.py verify         # VALID  entries=8  head=db80fade46477b04
 
 الإصدارات المجمدة الحالية (تُختم في GENESIS كل جلسة):
 `schema_hash=0043f752a119c0c8` (لم يتغير منذ التشغيل الأول) · `blind_schema_hash=dd7a56a0e3e93e1c` ·
-`protocol 1.0-mech-A003 / protocol_hash=710f896b96544e0b` · `grammar_hash=02445a0a5566be2d` ·
+`protocol 1.0-mech-A004 / protocol_hash=8363d012d772055b` · `grammar_hash=02445a0a5566be2d` ·
 `adapter_hash=bd2a2c04778cfe57`.
 
 ## قرارات نطاق موثقة (mechanical فقط)

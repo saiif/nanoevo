@@ -18,16 +18,16 @@
 - `run_mechanical.py` — الأسئلة الميكانيكية السبعة + أ.3 + A-003 (22/22) → `provenance/mech_run/`
 - `run_pilot_a.py` — Pilot-A: العائلات الخمس + taxonomy الفشل → `provenance/pilot_a_run/`
 - `ledger.py` — أدوات الـ ledger: `verify` / `append <entry.json>` / `show`
-- `amendments.jsonl` — الـ ledger المختوم: GENESIS، A-001، A-002 (+ملحق)، P-001، ADAPTER_FREEZE، A-003
+- `amendments.jsonl` — الـ ledger المختوم: GENESIS، A-001، A-002 (+ملحق)، P-001، ADAPTER_FREEZE، A-003، A-004
 
 ## السجلات (epistemic/provenance/)
-- `mech_run/` — آخر تشغيل ميكانيكي (بروتوكول `1.0-mech-A003`)
+- `mech_run/` — آخر تشغيل ميكانيكي (بروتوكول `1.0-mech-A004`)
 - `mech_run_archive_<ts>/` — كل التشغيلات السابقة بما فيها ما قبل التصحيحات (لا يُمسح الفشل)
 - `mech_run_archive_1787334521_A002_final/` — آخر تشغيل قبل A-003 (بروتوكول `1.0-mech-A001`)
 - `pilot_a_run/` — يُنشأ عند تشغيل Pilot-A
 
 ## التشغيل
     cd epistemic
-    python run_mechanical.py          # 22/22 — يؤرشف التشغيل السابق تلقائيًا
+    python run_mechanical.py          # 28/28 — يؤرشف التشغيل السابق تلقائيًا
     python ledger.py verify           # يتحقق من سلسلة الـ amendments ويطبع رأسها
     python run_pilot_a.py 3           # يحتاج اعتماد Anthropic (ANTHROPIC_API_KEY أو ant auth login)
