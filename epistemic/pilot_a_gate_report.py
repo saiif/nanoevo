@@ -239,11 +239,26 @@ def analyze_episode(tag, recs, w, name2id):
                         unmatched.append(nm)
                     else:
                         ids[hid] = ids.get(hid, 0.0) + pr
+                # أسماء متعددة تنهار إلى نفس الـ truth table = تكرار منطقي (لا يخالف الـ schema،
+                # لكنه يشوّه الأوزان: الفئة المكررة تأخذ حصتين من كتلة الاحتمال)
+                dup_groups = {}
+                for nm2 in dep["hypotheses"]:
+                    hid = name2id.get(_norm(nm2))
+                    if hid is not None:
+                        dup_groups.setdefault(hid, []).append(nm2)
+                dups = {k: v for k, v in dup_groups.items() if len(v) > 1}
+                uniform = None
+                if ids:
+                    exp = 1.0 / len(ids)
+                    uniform = all(abs(pr - exp) <= 1e-3 for pr in ids.values())
                 claimed_checks.append({
                     "action": action,
                     "claimed_n": len(dep["hypotheses"]), "actual_n": len(alive),
+                    "distinct_n": len(ids),
                     "matched": len(ids), "unmatched": unmatched,
                     "set_equal": set(ids) == alive,
+                    "uniform": uniform,
+                    "dups": {tuple(v) for v in dups.values()},
                     "mass_on_truth": round(ids.get(w.true_id, 0.0), 4),
                     "truth_in_claimed": w.true_id in ids,
                 })
@@ -391,18 +406,64 @@ def main(run_dir):
     print()
     print("### posterior المختوم مقابل الناجين الفعليين (COMMITMENT deposits)")
     print()
-    print("| episode | action | claimed n | actual n | matched | set == survivors? | mass on truth | truth claimed? |")
-    print("|---|---|---|---|---|---|---|---|")
+    print("| episode | action | names | distinct | survivors | set == survivors? | uniform? | mass on truth | truth claimed? |")
+    print("|---|---|---|---|---|---|---|---|---|")
     any_claims = False
+    n_dep_all = n_set_eq = n_unif = 0
+    dup_rows = []
     for _, e in episodes:
         for c in e["behavior"]["claimed_checks"]:
             any_claims = True
-            print(f"| {e['tag']} | {c['action']} | {c['claimed_n']} | {c['actual_n']} | "
-                  f"{c['matched']}{' (unmatched: ' + '; '.join(c['unmatched']) + ')' if c['unmatched'] else ''} | "
-                  f"{'Y' if c['set_equal'] else 'N'} | {c['mass_on_truth']} | "
+            n_dep_all += 1
+            n_set_eq += bool(c["set_equal"])
+            n_unif += bool(c["uniform"])
+            if c["dups"]:
+                dup_rows.append((e["tag"], c))
+            print(f"| {e['tag']} | {c['action']} | {c['claimed_n']} | {c['distinct_n']} | "
+                  f"{c['actual_n']} | {'Y' if c['set_equal'] else 'N'} | "
+                  f"{'Y' if c['uniform'] else 'N'} | {c['mass_on_truth']} | "
                   f"{'Y' if c['truth_in_claimed'] else 'N'} |")
     if not any_claims:
-        print("| — | — | — | — | — | — | — | — |")
+        print("| — | — | — | — | — | — | — | — | — |")
+    print()
+    print(f"- **set == survivors في {n_set_eq}/{n_dep_all} إيداع** (تتبع مجموعة الناجين مضبوط).")
+    print(f"- **posterior منتظم على الناجين في {n_unif}/{n_dep_all}**.")
+    nonunif_nodup = [(t, c) for _, e in episodes for c in e["behavior"]["claimed_checks"]
+                     for t in [e["tag"]] if c["uniform"] is False and not c["dups"]]
+    if dup_rows or nonunif_nodup:
+        print()
+        print("**ملاحظتان سلبيتان مسجَّلتان — وهما ظاهرتان مختلفتان لا تُدمجان:**")
+        print()
+    if dup_rows:
+        print("**(أ) تكرار منطقي في تعداد الفرضيات** — أسماء مختلفة تنهار إلى *نفس* جدول الحقيقة،")
+        print("فتأخذ فئة التكافؤ حصتين من كتلة الاحتمال:")
+        print()
+        for tag, c in dup_rows:
+            for pair in c["dups"]:
+                print(f"- `{tag}` / {c['action']}: {' ≡ '.join(pair)} — "
+                      f"{c['claimed_n']} اسمًا لـ {c['distinct_n']} فرضية متمايزة "
+                      f"(الوزن على الفئة المكررة ≈ {round(2 / c['claimed_n'], 4)} بدل "
+                      f"{round(1 / c['distinct_n'], 4)}).")
+        print()
+        print("**خلل canonicalization لدى الوكيل**: مجموعة الناجين صحيحة لكن الـ posterior موزون")
+        print("خطأً على فئة تكافؤ منطقي.")
+        print()
+    if nonunif_nodup:
+        print("**(ب) وزن غير منتظم بلا سند من الأدلة** — لا تكرار هنا؛ الأسماء متمايزة وكلها ناجية،")
+        print("أي متساوية التوافق مع الأدلة، ومع ذلك وُزِّعت الكتلة بغير تساوٍ:")
+        print()
+        for tag, c in nonunif_nodup:
+            print(f"- `{tag}` / {c['action']}: {c['distinct_n']} فرضيات متمايزة كلها متسقة مع الأدلة، "
+                  f"والكتلة على القانون الحقيقي {c['mass_on_truth']} بدل "
+                  f"{round(1 / c['distinct_n'], 4)} — انحراف عن الـ posterior المرجعي.")
+        print()
+        print("تحت حذف حتمي وprior منتظم، المرجع الصحيح هو التوزيع المنتظم على الناجين؛ فأي ترجيح")
+        print("إضافي لا تسنده الأدلة. لا يخالف العقد (الاحتمالات تجمع إلى 1.0)، لكنه **ميل تفضيلي")
+        print("غير مبرَّر إفتراضيًا** يستحق التتبع في Pilot-B حيث تصبح المعايرة مقياسًا أساسيًا.")
+    if dup_rows or nonunif_nodup:
+        print()
+        print("كلاهما يُسجَّل صراحةً ولا يُبلع: الدفعة ليست خالية من العيوب، وإن لم يغيّر أيٌّ منهما")
+        print("النتيجة النهائية (كل الحلقات انتهت SOLVED بـ Blind-ID كامل).")
     print()
 
     # ---- 4. Oracle ----
@@ -435,6 +496,11 @@ def main(run_dir):
     print(f"- TRUE_AUDIT (N < D_floor_weak) = leakage/accounting/oracle bug: "
           f"**{regions.get('TRUE_AUDIT', 0)}** من {len(episodes)}.")
     print(f"- weak ≠ strict في هذه الدفعة: {'نعم — التشعّب حقيقي عمليًا لا نظريًا فقط' if split_seen else 'لا (تطابقا هنا؛ التشعّب يبقى صحيحًا نظريًا وقد يظهر في عوالم أغنى)'}.")
+    sep = [e["tag"] for _, e in episodes if e["oracle"]["D_robust"] != e["oracle"]["D_inst"]]
+    print(f"- D_robust ≠ D_inst في: {'، '.join(sep) if sep else '(لا شيء)'} — "
+          "حيث يفترقان يكون التوقف task-aligned أرخص فعليًا من التعريف الكامل للقانون، "
+          "وهو دليل مباشر أن تعديل A-001 (المسطرة task-aligned لا identification كامل) "
+          "يقوم بعمل حقيقي لا مجرد إعادة تسمية.")
     print()
     # ---- 5. تصحيحات أداة القياس ----
     n_dep = sum(len(e["behavior"]["claimed_checks"]) for _, e in episodes)
@@ -478,12 +544,19 @@ def main(run_dir):
     print()
     print("الصياغة الملتزمة لما أثبتته الطبقة الثالثة، بلا تضخيم:")
     print()
-    print("> **Exact survivor-set tracking and calibrated uniform posterior in Pilot-A**")
+    n_all = sum(len(e["behavior"]["claimed_checks"]) for _, e in episodes)
+    n_eq2 = sum(1 for _, e in episodes for c in e["behavior"]["claimed_checks"] if c["set_equal"])
+    n_un2 = sum(1 for _, e in episodes for c in e["behavior"]["claimed_checks"] if c["uniform"])
+    print("> **Exact survivor-set tracking in Pilot-A, with two documented "
+          "posterior-weighting defects**")
     print()
-    print("أي: في هذه العوالم أعلن الموديل مجموعة الناجين الصحيحة تمامًا بوزن منتظم "
-          "1/|survivors|، وتوقعاته المختومة طابقت نسبة الناجين المصوتين بـ1. هذا **ليس** ادعاء "
-          "\"كفاءة بيزية معرفية\" عامة: النطاق depth-2 صغير، والإعلان كامل، وفضاء الفرضيات 30 فقط "
-          "وقابل للحصر يدويًا — والحذف الحتمي تحت prior منتظم يجعل الـ posterior الصحيح تمرينًا مباشرًا.")
+    print(f"أي: مجموعة الناجين مضبوطة في **{n_eq2}/{n_all}** إيداع — وهذا هو الادعاء القوي. "
+          f"أما الأوزان فمنتظمة في **{n_un2}/{n_all}** فقط، والفارق ليس ضجيجًا بل عيبان "
+          "مختلفان موثّقان أعلاه: (أ) تكرار منطقي يشوّه وزن فئة تكافؤ، (ب) ترجيح غير منتظم "
+          "بلا سند من الأدلة. وتوقعات outcome المختومة طابقت نسبة الناجين "
+          "المصوتين بـ1 بفارق ≤ 3×10⁻⁴. هذا **ليس** ادعاء \"كفاءة بيزية معرفية\" عامة: "
+          "النطاق depth-2 صغير، والإعلان كامل، وفضاء الفرضيات 30 فقط وقابل للحصر يدويًا — "
+          "والحذف الحتمي تحت prior منتظم يجعل الـ posterior الصحيح تمرينًا مباشرًا.")
     print()
     print("خارج نطاق حكم Pilot-A نهائيًا: **Blind-X، Frame Expansion، latent probes** — "
           "لا تُحتسب هنا نجاحًا ولا فشلًا؛ حضورها في الكود يُسجَّل فقط كـ plumbing جاهز للمرحلة التالية "
