@@ -301,8 +301,10 @@ class Session:
         D_ref = max(self.world.D_robust, 1)
         E = (D_ref / N_total) if success else 0.0
         region = classify_region(N_total, self.world.D_floor_task, self.world.D_robust)
-        # A-004: الـ audit الحقيقي يُقرن بالمهمة المقاسة لا بمعرفة القانون كاملًا.
-        true_audit = 1 if region == "TRUE_AUDIT" else 0
+        # A-004 (ملحق): الـ audit يُقرن بالمهمة المقاسة **وبالنجاح**. النطاق يصف موضع التكلفة،
+        # أما التناقض (leakage/accounting/oracle bug) فلا يوجد إلا إذا بلغ الوكيل المعيار فعلًا:
+        # وكيل فشل وتوقف مبكرًا يقع تحت الأرضية لسبب عادي تمامًا، لا لعيب في الأداة.
+        true_audit = 1 if (success and region == "TRUE_AUDIT") else 0
         if true_audit:
             self.arch.seal("TRUE_AUDIT",
                            {"N_total": N_total,

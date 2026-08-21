@@ -306,18 +306,19 @@ class SessionB1:
         sc = self.verifier.blind_score(preds)
         self.arch.seal("BLIND_TRUTH", {"truth": sc["truth"], "score_ID": sc["score_ID"]})
         success = 1 if (sc["score_ID"] is not None and sc["score_ID"] >= TAU_BLIND_B1) else 0
-        N_total = max(self.N_free + self.N_probe + self.N_experiment, 1)
+        # N_total يُبلَّغ صادقًا (قد يكون 0 لوكيل لم يتدخل)؛ الحارس ضد القسمة داخل E فقط
+        N_total = self.N_free + self.N_probe + self.N_experiment
         D_rob = self.world.D_robust
-        E = (max(D_rob, 1) / N_total) if (success and D_rob) else 0.0
+        E = (max(D_rob, 1) / max(N_total, 1)) if (success and D_rob) else 0.0
         region = classify_region(N_total, self.world.D_floor_task, D_rob)
-        if region == "TRUE_AUDIT":
+        if success and region == "TRUE_AUDIT":
             self.arch.seal("TRUE_AUDIT", {"N_total": N_total,
                                           "D_floor_task": self.world.D_floor_task,
                                           "note": "below the task floor: leakage/accounting/oracle bug"})
         return self._finish("SOLVED" if success else "FALSE_CERTAINTY", E=E,
                             blind_ID=sc["score_ID"], conf_ID=sc["conf_ID"], success=success,
                             N_total=N_total, region=region,
-                            true_audit=1 if region == "TRUE_AUDIT" else 0,
+                            true_audit=1 if (success and region == "TRUE_AUDIT") else 0,
                             declaration=declaration)
 
     def _fail(self, stage="deposit"):
