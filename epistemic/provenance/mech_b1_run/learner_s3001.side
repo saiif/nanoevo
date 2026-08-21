@@ -1,0 +1,11 @@
+free PROBE(Ly)
+free PROBE(Kr)
+IG-max PROBE(Qz)
+IG-max PROBE(Um)
+IG-max PROBE(Jm)
+IG-max EXPERIMENT(Ly)
+IG-max EXPERIMENT(Qz)
+IG-max EXPERIMENT(Kr)
+IG-max EXPERIMENT(Jm)
+IG-max EXPERIMENT(Um)
+declaring sufficiency
