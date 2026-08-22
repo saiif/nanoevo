@@ -318,6 +318,16 @@ def main():
     check("B1-Q12 claim is a structured required field (Verifier never parses free text)",
           bad_claim and miss_claim)
 
+    # B1-Q13: تدقيق التوقف يُختم فعلًا (patch صامت سابق عرّف الدالة ولم يستدعِها)
+    k_l = [x["payload"]["kind"] for x in s_l.arch.records()]
+    check("B1-Q13 STOPPING_AUDIT is sealed at a sufficiency declaration",
+          "STOPPING_AUDIT" in k_l,
+          "kinds: " + ", ".join(sorted(set(k_l))))
+    sa = [x["payload"] for x in s_l.arch.records("STOPPING_AUDIT")]
+    check("B1-Q13 stopping audit carries D_remaining and slack",
+          bool(sa) and "D_remaining" in sa[0] and "slack" in sa[0],
+          str(sa[0]) if sa else "no record"),
+
     print("\n" + "=" * 66)
     passed = sum(ok for _, ok in CHECKS)
     print(f"PILOT-B1 MECHANICAL VALIDATION: {passed}/{len(CHECKS)} checks passed")

@@ -1,0 +1,88 @@
+```json
+
+```
+```json
+
+```
+I've now probed both free observations: Wt=[1,1,1], Xp=[0,0,1]. Both vectors are fully known, so I can extract law information directly via EXPERIMENT on either without further probes. Computing each hypothesis's predicted outcome at [1,1,1] shows an even 15/15 split, making this maximally informative.
+
+```json
+
+```
+That task call was unintentional and irrelevant — ignore it. Here is the corrected deposit:
+
+```json
+
+```
+Right — PROBE/EXPERIMENT aren't real tools; they're just the JSON action strings the contract expects me to deposit as text. Here's the actual commitment:
+
+```json
+
+```
+Apologies — those tool searches were unnecessary noise; this puzzle is resolved purely through the JSON deposit protocol, no actual tools needed. Here is the real deposit:
+
+Remaining hypotheses (7, equal weight): H13, H14, H16, H18, H20, H22, H25. The unprobed symbols {Ly, Nd, Jm, Zn} hold vectors {[1,0,1],[0,0,0],[0,1,0],[1,1,0]} in unknown order. I'll probe Ly to learn its vector before spending an EXPERIMENT on it, so the outcome cleanly discriminates hypotheses rather than being confounded with vector uncertainty.
+
+```json
+
+```
+That tool search was unnecessary — this puzzle only needs the JSON deposit protocol. Here's the actual commitment:
+
+```json
+
+```
+That search was pointless — PROBE isn't a callable tool, just the action string for the JSON deposit. Here's the actual commitment:
+
+```json
+
+```
+Nd's vector [1,0,1] is now fully known. Evaluating the four surviving hypotheses at (1,0,1): H13, H16, H22 all predict 1, while H25 predicts 0. This experiment will split off H25 if the outcome is 0, though it won't distinguish among H13/H16/H22 if the outcome is 1.
+
+```json
+
+```
+Nd's vector confirms H25 fails there (p0 XOR ~p1 = 1 XOR 1 = 0, but observed outcome was 1), leaving exactly three survivors: H13, H16, H22 — all consistent with every observation so far. The two unprobed symbols Jm, Zn hold the remaining vectors {[0,0,0],[1,1,0]} in unknown order, and these three hypotheses diverge sharply on both: on [0,0,0] only H16 predicts 0; on [1,1,0] only H22 predicts 0. So I'll probe Jm first to learn its vector before spending an experiment, since interpreting the experiment's meaning depends on knowing which vector it hit.
+
+```json
+
+```
+That tool search was unnecessary noise — irrelevant to this puzzle, which is resolved entirely through the JSON deposit protocol. Here's the actual commitment:
+
+```json
+
+```
+Nd's vector [1,0,1] and Jm's vector [0,0,0] are now both known, and Zn's vector is deducible by elimination: the six declared vectors are {[1,0,1],[0,0,1],[0,0,0],[1,1,1],[0,1,0],[1,1,0]}, and Wt,Xp,Ly,Nd,Jm already account for five of them, leaving [1,1,0] as Zn's vector — no probe needed.
+
+Re-checking all five outcomes so far (Wt=1,Xp=1,Ly=0,Nd=1,Jm=1) against the full catalog: H16 (p0∨p2) fails at Jm=[0,0,0] (predicts 0, actual 1), so it's eliminated. Only **H13** (p0∨¬p1) and **H22** (¬p1∨p2) remain consistent with everything observed. They diverge exactly at Zn=[1,1,0]: H13 predicts 1, H22 predicts 0 — a fully discriminating test.
+
+```json
+
+```
+All six observations are now fully explained by exactly one hypothesis. Checking H13 (p0 OR NOT p1) against every data point:
+
+- Wt=[1,1,1]: 1∨0=1 ✓ (outcome=1)
+- Xp=[0,0,1]: 0∨1=1 ✓ (outcome=1)
+- Ly=[0,1,0]: 0∨0=0 ✓ (outcome=0)
+- Nd=[1,0,1]: 1∨1=1 ✓ (outcome=1)
+- Jm=[0,0,0]: 0∨1=1 ✓ (outcome=1)
+- Zn=[1,1,0]: 1∨0=1 ✓ (outcome=1)
+
+H22 was eliminated by the Zn result (NOT p1 OR p2 = 0∨0 = 0, but observed outcome was 1). H13 is the unique survivor, consistent with all data.
+
+```json
+
+```
+Only H13 (p0 OR NOT p1) remains as my resolved law, so predictions are computed directly from it; confidence reflects the ~2% residual uncertainty I flagged at sufficiency, uniformly since no other hypothesis is in play.
+
+- Kr [0,0,1]: 0∨1=1
+- Rc [1,1,1]: 1∨0=1
+- Ok [1,0,0]: 1∨1=1
+- Ea [0,1,0]: 0∨0=0
+- Bf [0,1,1]: 0∨0=0
+- Hs [0,0,0]: 0∨1=1
+- Vx [1,1,0]: 1∨0=1
+- Tg [1,0,1]: 1∨1=1
+
+```json
+
+```

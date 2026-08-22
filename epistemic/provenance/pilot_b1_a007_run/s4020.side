@@ -1,0 +1,58 @@
+I'll spend my second free observation probing another symbol to learn its vector, which sets up a clean EXPERIMENT interpretation later.
+
+```json
+
+```
+```json
+
+```
+That tool call was unnecessary noise — back to the actual task.
+
+```json
+
+```
+Both experiments predicted 0 and matched, narrowing to 9 hypotheses consistent with (1,0,0)→0 and (0,0,0)→0: H00, H02, H04, H06, H08, H09, H10, H20, H28. The remaining four symbols carry vectors {[0,1,1],[1,1,1],[1,0,1],[0,1,0]} in unknown order — experimenting blind on them only yields count-level info (several hypotheses share the same 1-count pattern across those vectors), so I need to pin down one symbol's actual vector before an experiment on it can cleanly discriminate.
+
+```json
+
+```
+That skill invocation was unrelated to this task — disregarding it and returning to the deposit.
+
+Ok's vector is now known as [1,0,1]. Computing each surviving hypothesis's prediction there: H04, H10, H20, H28 predict outcome=1; H00, H02, H06, H08, H09 predict outcome=0. This is the most discriminating action available (4 vs 5 split).
+
+```json
+
+```
+Enough sidetracking — here's the actual deposit for the epistemic task.
+
+```json
+
+```
+That tool call was unnecessary — disregarding it and returning to the deposit.
+
+```json
+
+```
+```json
+
+```
+That was an unnecessary tool call — ignoring it and returning to the actual task. Continuing the epistemic protocol:
+
+With Nd's vector confirmed as [1,1,1], and Zn's vector deducible by elimination as [0,1,1] (the sole remaining unused vector, no probe needed), the three surviving hypotheses (H00, H06, H08) split 2-vs-1 at Nd: H00 and H08 predict outcome=1, H06 predicts outcome=0.
+
+```json
+
+```
+Disregarding that — returning to the actual deposit. With H00 and H08 the only survivors, and Zn's vector deduced as [0,1,1] by elimination, EXPERIMENT(Zn) cleanly discriminates them (H00→0, H08→1).
+
+```json
+
+```
+```json
+
+```
+Using H00 = (p0 AND p1), confirmed with high confidence from the elimination sequence.
+
+```json
+
+```

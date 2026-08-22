@@ -295,6 +295,8 @@ class SessionB1:
             t = dep["type"]
             if t == "SUFFICIENCY":
                 self.arch.seal("SUFFICIENCY", {"deposit": dep})
+                self.arch.seal("STOPPING_AUDIT",
+                               self.verifier.stopping_audit(self.ev, self.budget))
                 return self._blind()
             if t == "INCOMPLETE":
                 self.arch.seal("INCOMPLETE", {"deposit": dep})

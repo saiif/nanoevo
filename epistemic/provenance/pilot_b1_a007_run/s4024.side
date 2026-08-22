@@ -1,0 +1,48 @@
+I'll probe Xp first to anchor a known vector.
+
+```json
+
+```
+```json
+
+```
+```json
+
+```
+```json
+
+```
+Now I have two anchored law values: law(1,1,0)=1 and law(0,0,1)=1. Filtering the 15 candidates against both constraints leaves 9 hypotheses: H13, H14, H16, H19, H20, H23, H25, H26, H28.
+
+The four remaining symbols (Rc, Vx, Ly, Qz) hold vectors {[0,1,0],[1,0,1],[0,1,1],[1,0,0]} in unknown order. To keep experiments clean (known vector → unambiguous law readout), I'll probe one of them next before experimenting on it — probing itself doesn't inform the law, so my hypothesis weights stay unchanged.
+
+```json
+
+```
+```json
+
+```
+Après Xp[1,1,0]→1, Hs[0,0,1]→1, et Rc[0,1,0]→1, le filtrage laisse 5 hypothèses survivantes : H14, H19, H20, H23, H28. Ces cinq donnent des triplets de sortie distincts sur les trois vecteurs restants non assignés {[1,0,1],[0,1,1],[1,0,0]}, donc je dois d'abord connaître le vecteur d'un symbole avant qu'une expérience soit pleinement informative.
+
+```json
+
+```
+```json
+
+```
+```json
+
+```
+Ly=[0,1,1] gives p1=1,p2=1. Among the surviving three: H20=(p1 OR p2)→1, H23=(NOT p1 OR NOT p2)→0, H28=(p1 XOR p2)→0. This experiment will split H20 off from {H23,H28}.
+
+```json
+
+```
+All five data points now uniquely pin down the law. After Ly[0,1,1]→1, only H20 (p1 OR p2) survives — it correctly predicts outcome=1 on every tested vector: (1,1,0)→1, (0,0,1)→1, (0,1,0)→1, (1,0,1)→1, (0,1,1)→1, while H23 and H28 are eliminated.
+
+```json
+
+```
+```json
+
+```
