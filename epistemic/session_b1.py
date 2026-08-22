@@ -155,6 +155,12 @@ class SessionB1:
             dep, thoughts = self.agent.deposit()
             if thoughts:
                 self._think(thoughts)
+            # المستوى الخام (قرار 3): يُختم كما خرج من الموديل قبل أي فحص، كـ diagnostic provenance.
+            # لا يحرّك الجلسة إطلاقًا — الالتزام المُصدَّق (dep) وحده يفعل. يُبقي الأدلة السلوكية
+            # (تكرار المفاتيح، معرّف مجهول، بنية مشوّهة، سلوك الإصلاح) قابلة للقياس لاحقًا.
+            raw = getattr(self.agent, "last_raw", None)
+            if raw is not None:
+                self.arch.seal("RAW_PROPOSAL", {"raw": raw, "attempt": attempt})
             try:
                 validate_b1(dep, self.catalog_ids)
             except SchemaError as e:
@@ -297,6 +303,9 @@ class SessionB1:
             p, thoughts = self.agent.blind_predict(cases)
             if thoughts:
                 self._think(thoughts)
+            raw = getattr(self.agent, "last_raw", None)      # المستوى الخام لمسار الاختبار الأعمى
+            if raw is not None:
+                self.arch.seal("RAW_BLIND", {"raw": raw, "attempt": attempt})
             err = validate_blind(p, cases)
             if err is None:
                 preds = p

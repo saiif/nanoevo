@@ -92,6 +92,7 @@ class LLMAgentB1:
         self.model = model
         self.endpoint = endpoint
         self.history = []
+        self.last_raw = None            # نص الموديل كما خرج (قبل أي parse) — يُختم كـ RawProposal
         self.request_ids = []
         self.stop_reasons = []
         self.truncated = 0
@@ -129,6 +130,7 @@ class LLMAgentB1:
             msgs.append({"role": "user", "content": extra_user})
         resp = self.client.messages.create(model=self.model, max_tokens=max_tokens, messages=msgs)
         text = "".join(b.text for b in resp.content if getattr(b, "type", None) == "text")
+        self.last_raw = text            # المستوى الخام: قبل _extract/json.loads (يحفظ تكرار المفاتيح)
         rid = getattr(resp, "id", None)
         if rid:
             self.request_ids.append(rid)
