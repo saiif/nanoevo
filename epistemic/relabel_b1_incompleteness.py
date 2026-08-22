@@ -69,7 +69,7 @@ def main():
             if decl is None:
                 continue
             bl = [tuple(v) for v in w.blind_ID.values()]
-            attainable, best_ig, n_inf = attainable_within(
+            attainable, d_rem, best_ig, n_inf = attainable_within(
                 w.hypotheses, w.n_syms, w.emask, w.ctx, ev, bl, w.tau, BUDGET - used)
             sup = support_of(w.hypotheses, ev, w.emask, w.ctx)
             P, Z, _, _ = posterior(w.hypotheses, ev, w.emask, w.ctx)
@@ -90,6 +90,8 @@ def main():
                    "attainable_within_remaining_budget": attainable,
                    "best_remaining_IG_law": best_ig,
                    "n_informative_actions_remaining": n_inf,
+                   "D_remaining": d_rem,
+                   "slack": (BUDGET - used - d_rem) if d_rem is not None else None,
                    "claimed_exhaustion_text": claimed_exhaustion,
                    "reason_excerpt": (decl.get("reason") or "")[:110]}
             out.append(row)
@@ -101,6 +103,8 @@ def main():
             print(f"  budget remaining    : {row['budget_remaining']} of {BUDGET}")
             print(f"  decisive action left: {attainable}  best IG_law={best_ig}"
                   f"  informative actions={n_inf}")
+            print(f"  D_remaining={d_rem}  slack={row['slack']}"
+                  f"   <- slack >> 0 with an exhaustion claim = strong control error")
             print(f"  reason excerpt      : {row['reason_excerpt']}")
     if out:
         print("\n" + "=" * 100)

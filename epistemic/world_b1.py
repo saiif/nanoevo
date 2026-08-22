@@ -339,7 +339,9 @@ def attainable_within(hyps, n_syms, emask, ctx, ev0, blind_vectors, tau, budget)
     عضو في الـ support لو كان هو الصحيح. هذا يجعل "هل كان بإمكانه الاستمرار؟" سؤالًا
     أوراكليًا حتميًا لا حكمًا على نية الوكيل.
 
-    يرجع (attainable: bool, best_action_ig: أعلى IG_law متاح, n_informative_actions).
+    يرجع (attainable, D_remaining, best_action_ig, n_informative_actions) حيث
+    D_remaining = أدنى ميزانية تكفي للضمان من هذه الحالة (None إذا تجاوزت المتاح).
+    ومنه Slack = B_remaining − D_remaining: كم من الهامش تركه الوكيل على الطاولة.
     """
     acts = all_actions(n_syms)
     term_memo = {}
@@ -407,7 +409,13 @@ def attainable_within(hyps, n_syms, emask, ctx, ev0, blind_vectors, tau, budget)
         if igh > 1e-9:
             n_inf += 1
             best_ig = max(best_ig, igh)
-    return solvable(ev0, sup0, max(budget, 0)), round(best_ig, 4), n_inf
+    # أدنى ميزانية كافية: تعميق تكراري يستفيد من نفس الذاكرة
+    d_remaining = None
+    for b in range(max(budget, 0) + 1):
+        if solvable(ev0, sup0, b):
+            d_remaining = b
+            break
+    return (d_remaining is not None), d_remaining, round(best_ig, 4), n_inf
 
 
 def d_robust_b1(hyps, n_syms, emask, ctx, blind_vectors, tau, cap=8, start=0):

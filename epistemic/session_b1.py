@@ -43,6 +43,9 @@ PROTOCOL_SPEC_B1 = {
     "schema_retry_limit": 1,
     "tau_blind": 0.90,
     "accounting": "N_total = N_free + N_probe + N_experiment (never merged)",
+    "stopping_diagnostics": "every terminal declaration seals a STOPPING_AUDIT: "
+        "still_attainable, D_remaining (minimum sufficient budget from the current state), "
+        "and slack = budget_remaining - D_remaining. Oracle-side only; never shown to the agent.",
     "incompleteness_verdicts": {
         "CORRECT_INCOMPLETENESS": "no admissible policy within the REMAINING budget attains the "
             "task criterion -> Article 41 epistemic success; proceeds to the blind test",
@@ -132,7 +135,7 @@ class VerifierB1:
         'لا أعرف بعد' / 'لا أستطيع أن أعرف بالموارد المتبقية' / 'أظن خطأً أني لا أستطيع'."""
         w = self._w
         bl = [tuple(v) for v in w.blind_ID.values()]
-        attainable, best_ig, n_inf = attainable_within(
+        attainable, d_rem, best_ig, n_inf = attainable_within(
             w.hypotheses, w.n_syms, w.emask, w.ctx, evidence, bl, w.tau, budget_remaining)
         if not attainable:
             verdict = "CORRECT_INCOMPLETENESS"
@@ -143,6 +146,21 @@ class VerifierB1:
         return {"verdict": verdict, "claim": claim,
                 "attainable_within_remaining_budget": attainable,
                 "budget_remaining": budget_remaining,
+                "D_remaining": d_rem,
+                # Slack ≫ 0 مع ادعاء نفاد الأفعال = خطأ تحكم قوي، لا حالة حدّية
+                "slack": (budget_remaining - d_rem) if d_rem is not None else None,
+                "best_remaining_IG_law": best_ig,
+                "n_informative_actions_remaining": n_inf}
+
+    def stopping_audit(self, evidence, budget_remaining):
+        """يُختم عند **أي** توقف (اكتفاءً كان أو نقصًا): جودة التوقف قابلة للقياس دائمًا."""
+        w = self._w
+        bl = [tuple(v) for v in w.blind_ID.values()]
+        attainable, d_rem, best_ig, n_inf = attainable_within(
+            w.hypotheses, w.n_syms, w.emask, w.ctx, evidence, bl, w.tau, budget_remaining)
+        return {"still_attainable": attainable, "budget_remaining": budget_remaining,
+                "D_remaining": d_rem,
+                "slack": (budget_remaining - d_rem) if d_rem is not None else None,
                 "best_remaining_IG_law": best_ig,
                 "n_informative_actions_remaining": n_inf}
 

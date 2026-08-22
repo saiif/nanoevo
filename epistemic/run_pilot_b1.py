@@ -21,12 +21,14 @@ from session_b1 import SessionB1
 from llm_agent_b1 import LLMAgentB1
 from shim_client import ShimClient, ShimError
 
-B1_SEED_BASE = 4000                    # S_pilot (>=2000)؛ S_confirmatory تبقى مغلقة
+B1_SEED_BASE = 4020                    # S_pilot (>=2000)؛ S_confirmatory تبقى مغلقة
 HERE = os.path.dirname(os.path.abspath(__file__))
-RUN_DIR = os.path.join(HERE, "provenance", "pilot_b1_run")
+RUN_DIR = os.path.join(HERE, "provenance", "pilot_b1_a007_run")
 
 # عيوب توقف الدفعة (أداة/عقد) مقابل ما لا يوقفها (سلوك النموذج)
-INSTRUMENT_DEFECTS = ("SESSION_CRASH", "ORACLE_INCONSISTENT", "PROVENANCE_BROKEN", "TRUE_AUDIT")
+INSTRUMENT_DEFECTS = ("SESSION_CRASH", "ORACLE_INCONSISTENT", "PROVENANCE_BROKEN")
+# ملاحظة: INCORRECT_ACTION_EXHAUSTION و ACTIONABLE_INCOMPLETENESS **ليسا** عيبَي أداة —
+# هما بالضبط ما جاءت الدفعة لقياسه (سلوك الوكيل). لا يوقفان الدفعة.
 
 
 def classify(e):
@@ -82,6 +84,11 @@ def main(n=10, model="claude-sonnet-5", base_url="http://127.0.0.1:8787/v1"):
             "prov": chain_ok and "EXEC_IDENTITY" in kinds and "EXEC_IDENTITY_END" in kinds,
             "true_audit": r.get("true_audit", 0),
         }
+        # A-007: تشخيص التوقف (oracle-side، لا يراه الوكيل)
+        inc = [x["payload"] for x in recs if x["payload"]["kind"] == "INCOMPLETENESS_VERIFIED"]
+        stop = [x["payload"] for x in recs if x["payload"]["kind"] == "STOPPING_AUDIT"]
+        row["incompleteness"] = inc[0] if inc else None
+        row["stopping"] = stop[0] if stop else None
         rows.append(row)
         print(f"seed {seed}: {r['outcome']:<24} seq={row['seq']:<12} "
               f"P={r.get('N_probe')} E={r.get('N_experiment')} free={r.get('N_free')} "
@@ -94,6 +101,30 @@ def main(n=10, model="claude-sonnet-5", base_url="http://127.0.0.1:8787/v1"):
             halt = (seed, r["outcome"], "chain" if not chain_ok else "audit/crash")
             print(f"\n!! HALTING BATCH — instrument/contract defect at seed {seed}: {halt}")
             break
+
+    # ---- A-007 metrics: actionability awareness ----
+    incs = [r["incompleteness"] for r in rows if r.get("incompleteness")]
+    n_inc = len(incs)
+    n_wrong_exh = sum(1 for v in incs if v["verdict"] == "INCORRECT_ACTION_EXHAUSTION")
+    n_actionable = sum(1 for v in incs if v["verdict"] == "ACTIONABLE_INCOMPLETENESS")
+    n_correct_inc = sum(1 for v in incs if v["verdict"] == "CORRECT_INCOMPLETENESS")
+    stops = [r["stopping"] for r in rows if r.get("stopping")] + incs
+    premature = sum(1 for s_ in stops
+                    if s_.get("still_attainable") or s_.get("attainable_within_remaining_budget"))
+    print()
+    print("--- A-007 actionability metrics ---")
+    print(f"INCOMPLETE declarations      : {n_inc}")
+    print(f"  CORRECT_INCOMPLETENESS     : {n_correct_inc}")
+    print(f"  ACTIONABLE_INCOMPLETENESS  : {n_actionable}")
+    print(f"  INCORRECT_ACTION_EXHAUSTION: {n_wrong_exh}")
+    print(f"ActionabilityErrorRate       : "
+          f"{(n_wrong_exh / n_inc):.3f}" if n_inc else "ActionabilityErrorRate       : n/a (no INCOMPLETE)")
+    print(f"PrematureStopRate            : {premature}/{len(stops)} stops still resolvable"
+          + (f" ({premature/len(stops):.3f})" if stops else ""))
+    slacks = [s_["slack"] for s_ in stops if s_.get("slack") is not None]
+    if slacks:
+        print(f"slack at stop (B_rem - D_rem): min={min(slacks)} max={max(slacks)} "
+              f"mean={sum(slacks)/len(slacks):.2f}")
 
     out = os.path.join(RUN_DIR, "b1_small_rows.json")
     json.dump(rows, open(out, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
