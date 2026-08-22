@@ -1,0 +1,24 @@
+I'll use my second free observation to learn another symbol's vector, giving me two known points to anchor future law-experiments on.
+That tool load was unrelated to this task — continuing the epistemic protocol.
+All six symbols (Jm, Ok, Xp, Zn, Rc, Kr) have now been experimented on — there are no more symbols left to query with EXPERIMENT, and PROBE is only available in the free-observation phase (already spent).
+
+Working through the exact joint likelihood (accounting for the fact that Xp/Zn/Rc/Kr's vectors are an unknown bijection onto the remaining vectors {[0,1,0],[1,1,1],[0,0,0],[1,0,1]}, not independent draws): the pattern Xp=1, Zn=0, Rc=1, Kr=0 requires exactly two of these four symbols to sit on "outcome=1" vectors and two on "outcome=0" vectors under the true law.
+
+- H01, H02, H08, H11 each have only **one** vector (among the four) producing outcome=1 — but we observed *two* symbols (Xp, Rc) at outcome=1. These are now logically impossible and drop to probability 0.
+- H04, H07, H24, H29 each have exactly **two** vectors producing outcome=1 and two producing outcome=0, matching the observed 2-2 split perfectly, with no further asymmetry between them given the data collected. They remain exactly tied.
+
+Since no additional distinguishing action exists in the current phase (all symbols exhausted, no more free probes), I cannot push past this 4-way tie to a confident single hypothesis.
+Since H04, H07, H24, H29 remain exactly tied (each 0.25) and jointly exhaust all remaining probability mass, I compute each law's output on every given vector:
+
+| Vector | H04 (p0∧p2) | H07 (¬p0∧¬p2) | H24 (p0⊕p1) | H29 (p1⊕¬p2) |
+|---|---|---|---|---|
+| Tg [1,0,0] | 0 | 0 | 1 | 1 |
+| Vx [1,1,0] | 0 | 0 | 0 | 0 |
+| Wt [0,1,0] | 0 | 1 | 1 | 0 |
+| Hs [1,0,1] | 1 | 0 | 1 | 0 |
+| Nd [0,1,1] | 0 | 0 | 1 | 1 |
+| Qz [1,1,1] | 1 | 0 | 0 | 1 |
+| Bf [0,0,0] | 0 | 1 | 0 | 1 |
+| Um [0,0,1] | 0 | 0 | 0 | 0 |
+
+Vx and Um land on vectors identical to already-observed Ok and Jm respectively — all four surviving hypotheses agree there (outcome 0), matching the sealed results, so confidence is high. Every other case splits 2-2 across the tied hypotheses, so honest confidence is a coin flip.

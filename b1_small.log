@@ -1,0 +1,12 @@
+seed 4000: SOLVED                   seq=PPEEEEPPPE   P=3 E=5 free=2 N=10 blindID=1.0 floor=2 Drob=8 E_rob=0.8 rej=0 ref=0
+seed 4001: SOLVED                   seq=PPEEPEPEPEE  P=3 E=6 free=2 N=11 blindID=1.0 floor=3 Drob=8 E_rob=0.7272727272727273 rej=1 ref=0
+seed 4002: SOLVED                   seq=PPEEEPPPE    P=3 E=4 free=2 N=9 blindID=1.0 floor=2 Drob=8 E_rob=0.8888888888888888 rej=0 ref=0
+seed 4003: SOLVED                   seq=PPEEEEEP     P=1 E=5 free=2 N=8 blindID=1.0 floor=3 Drob=8 E_rob=1.0 rej=1 ref=0
+seed 4004: SOLVED                   seq=PPEEPEPEE    P=2 E=5 free=2 N=9 blindID=1.0 floor=3 Drob=8 E_rob=0.8888888888888888 rej=1 ref=0
+seed 4005: SOLVED                   seq=PPEEPEPEPE   P=3 E=5 free=2 N=10 blindID=1.0 floor=2 Drob=8 E_rob=0.8 rej=0 ref=0
+seed 4006: SOLVED                   seq=PPEEEEEP     P=1 E=5 free=2 N=8 blindID=1.0 floor=3 Drob=8 E_rob=1.0 rej=0 ref=0
+seed 4007: SOLVED                   seq=PPEEPEPEE    P=2 E=5 free=2 N=9 blindID=1.0 floor=3 Drob=8 E_rob=0.8888888888888888 rej=1 ref=0
+seed 4008: SOLVED                   seq=PPEEPEPEPEE  P=3 E=6 free=2 N=11 blindID=1.0 floor=2 Drob=8 E_rob=0.7272727272727273 rej=0 ref=0
+seed 4009: SOLVED                   seq=PPEEPEPEPEE  P=3 E=6 free=2 N=11 blindID=1.0 floor=3 Drob=8 E_rob=0.7272727272727273 rej=0 ref=0
+
+rows written: /home/debian/nanoevo/epistemic/provenance/pilot_b1_run/b1_small_rows.json

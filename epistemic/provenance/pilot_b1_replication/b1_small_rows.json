@@ -1,0 +1,1815 @@
+[
+ {
+  "seed": 4010,
+  "result": {
+   "outcome": "SOLVED",
+   "N_free": 2,
+   "N_probe": 2,
+   "N_experiment": 5,
+   "N_refused": 0,
+   "D_floor_task": 3,
+   "D_floor_strict": 7,
+   "D_robust": 8,
+   "n_blind_ID": 8,
+   "n_blind_X": 0,
+   "belief_metrics": [
+    {
+     "action": "EXPERIMENT(Wt)",
+     "belief": {
+      "support_size_oracle": 30,
+      "support_size_declared": 30,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.033333
+     },
+     "information": {
+      "IG_joint": 1.0,
+      "IG_law": 1.0,
+      "IG_state": 0.0,
+      "IG_max_same_type": 1.0,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "EXPERIMENT(Ea)",
+     "belief": {
+      "support_size_oracle": 15,
+      "support_size_declared": 30,
+      "missing": [],
+      "extra": [
+       "H01",
+       "H02",
+       "H03",
+       "H05",
+       "H06",
+       "H07",
+       "H09",
+       "H10",
+       "H11",
+       "H15",
+       "H19",
+       "H23",
+       "H24",
+       "H26",
+       "H28"
+      ],
+      "support_jaccard": 0.5,
+      "support_exact": false,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.066667
+     },
+     "information": {
+      "IG_joint": 0.9968,
+      "IG_law": 0.9968,
+      "IG_state": -0.0,
+      "IG_max_same_type": 0.9968,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "PROBE(Zn)",
+     "belief": {
+      "support_size_oracle": 8,
+      "support_size_declared": 30,
+      "missing": [],
+      "extra": [
+       "H01",
+       "H02",
+       "H03",
+       "H05",
+       "H06",
+       "H07",
+       "H09",
+       "H10",
+       "H11",
+       "H12",
+       "H14",
+       "H15",
+       "H17",
+       "H18",
+       "H19",
+       "H20",
+       "H21",
+       "H23",
+       "H24",
+       "H26",
+       "H27",
+       "H28"
+      ],
+      "support_jaccard": 0.2667,
+      "support_exact": false,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.125
+     },
+     "information": {
+      "IG_joint": 2.0,
+      "IG_law": 0.0,
+      "IG_state": 2.0,
+      "IG_max_same_type": 2.0,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "EXPERIMENT(Zn)",
+     "belief": {
+      "support_size_oracle": 8,
+      "support_size_declared": 30,
+      "missing": [],
+      "extra": [
+       "H01",
+       "H02",
+       "H03",
+       "H05",
+       "H06",
+       "H07",
+       "H09",
+       "H10",
+       "H11",
+       "H12",
+       "H14",
+       "H15",
+       "H17",
+       "H18",
+       "H19",
+       "H20",
+       "H21",
+       "H23",
+       "H24",
+       "H26",
+       "H27",
+       "H28"
+      ],
+      "support_jaccard": 0.2667,
+      "support_exact": false,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.125
+     },
+     "information": {
+      "IG_joint": 1.0,
+      "IG_law": 1.0,
+      "IG_state": 0.0,
+      "IG_max_same_type": 1.0,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "PROBE(Kr)",
+     "belief": {
+      "support_size_oracle": 4,
+      "support_size_declared": 4,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.25
+     },
+     "information": {
+      "IG_joint": 1.585,
+      "IG_law": 0.0,
+      "IG_state": 1.585,
+      "IG_max_same_type": 1.585,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "EXPERIMENT(Kr)",
+     "belief": {
+      "support_size_oracle": 4,
+      "support_size_declared": 4,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.25
+     },
+     "information": {
+      "IG_joint": 1.0,
+      "IG_law": 1.0,
+      "IG_state": 0.0,
+      "IG_max_same_type": 1.0,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "EXPERIMENT(Tg)",
+     "belief": {
+      "support_size_oracle": 2,
+      "support_size_declared": 2,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.5
+     },
+     "information": {
+      "IG_joint": 1.0,
+      "IG_law": 1.0,
+      "IG_state": 0.0,
+      "IG_max_same_type": 1.0,
+      "probe_quality": 1.0
+     }
+    }
+   ],
+   "E": 0.8888888888888888,
+   "blind_ID": 1.0,
+   "conf_ID": 0.96,
+   "success": 1,
+   "N_total": 9,
+   "region": "AT_OR_ABOVE_ROBUST",
+   "true_audit": 0,
+   "declaration": "SUFFICIENCY"
+  },
+  "seq": "PPEEPEPEE",
+  "rejects": 0,
+  "refusals": 0,
+  "chain_ok": true,
+  "prov": true,
+  "true_audit": 0
+ },
+ {
+  "seed": 4011,
+  "result": {
+   "outcome": "SOLVED",
+   "N_free": 2,
+   "N_probe": 0,
+   "N_experiment": 5,
+   "N_refused": 0,
+   "D_floor_task": 3,
+   "D_floor_strict": 7,
+   "D_robust": 8,
+   "n_blind_ID": 8,
+   "n_blind_X": 0,
+   "belief_metrics": [
+    {
+     "action": "EXPERIMENT(Ea)",
+     "belief": {
+      "support_size_oracle": 30,
+      "support_size_declared": 30,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.000967,
+      "mass_on_truth": 0.0333
+     },
+     "information": {
+      "IG_joint": 1.0,
+      "IG_law": 1.0,
+      "IG_state": 0.0,
+      "IG_max_same_type": 1.0,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "EXPERIMENT(Um)",
+     "belief": {
+      "support_size_oracle": 15,
+      "support_size_declared": 15,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.000467,
+      "mass_on_truth": 0.0667
+     },
+     "information": {
+      "IG_joint": 0.971,
+      "IG_law": 0.971,
+      "IG_state": 0.0,
+      "IG_max_same_type": 0.9968,
+      "probe_quality": 0.9741
+     }
+    },
+    {
+     "action": "EXPERIMENT(Zn)",
+     "belief": {
+      "support_size_oracle": 9,
+      "support_size_declared": 9,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 8.9e-05,
+      "mass_on_truth": 0.1111
+     },
+     "information": {
+      "IG_joint": 0.9911,
+      "IG_law": 0.1861,
+      "IG_state": 0.0,
+      "IG_max_same_type": 0.9911,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "EXPERIMENT(Rc)",
+     "belief": {
+      "support_size_oracle": 9,
+      "support_size_declared": 9,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.25
+     },
+     "information": {
+      "IG_joint": 0.9799,
+      "IG_law": 0.5207,
+      "IG_state": 0.0428,
+      "IG_max_same_type": 0.9799,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "EXPERIMENT(Kr)",
+     "belief": {
+      "support_size_oracle": 5,
+      "support_size_declared": 5,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.6
+     },
+     "information": {
+      "IG_joint": 0.971,
+      "IG_law": 0.971,
+      "IG_state": 0.171,
+      "IG_max_same_type": 0.971,
+      "probe_quality": 1.0
+     }
+    }
+   ],
+   "E": 1.1428571428571428,
+   "blind_ID": 1.0,
+   "conf_ID": 0.9500000000000001,
+   "success": 1,
+   "N_total": 7,
+   "region": "FAVORABLE_TRAJECTORY",
+   "true_audit": 0,
+   "declaration": "SUFFICIENCY"
+  },
+  "seq": "PPEEEEE",
+  "rejects": 0,
+  "refusals": 0,
+  "chain_ok": true,
+  "prov": true,
+  "true_audit": 0
+ },
+ {
+  "seed": 4012,
+  "result": {
+   "outcome": "SOLVED",
+   "N_free": 2,
+   "N_probe": 2,
+   "N_experiment": 5,
+   "N_refused": 0,
+   "D_floor_task": 3,
+   "D_floor_strict": 7,
+   "D_robust": 8,
+   "n_blind_ID": 8,
+   "n_blind_X": 0,
+   "belief_metrics": [
+    {
+     "action": "EXPERIMENT(Tg)",
+     "belief": {
+      "support_size_oracle": 30,
+      "support_size_declared": 30,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.033333
+     },
+     "information": {
+      "IG_joint": 1.0,
+      "IG_law": 1.0,
+      "IG_state": 0.0,
+      "IG_max_same_type": 1.0,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "EXPERIMENT(Ea)",
+     "belief": {
+      "support_size_oracle": 15,
+      "support_size_declared": 15,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.066667
+     },
+     "information": {
+      "IG_joint": 0.971,
+      "IG_law": 0.971,
+      "IG_state": 0.0,
+      "IG_max_same_type": 0.9968,
+      "probe_quality": 0.9741
+     }
+    },
+    {
+     "action": "PROBE(Wt)",
+     "belief": {
+      "support_size_oracle": 6,
+      "support_size_declared": 6,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.166667
+     },
+     "information": {
+      "IG_joint": 2.0,
+      "IG_law": 0.0,
+      "IG_state": 2.0,
+      "IG_max_same_type": 2.0,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "EXPERIMENT(Wt)",
+     "belief": {
+      "support_size_oracle": 6,
+      "support_size_declared": 6,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.166667
+     },
+     "information": {
+      "IG_joint": 0.9183,
+      "IG_law": 0.9183,
+      "IG_state": 0.0,
+      "IG_max_same_type": 0.9911,
+      "probe_quality": 0.9266
+     }
+    },
+    {
+     "action": "PROBE(Kr)",
+     "belief": {
+      "support_size_oracle": 4,
+      "support_size_declared": 4,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.25
+     },
+     "information": {
+      "IG_joint": 1.585,
+      "IG_law": 0.0,
+      "IG_state": 1.585,
+      "IG_max_same_type": 1.585,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "EXPERIMENT(Kr)",
+     "belief": {
+      "support_size_oracle": 4,
+      "support_size_declared": 4,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.25
+     },
+     "information": {
+      "IG_joint": 1.0,
+      "IG_law": 1.0,
+      "IG_state": 0.0,
+      "IG_max_same_type": 1.0,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "EXPERIMENT(Bf)",
+     "belief": {
+      "support_size_oracle": 2,
+      "support_size_declared": 2,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.5
+     },
+     "information": {
+      "IG_joint": 1.0,
+      "IG_law": 1.0,
+      "IG_state": 0.0,
+      "IG_max_same_type": 1.0,
+      "probe_quality": 1.0
+     }
+    }
+   ],
+   "E": 0.8888888888888888,
+   "blind_ID": 1.0,
+   "conf_ID": 0.9699999999999999,
+   "success": 1,
+   "N_total": 9,
+   "region": "AT_OR_ABOVE_ROBUST",
+   "true_audit": 0,
+   "declaration": "SUFFICIENCY"
+  },
+  "seq": "PPEEPEPEE",
+  "rejects": 0,
+  "refusals": 0,
+  "chain_ok": true,
+  "prov": true,
+  "true_audit": 0
+ },
+ {
+  "seed": 4013,
+  "result": {
+   "outcome": "SOLVED",
+   "N_free": 2,
+   "N_probe": 3,
+   "N_experiment": 5,
+   "N_refused": 0,
+   "D_floor_task": 2,
+   "D_floor_strict": 6,
+   "D_robust": 8,
+   "n_blind_ID": 8,
+   "n_blind_X": 0,
+   "belief_metrics": [
+    {
+     "action": "EXPERIMENT(Ea)",
+     "belief": {
+      "support_size_oracle": 30,
+      "support_size_declared": 30,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.000967,
+      "mass_on_truth": 0.0333
+     },
+     "information": {
+      "IG_joint": 1.0,
+      "IG_law": 1.0,
+      "IG_state": 0.0,
+      "IG_max_same_type": 1.0,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "EXPERIMENT(Jm)",
+     "belief": {
+      "support_size_oracle": 15,
+      "support_size_declared": 15,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.000467,
+      "mass_on_truth": 0.0667
+     },
+     "information": {
+      "IG_joint": 0.9968,
+      "IG_law": 0.9968,
+      "IG_state": -0.0,
+      "IG_max_same_type": 0.9968,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "PROBE(Rc)",
+     "belief": {
+      "support_size_oracle": 7,
+      "support_size_declared": 7,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 1e-06,
+      "mass_on_truth": 0.142857
+     },
+     "information": {
+      "IG_joint": 2.0,
+      "IG_law": 0.0,
+      "IG_state": 2.0,
+      "IG_max_same_type": 2.0,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "EXPERIMENT(Rc)",
+     "belief": {
+      "support_size_oracle": 7,
+      "support_size_declared": 7,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 1e-06,
+      "mass_on_truth": 0.142857
+     },
+     "information": {
+      "IG_joint": 0.8631,
+      "IG_law": 0.8631,
+      "IG_state": 0.0,
+      "IG_max_same_type": 0.9587,
+      "probe_quality": 0.9003
+     }
+    },
+    {
+     "action": "PROBE(Ok)",
+     "belief": {
+      "support_size_oracle": 5,
+      "support_size_declared": 5,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.2
+     },
+     "information": {
+      "IG_joint": 1.585,
+      "IG_law": 0.0,
+      "IG_state": 1.585,
+      "IG_max_same_type": 1.585,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "EXPERIMENT(Ok)",
+     "belief": {
+      "support_size_oracle": 5,
+      "support_size_declared": 5,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.2
+     },
+     "information": {
+      "IG_joint": 0.971,
+      "IG_law": 0.971,
+      "IG_state": 0.0,
+      "IG_max_same_type": 0.971,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "PROBE(Zn)",
+     "belief": {
+      "support_size_oracle": 2,
+      "support_size_declared": 2,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.5
+     },
+     "information": {
+      "IG_joint": 1.0,
+      "IG_law": 0.0,
+      "IG_state": 1.0,
+      "IG_max_same_type": 1.0,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "EXPERIMENT(Zn)",
+     "belief": {
+      "support_size_oracle": 2,
+      "support_size_declared": 2,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.5
+     },
+     "information": {
+      "IG_joint": 1.0,
+      "IG_law": 1.0,
+      "IG_state": 0.0,
+      "IG_max_same_type": 1.0,
+      "probe_quality": 1.0
+     }
+    }
+   ],
+   "E": 0.8,
+   "blind_ID": 1.0,
+   "conf_ID": 0.9500000000000001,
+   "success": 1,
+   "N_total": 10,
+   "region": "AT_OR_ABOVE_ROBUST",
+   "true_audit": 0,
+   "declaration": "SUFFICIENCY"
+  },
+  "seq": "PPEEPEPEPE",
+  "rejects": 0,
+  "refusals": 0,
+  "chain_ok": true,
+  "prov": true,
+  "true_audit": 0
+ },
+ {
+  "seed": 4014,
+  "result": {
+   "outcome": "SOLVED",
+   "N_free": 2,
+   "N_probe": 3,
+   "N_experiment": 6,
+   "N_refused": 0,
+   "D_floor_task": 3,
+   "D_floor_strict": 7,
+   "D_robust": 8,
+   "n_blind_ID": 8,
+   "n_blind_X": 0,
+   "belief_metrics": [
+    {
+     "action": "EXPERIMENT(Ok)",
+     "belief": {
+      "support_size_oracle": 30,
+      "support_size_declared": 30,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.033333
+     },
+     "information": {
+      "IG_joint": 1.0,
+      "IG_law": 1.0,
+      "IG_state": 0.0,
+      "IG_max_same_type": 1.0,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "EXPERIMENT(Ly)",
+     "belief": {
+      "support_size_oracle": 15,
+      "support_size_declared": 30,
+      "missing": [],
+      "extra": [
+       "H03",
+       "H06",
+       "H10",
+       "H13",
+       "H14",
+       "H15",
+       "H16",
+       "H18",
+       "H19",
+       "H20",
+       "H22",
+       "H23",
+       "H25",
+       "H26",
+       "H28"
+      ],
+      "support_jaccard": 0.5,
+      "support_exact": false,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.066667
+     },
+     "information": {
+      "IG_joint": 0.971,
+      "IG_law": 0.971,
+      "IG_state": 0.0,
+      "IG_max_same_type": 0.9968,
+      "probe_quality": 0.9741
+     }
+    },
+    {
+     "action": "PROBE(Bf)",
+     "belief": {
+      "support_size_oracle": 6,
+      "support_size_declared": 6,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.166667
+     },
+     "information": {
+      "IG_joint": 2.0,
+      "IG_law": 0.0,
+      "IG_state": 2.0,
+      "IG_max_same_type": 2.0,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "EXPERIMENT(Bf)",
+     "belief": {
+      "support_size_oracle": 6,
+      "support_size_declared": 6,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.166667
+     },
+     "information": {
+      "IG_joint": 0.9183,
+      "IG_law": 0.9183,
+      "IG_state": 0.0,
+      "IG_max_same_type": 0.9911,
+      "probe_quality": 0.9266
+     }
+    },
+    {
+     "action": "PROBE(Rc)",
+     "belief": {
+      "support_size_oracle": 4,
+      "support_size_declared": 4,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.25
+     },
+     "information": {
+      "IG_joint": 1.585,
+      "IG_law": 0.0,
+      "IG_state": 1.585,
+      "IG_max_same_type": 1.585,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "EXPERIMENT(Rc)",
+     "belief": {
+      "support_size_oracle": 4,
+      "support_size_declared": 4,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.25
+     },
+     "information": {
+      "IG_joint": 0.8113,
+      "IG_law": 0.8113,
+      "IG_state": 0.0,
+      "IG_max_same_type": 1.0,
+      "probe_quality": 0.8113
+     }
+    },
+    {
+     "action": "PROBE(Nd)",
+     "belief": {
+      "support_size_oracle": 3,
+      "support_size_declared": 3,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.333333
+     },
+     "information": {
+      "IG_joint": 1.0,
+      "IG_law": 0.0,
+      "IG_state": 1.0,
+      "IG_max_same_type": 1.0,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "EXPERIMENT(Nd)",
+     "belief": {
+      "support_size_oracle": 3,
+      "support_size_declared": 3,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.333333
+     },
+     "information": {
+      "IG_joint": 0.9183,
+      "IG_law": 0.9183,
+      "IG_state": 0.0,
+      "IG_max_same_type": 0.9183,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "EXPERIMENT(Tg)",
+     "belief": {
+      "support_size_oracle": 2,
+      "support_size_declared": 2,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.5
+     },
+     "information": {
+      "IG_joint": 1.0,
+      "IG_law": 1.0,
+      "IG_state": 0.0,
+      "IG_max_same_type": 1.0,
+      "probe_quality": 1.0
+     }
+    }
+   ],
+   "E": 0.7272727272727273,
+   "blind_ID": 1.0,
+   "conf_ID": 0.9500000000000001,
+   "success": 1,
+   "N_total": 11,
+   "region": "AT_OR_ABOVE_ROBUST",
+   "true_audit": 0,
+   "declaration": "SUFFICIENCY"
+  },
+  "seq": "PPEEPEPEPEE",
+  "rejects": 1,
+  "refusals": 0,
+  "chain_ok": true,
+  "prov": true,
+  "true_audit": 0
+ },
+ {
+  "seed": 4015,
+  "result": {
+   "outcome": "FALSE_CERTAINTY",
+   "N_free": 2,
+   "N_probe": 0,
+   "N_experiment": 6,
+   "N_refused": 0,
+   "D_floor_task": 3,
+   "D_floor_strict": 7,
+   "D_robust": 8,
+   "n_blind_ID": 8,
+   "n_blind_X": 0,
+   "belief_metrics": [
+    {
+     "action": "EXPERIMENT(Jm)",
+     "belief": {
+      "support_size_oracle": 30,
+      "support_size_declared": 30,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 1e-05,
+      "mass_on_truth": 0.033333
+     },
+     "information": {
+      "IG_joint": 1.0,
+      "IG_law": 1.0,
+      "IG_state": 0.0,
+      "IG_max_same_type": 1.0,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "EXPERIMENT(Ok)",
+     "belief": {
+      "support_size_oracle": 15,
+      "support_size_declared": 15,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 5e-06,
+      "mass_on_truth": 0.066667
+     },
+     "information": {
+      "IG_joint": 0.971,
+      "IG_law": 0.971,
+      "IG_state": 0.0,
+      "IG_max_same_type": 0.9968,
+      "probe_quality": 0.9741
+     }
+    },
+    {
+     "action": "EXPERIMENT(Xp)",
+     "belief": {
+      "support_size_oracle": 9,
+      "support_size_declared": 9,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 1e-06,
+      "mass_on_truth": 0.111111
+     },
+     "information": {
+      "IG_joint": 0.9911,
+      "IG_law": 0.1861,
+      "IG_state": 0.0,
+      "IG_max_same_type": 0.9911,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "EXPERIMENT(Zn)",
+     "belief": {
+      "support_size_oracle": 9,
+      "support_size_declared": 9,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.125
+     },
+     "information": {
+      "IG_joint": 0.9799,
+      "IG_law": 0.5207,
+      "IG_state": 0.0428,
+      "IG_max_same_type": 0.9799,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "EXPERIMENT(Rc)",
+     "belief": {
+      "support_size_oracle": 8,
+      "support_size_declared": 8,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 1e-06,
+      "mass_on_truth": 0.142857
+     },
+     "information": {
+      "IG_joint": 0.8631,
+      "IG_law": 0.2917,
+      "IG_state": 0.1839,
+      "IG_max_same_type": 0.8631,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "EXPERIMENT(Kr)",
+     "belief": {
+      "support_size_oracle": 4,
+      "support_size_declared": 8,
+      "missing": [],
+      "extra": [
+       "H01",
+       "H02",
+       "H08",
+       "H11"
+      ],
+      "support_jaccard": 0.5,
+      "support_exact": false,
+      "probability_error_tv": 0.272728,
+      "mass_on_truth": 0.181818
+     },
+     "information": {
+      "IG_joint": 0.0,
+      "IG_law": 0.0,
+      "IG_state": 0.0,
+      "IG_max_same_type": 0.0,
+      "probe_quality": null
+     }
+    }
+   ],
+   "E": 0.0,
+   "blind_ID": 0.375,
+   "conf_ID": 0.6125,
+   "success": 0,
+   "N_total": 8,
+   "region": "AT_OR_ABOVE_ROBUST",
+   "true_audit": 0,
+   "declaration": "INCOMPLETE"
+  },
+  "seq": "PPEEEEEE",
+  "rejects": 0,
+  "refusals": 0,
+  "chain_ok": true,
+  "prov": true,
+  "true_audit": 0
+ },
+ {
+  "seed": 4016,
+  "result": {
+   "outcome": "SOLVED",
+   "N_free": 2,
+   "N_probe": 3,
+   "N_experiment": 5,
+   "N_refused": 0,
+   "D_floor_task": 3,
+   "D_floor_strict": 7,
+   "D_robust": 8,
+   "n_blind_ID": 8,
+   "n_blind_X": 0,
+   "belief_metrics": [
+    {
+     "action": "EXPERIMENT(Tg)",
+     "belief": {
+      "support_size_oracle": 30,
+      "support_size_declared": 30,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.033333
+     },
+     "information": {
+      "IG_joint": 1.0,
+      "IG_law": 1.0,
+      "IG_state": 0.0,
+      "IG_max_same_type": 1.0,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "EXPERIMENT(Bf)",
+     "belief": {
+      "support_size_oracle": 15,
+      "support_size_declared": 15,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.066667
+     },
+     "information": {
+      "IG_joint": 0.9968,
+      "IG_law": 0.9968,
+      "IG_state": -0.0,
+      "IG_max_same_type": 0.9968,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "EXPERIMENT(Ea)",
+     "belief": {
+      "support_size_oracle": 7,
+      "support_size_declared": 7,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.142857
+     },
+     "information": {
+      "IG_joint": 0.9403,
+      "IG_law": 0.0481,
+      "IG_state": 0.0466,
+      "IG_max_same_type": 0.9403,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "PROBE(Ea)",
+     "belief": {
+      "support_size_oracle": 7,
+      "support_size_declared": 7,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.111111
+     },
+     "information": {
+      "IG_joint": 1.9708,
+      "IG_law": 0.5808,
+      "IG_state": 1.9708,
+      "IG_max_same_type": 1.9971,
+      "probe_quality": 0.9868
+     }
+    },
+    {
+     "action": "PROBE(Xp)",
+     "belief": {
+      "support_size_oracle": 5,
+      "support_size_declared": 5,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.2
+     },
+     "information": {
+      "IG_joint": 1.585,
+      "IG_law": 0.0,
+      "IG_state": 1.585,
+      "IG_max_same_type": 1.585,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "EXPERIMENT(Xp)",
+     "belief": {
+      "support_size_oracle": 5,
+      "support_size_declared": 5,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.2
+     },
+     "information": {
+      "IG_joint": 0.971,
+      "IG_law": 0.971,
+      "IG_state": 0.0,
+      "IG_max_same_type": 1.0,
+      "probe_quality": 0.971
+     }
+    },
+    {
+     "action": "PROBE(Ly)",
+     "belief": {
+      "support_size_oracle": 2,
+      "support_size_declared": 2,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.5
+     },
+     "information": {
+      "IG_joint": 1.0,
+      "IG_law": 0.0,
+      "IG_state": 1.0,
+      "IG_max_same_type": 1.0,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "EXPERIMENT(Ly)",
+     "belief": {
+      "support_size_oracle": 2,
+      "support_size_declared": 2,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.5
+     },
+     "information": {
+      "IG_joint": 1.0,
+      "IG_law": 1.0,
+      "IG_state": 0.0,
+      "IG_max_same_type": 1.0,
+      "probe_quality": 1.0
+     }
+    }
+   ],
+   "E": 0.8,
+   "blind_ID": 1.0,
+   "conf_ID": 0.9900000000000001,
+   "success": 1,
+   "N_total": 10,
+   "region": "AT_OR_ABOVE_ROBUST",
+   "true_audit": 0,
+   "declaration": "SUFFICIENCY"
+  },
+  "seq": "PPEEEPPEPE",
+  "rejects": 0,
+  "refusals": 0,
+  "chain_ok": true,
+  "prov": true,
+  "true_audit": 0
+ },
+ {
+  "seed": 4017,
+  "result": {
+   "outcome": "SOLVED",
+   "N_free": 2,
+   "N_probe": 3,
+   "N_experiment": 5,
+   "N_refused": 0,
+   "D_floor_task": 2,
+   "D_floor_strict": 6,
+   "D_robust": 8,
+   "n_blind_ID": 8,
+   "n_blind_X": 0,
+   "belief_metrics": [
+    {
+     "action": "EXPERIMENT(Vx)",
+     "belief": {
+      "support_size_oracle": 30,
+      "support_size_declared": 30,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 1e-05,
+      "mass_on_truth": 0.033333
+     },
+     "information": {
+      "IG_joint": 1.0,
+      "IG_law": 1.0,
+      "IG_state": 0.0,
+      "IG_max_same_type": 1.0,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "EXPERIMENT(Nd)",
+     "belief": {
+      "support_size_oracle": 15,
+      "support_size_declared": 15,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 5e-06,
+      "mass_on_truth": 0.066667
+     },
+     "information": {
+      "IG_joint": 0.971,
+      "IG_law": 0.971,
+      "IG_state": 0.0,
+      "IG_max_same_type": 0.9968,
+      "probe_quality": 0.9741
+     }
+    },
+    {
+     "action": "EXPERIMENT(Um)",
+     "belief": {
+      "support_size_oracle": 9,
+      "support_size_declared": 9,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 1e-06,
+      "mass_on_truth": 0.111111
+     },
+     "information": {
+      "IG_joint": 0.9911,
+      "IG_law": 0.1861,
+      "IG_state": 0.0,
+      "IG_max_same_type": 0.9911,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "PROBE(Um)",
+     "belief": {
+      "support_size_oracle": 8,
+      "support_size_declared": 8,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.15
+     },
+     "information": {
+      "IG_joint": 2.0,
+      "IG_law": 0.649,
+      "IG_state": 2.0,
+      "IG_max_same_type": 2.0,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "PROBE(Ly)",
+     "belief": {
+      "support_size_oracle": 5,
+      "support_size_declared": 5,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.092307,
+      "mass_on_truth": 0.230769
+     },
+     "information": {
+      "IG_joint": 1.585,
+      "IG_law": 0.0,
+      "IG_state": 1.585,
+      "IG_max_same_type": 1.585,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "EXPERIMENT(Ly)",
+     "belief": {
+      "support_size_oracle": 5,
+      "support_size_declared": 5,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.092307,
+      "mass_on_truth": 0.230769
+     },
+     "information": {
+      "IG_joint": 0.971,
+      "IG_law": 0.971,
+      "IG_state": 0.0,
+      "IG_max_same_type": 0.971,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "PROBE(Rc)",
+     "belief": {
+      "support_size_oracle": 2,
+      "support_size_declared": 2,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.5
+     },
+     "information": {
+      "IG_joint": 1.0,
+      "IG_law": 0.0,
+      "IG_state": 1.0,
+      "IG_max_same_type": 1.0,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "EXPERIMENT(Rc)",
+     "belief": {
+      "support_size_oracle": 2,
+      "support_size_declared": 2,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.5
+     },
+     "information": {
+      "IG_joint": 1.0,
+      "IG_law": 1.0,
+      "IG_state": 0.0,
+      "IG_max_same_type": 1.0,
+      "probe_quality": 1.0
+     }
+    }
+   ],
+   "E": 0.8,
+   "blind_ID": 1.0,
+   "conf_ID": 0.9699999999999999,
+   "success": 1,
+   "N_total": 10,
+   "region": "AT_OR_ABOVE_ROBUST",
+   "true_audit": 0,
+   "declaration": "SUFFICIENCY"
+  },
+  "seq": "PPEEEPPEPE",
+  "rejects": 0,
+  "refusals": 0,
+  "chain_ok": true,
+  "prov": true,
+  "true_audit": 0
+ },
+ {
+  "seed": 4018,
+  "result": {
+   "outcome": "FALSE_CERTAINTY",
+   "N_free": 2,
+   "N_probe": 0,
+   "N_experiment": 5,
+   "N_refused": 0,
+   "D_floor_task": 2,
+   "D_floor_strict": 6,
+   "D_robust": 8,
+   "n_blind_ID": 8,
+   "n_blind_X": 0,
+   "belief_metrics": [
+    {
+     "action": "EXPERIMENT(Zn)",
+     "belief": {
+      "support_size_oracle": 30,
+      "support_size_declared": 30,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 1e-05,
+      "mass_on_truth": 0.033333
+     },
+     "information": {
+      "IG_joint": 1.0,
+      "IG_law": 1.0,
+      "IG_state": 0.0,
+      "IG_max_same_type": 1.0,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "EXPERIMENT(Jm)",
+     "belief": {
+      "support_size_oracle": 15,
+      "support_size_declared": 15,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 5e-06,
+      "mass_on_truth": 0.066667
+     },
+     "information": {
+      "IG_joint": 0.9968,
+      "IG_law": 0.9968,
+      "IG_state": -0.0,
+      "IG_max_same_type": 0.9968,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "EXPERIMENT(Kr)",
+     "belief": {
+      "support_size_oracle": 7,
+      "support_size_declared": 7,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 1e-06,
+      "mass_on_truth": 0.142857
+     },
+     "information": {
+      "IG_joint": 0.9403,
+      "IG_law": 0.0481,
+      "IG_state": 0.0466,
+      "IG_max_same_type": 0.9403,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "EXPERIMENT(Ly)",
+     "belief": {
+      "support_size_oracle": 7,
+      "support_size_declared": 7,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 1e-06,
+      "mass_on_truth": 0.166667
+     },
+     "information": {
+      "IG_joint": 0.9911,
+      "IG_law": 0.0728,
+      "IG_state": 0.0289,
+      "IG_max_same_type": 0.9911,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "EXPERIMENT(Tg)",
+     "belief": {
+      "support_size_oracle": 7,
+      "support_size_declared": 7,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 1e-06,
+      "mass_on_truth": 0.2
+     },
+     "information": {
+      "IG_joint": 0.971,
+      "IG_law": 0.171,
+      "IG_state": 0.02,
+      "IG_max_same_type": 0.971,
+      "probe_quality": 1.0
+     }
+    }
+   ],
+   "E": 0.0,
+   "blind_ID": 0.875,
+   "conf_ID": 0.8125,
+   "success": 0,
+   "N_total": 7,
+   "region": "FAVORABLE_TRAJECTORY",
+   "true_audit": 0,
+   "declaration": "INCOMPLETE"
+  },
+  "seq": "PPEEEEE",
+  "rejects": 1,
+  "refusals": 0,
+  "chain_ok": true,
+  "prov": true,
+  "true_audit": 0
+ },
+ {
+  "seed": 4019,
+  "result": {
+   "outcome": "SOLVED",
+   "N_free": 2,
+   "N_probe": 3,
+   "N_experiment": 5,
+   "N_refused": 0,
+   "D_floor_task": 2,
+   "D_floor_strict": 6,
+   "D_robust": 8,
+   "n_blind_ID": 8,
+   "n_blind_X": 0,
+   "belief_metrics": [
+    {
+     "action": "EXPERIMENT(Hs)",
+     "belief": {
+      "support_size_oracle": 30,
+      "support_size_declared": 30,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.033333
+     },
+     "information": {
+      "IG_joint": 1.0,
+      "IG_law": 1.0,
+      "IG_state": 0.0,
+      "IG_max_same_type": 1.0,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "EXPERIMENT(Bf)",
+     "belief": {
+      "support_size_oracle": 15,
+      "support_size_declared": 15,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.066667
+     },
+     "information": {
+      "IG_joint": 0.971,
+      "IG_law": 0.971,
+      "IG_state": 0.0,
+      "IG_max_same_type": 0.9968,
+      "probe_quality": 0.9741
+     }
+    },
+    {
+     "action": "PROBE(Xp)",
+     "belief": {
+      "support_size_oracle": 9,
+      "support_size_declared": 9,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.111111
+     },
+     "information": {
+      "IG_joint": 2.0,
+      "IG_law": 0.0,
+      "IG_state": 2.0,
+      "IG_max_same_type": 2.0,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "EXPERIMENT(Xp)",
+     "belief": {
+      "support_size_oracle": 9,
+      "support_size_declared": 9,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.111111
+     },
+     "information": {
+      "IG_joint": 0.9911,
+      "IG_law": 0.9911,
+      "IG_state": 0.0,
+      "IG_max_same_type": 0.9911,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "PROBE(Rc)",
+     "belief": {
+      "support_size_oracle": 4,
+      "support_size_declared": 4,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.25
+     },
+     "information": {
+      "IG_joint": 1.585,
+      "IG_law": 0.0,
+      "IG_state": 1.585,
+      "IG_max_same_type": 1.585,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "PROBE(Tg)",
+     "belief": {
+      "support_size_oracle": 4,
+      "support_size_declared": 4,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.25
+     },
+     "information": {
+      "IG_joint": 1.0,
+      "IG_law": 0.0,
+      "IG_state": 1.0,
+      "IG_max_same_type": 1.0,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "EXPERIMENT(Tg)",
+     "belief": {
+      "support_size_oracle": 4,
+      "support_size_declared": 4,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.25
+     },
+     "information": {
+      "IG_joint": 1.0,
+      "IG_law": 1.0,
+      "IG_state": 0.0,
+      "IG_max_same_type": 1.0,
+      "probe_quality": 1.0
+     }
+    },
+    {
+     "action": "EXPERIMENT(Ea)",
+     "belief": {
+      "support_size_oracle": 2,
+      "support_size_declared": 2,
+      "missing": [],
+      "extra": [],
+      "support_jaccard": 1.0,
+      "support_exact": true,
+      "probability_error_tv": 0.0,
+      "mass_on_truth": 0.5
+     },
+     "information": {
+      "IG_joint": 1.0,
+      "IG_law": 1.0,
+      "IG_state": 0.0,
+      "IG_max_same_type": 1.0,
+      "probe_quality": 1.0
+     }
+    }
+   ],
+   "E": 0.8,
+   "blind_ID": 1.0,
+   "conf_ID": 0.9800000000000002,
+   "success": 1,
+   "N_total": 10,
+   "region": "AT_OR_ABOVE_ROBUST",
+   "true_audit": 0,
+   "declaration": "SUFFICIENCY"
+  },
+  "seq": "PPEEPEPPEE",
+  "rejects": 1,
+  "refusals": 0,
+  "chain_ok": true,
+  "prov": true,
+  "true_audit": 0
+ }
+]

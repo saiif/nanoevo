@@ -1,0 +1,77 @@
+Reasoning: With 30 hypotheses each depending on exactly 2 of the 3 latent properties, and 2 free probes available, my plan is to learn exact vectors for two symbols first (free), then spend paid interventions pairing EXPERIMENT calls with known-vector symbols — since an experiment only constrains the hypothesis space when I know the vector it was run on. I computed the full truth table of all 30 hypotheses over the 6 present vectors and confirmed every single vector gives a perfectly balanced 15/15 split of hypotheses, so my first probe target doesn't matter much. Starting with Nd.
+
+```json
+
+```
+Reasoning: I've used my first free probe on Nd (vector [1,1,0]). I have one free observation left before formal commitments begin. I'll use it to learn a second symbol's vector now, while it's still free, so that once I enter the commitment phase I already have two known-vector symbols available for informative EXPERIMENT calls (each experiment on a known vector splits the 30-hypothesis catalog roughly in half, since I verified every present vector yields a balanced 15/15 split across the catalog). I'll probe Vx next.
+
+```json
+
+```
+Reasoning: Free observation phase is over — I now know Nd=[1,1,0] and Vx=[0,0,1], but nothing yet about the law itself. Time to enter the commitment phase. I computed the outcome each of the 30 catalog hypotheses would predict on Nd's known vector (1,1,0): exactly 15 predict outcome=1 and 15 predict outcome=0, a maximally informative 50/50 split (same holds for Vx, so either is equally good as a first target). Since I have zero evidence about the law so far, my hypothesis distribution stays uniform (1/30 each) and my predicted P(outcome=1) is 0.5. I'll run the first EXPERIMENT on Nd, since I know its vector precisely and can therefore map whatever binary result comes back directly onto the hypothesis catalog.
+
+```json
+
+```
+Reasoning: EXPERIMENT(Nd) returned 0. Checking all 30 hypotheses against Nd's known vector (1,1,0), exactly 15 predicted outcome=0 and 15 predicted outcome=1. The 15 consistent with the observed 0 are: H01,H02,H03,H04,H06,H07,H08,H10,H11,H15,H18,H22,H24,H27,H29 — each now gets weight 1/15, the rest go to zero.
+
+For my next action I have a second known vector, Vx=[0,0,1]. Evaluating the surviving 15 hypotheses on Vx's vector gives a 9/6 split (H01,H02,H04,H07,H08,H11,H24,H27,H29 predict 0; H03,H06,H10,H15,H18,H22 predict 1) — still solidly informative, and cheaper than spending an intervention on a fresh PROBE before I can use it. So I'll run EXPERIMENT(Vx) next, predicting P(outcome=1)=6/15≈0.4.
+
+```json
+
+```
+Reasoning: EXPERIMENT(Vx)=0. Checking the 15 survivors against Vx=[0,0,1]: the 9 that predicted 0 survive — H01,H02,H04,H07,H08,H11,H24,H27,H29 — each now weight 1/9.
+
+I've exhausted my 2 free probes, so learning a new symbol's vector now costs an intervention. I checked all four still-unknown vectors ([0,1,1],[1,0,1],[0,1,0],[1,0,0], assigned unknown-permutation to Ea,Jm,Kr,Qz) against these 9 survivors — every one gives an identical 4/5 split, so which symbol I probe next is irrelevant to informativeness. I'll probe Ea to learn its vector; this reveals no law information by itself (hence hypothesis weights are unchanged and no outcome is predicted), but sets up a maximally-splitting EXPERIMENT next turn.
+
+```json
+
+```
+Reasoning: PROBE(Ea) cost an intervention but revealed no law information, so my 9-hypothesis distribution (H01,H02,H04,H07,H08,H11,H24,H27,H29, each 1/9) stays unchanged. Now that I know Ea=[0,1,1], I computed each survivor's prediction on this vector: H01=0,H02=1,H04=0,H07=0,H08=1,H11=0,H24=1,H27=0,H29=1 — a 5/4 split, still solidly informative. I'll spend the next intervention running EXPERIMENT(Ea), predicting P(outcome=1)=4/9≈0.444.
+
+```json
+
+```
+Reasoning: EXPERIMENT(Ea)=0. Checking H01,H02,H04,H07,H08,H11,H24,H27,H29 against Ea=[0,1,1]: predictions were H01=0,H02=1,H04=0,H07=0,H08=1,H11=0,H24=1,H27=0,H29=1. The 5 predicting 0 survive: H01,H04,H07,H11,H27 — each now weight 1/5.
+
+Remaining unknown symbols Jm,Kr,Qz hold vectors [1,0,1],[0,1,0],[1,0,0] in some unknown order. I computed how these 5 survivors split on each: [1,0,1]→3/2, [0,1,0]→2/3, [1,0,0]→2/3 — all equally balanced given only 5 hypotheses remain, so which symbol I probe next is arbitrary. I'll probe Jm to learn its vector (no law information yet, weights unchanged), setting up the next EXPERIMENT.
+
+```json
+
+```
+```json
+
+```
+Reasoning: EXPERIMENT(Jm)=0. Checking H01,H04,H07,H11,H27 against Jm=[1,0,0]: predictions were H01=1,H04=0,H07=0,H11=1,H27=0. The 3 predicting 0 survive: H04,H07,H27 — each now weight 1/3.
+
+Only Kr and Qz remain unknown, holding vectors [1,0,1] and [0,1,0] in unknown order. I checked both: on [1,0,1] the split is H04=1,H07=0,H27=1 (2/1); on [0,1,0] it's H04=0,H07=1,H27=1 (2/1) — identical informativeness either way, and this is the best achievable split with 3 hypotheses. I need to know a vector before an experiment is meaningful, so I'll probe Kr next (no law information yet, weights unchanged) — this also tells me Qz's vector by elimination since only one vector will remain.
+
+```json
+
+```
+Reasoning: PROBE(Kr) cost an intervention but revealed no law information, so weights stay H04=1/3, H07=1/3, H27=1/3. Kr=[1,0,1] is now known; by bijection elimination Qz must hold the one remaining vector [0,1,0] — but that's a bonus for later, not needed now. Evaluating the three survivors on Kr's vector (p0=1,p1=0,p2=1): H04=(p0∧p2)=1, H07=(¬p0∧¬p2)=0, H27=(p0 XOR ¬p2)=1 XOR 0=1. That's a 2/1 split (H07 isolated), the best available with 3 hypotheses, and costs nothing extra since Kr's vector is already known. I'll run EXPERIMENT(Kr), predicting P(outcome=1)=2/3.
+
+```json
+
+```
+Reasoning: EXPERIMENT(Kr)=0. Checking H04,H07,H27 against Kr=[1,0,1]: H04=(p0∧p2)=1, H07=(¬p0∧¬p2)=0, H27=(p0 XOR ¬p2)=1. Only H07 predicted 0, matching the result — H04 and H27 are eliminated. H07 alone survives with weight 1.0.
+
+Sanity-checking H07=(NOT p0 AND NOT p2) against every prior experiment: Nd[1,1,0]→0∧1=0 (matches outcome 0), Vx[0,0,1]→1∧0=0 (matches), Ea[0,1,1]→1∧0=0 (matches), Jm[1,0,0]→0∧1=0 (matches), Kr[1,0,1]→0∧0=0 (matches). All five independent experiments are perfectly consistent with H07 and with no other catalog hypothesis. This is a unique, fully determined fit in a noiseless world — sufficiency reached.
+
+```json
+
+```
+Reasoning: H07 = (NOT p0 AND NOT p2) is the unique surviving hypothesis, confirmed consistent across all 5 experiments (Nd, Vx, Ea, Jm, Kr) with no ambiguity. Applying it directly to each new vector (outcome=1 iff p0=0 AND p2=0):
+
+- Ly [1,1,1]: p0=1 → 0
+- Hs [0,1,1]: p2=1 → 0
+- Um [1,1,0]: p0=1 → 0
+- Rc [1,0,0]: p0=1 → 0
+- Ok [1,0,1]: p0=1 → 0
+- Bf [0,0,0]: p0=0,p2=0 → 1
+- Zn [0,0,1]: p2=1 → 0
+- Xp [0,1,0]: p0=0,p2=0 → 1
+
+```json
+
+```

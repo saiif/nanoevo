@@ -1,3 +1,6 @@
 __pycache__/
 *.pyc
 .omc/
+
+# temporary mechanical-run archives
+epistemic/provenance/mech_b1_archive_*/

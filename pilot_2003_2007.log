@@ -1,0 +1,16 @@
+seed 2003: SOLVED                         E=1.0  blind_ID=1.0  N_total=6  D_pred=6  rejects=0  refusals=0
+seed 2004: SOLVED                         E=1.0  blind_ID=1.0  N_total=6  D_pred=6  rejects=0  refusals=0
+seed 2005: SOLVED                         E=1.0  blind_ID=1.0  N_total=5  D_pred=5  rejects=0  refusals=0
+seed 2006: SOLVED                         E=1.0  blind_ID=1.0  N_total=5  D_pred=5  rejects=0  refusals=0
+seed 2007: SOLVED                         E=1.0  blind_ID=1.0  N_total=5  D_pred=5  rejects=0  refusals=0
+
+--- Pilot-A report: five result families ---
+1. contract compliance rate : 5/5
+2. schema reject/retry rate : 0 rejects / 5 sessions
+3. invalid intervention rate: 0 refusals / 5 sessions
+4. session completion rate  : 5/5
+5. provenance completeness  : 5/5 (chain valid + exec identity sealed at start and end + terminal record)
+E/calibration مسجلة diagnostic فقط في هذه المرحلة.
+
+failure taxonomy: {"adapter_failure": 0, "contract_non_compliance": 0, "provider_api_failure": 0, "world_session_bug": 0}
+القاعدة: LLM adapts to the contract, not the contract to the LLM — تعديل الماسورة مشروع فقط للفئة الأخيرة.

@@ -14,6 +14,7 @@ from channel import Archivist, SchemaError, validate_blind, blind_schema_hash, p
 from world import classify_region
 from world_b1 import (Evidence, all_actions, apply_action, posterior,
                       information_gain, grammar_hash_b1, GRAMMAR_VERSION_B1)
+from ig_state import information_gain_full     # IG_Σ تشخيصي (تحليل فقط، لا يمسّ العقد)
 
 PROTOCOL_VERSION_B1 = "1.0-b1-A005"
 SCHEMA_VERSION_B1 = "1.1-b1"
@@ -154,6 +155,12 @@ class SessionB1:
             dep, thoughts = self.agent.deposit()
             if thoughts:
                 self._think(thoughts)
+            # المستوى الخام (قرار 3): يُختم كما خرج من الموديل قبل أي فحص، كـ diagnostic provenance.
+            # لا يحرّك الجلسة إطلاقًا — الالتزام المُصدَّق (dep) وحده يفعل. يُبقي الأدلة السلوكية
+            # (تكرار المفاتيح، معرّف مجهول، بنية مشوّهة، سلوك الإصلاح) قابلة للقياس لاحقًا.
+            raw = getattr(self.agent, "last_raw", None)
+            if raw is not None:
+                self.arch.seal("RAW_PROPOSAL", {"raw": raw, "attempt": attempt})
             try:
                 validate_b1(dep, self.catalog_ids)
             except SchemaError as e:
@@ -193,13 +200,15 @@ class SessionB1:
         kind, sym = self.verifier.parse(action)
         x = self.sym_index[sym]
         a = (kind, x, None)
-        ig, ig_law = information_gain(w.hypotheses, self.ev, w.emask, w.ctx, a)
+        # IG_law ≡ IG_H = I(H;Y|E)؛ IG_state = IG_Σ = I(Σ;Y|E) — تشخيص غير جمعي.
+        ig, ig_law, ig_state = information_gain_full(w.hypotheses, self.ev, w.emask, w.ctx, a)
         same = [b for b in all_actions(w.n_syms) if b[0] == kind]
         best = 0.0
         for b in same:
             g, _ = information_gain(w.hypotheses, self.ev, w.emask, w.ctx, b)
             best = max(best, g)
         return {"IG_joint": round(ig, 4), "IG_law": round(ig_law, 4),
+                "IG_state": round(ig_state, 4),
                 "IG_max_same_type": round(best, 4),
                 "probe_quality": round(ig / best, 4) if best > 1e-12 else None}
 
@@ -294,6 +303,9 @@ class SessionB1:
             p, thoughts = self.agent.blind_predict(cases)
             if thoughts:
                 self._think(thoughts)
+            raw = getattr(self.agent, "last_raw", None)      # المستوى الخام لمسار الاختبار الأعمى
+            if raw is not None:
+                self.arch.seal("RAW_BLIND", {"raw": raw, "attempt": attempt})
             err = validate_blind(p, cases)
             if err is None:
                 preds = p

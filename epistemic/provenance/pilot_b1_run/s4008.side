@@ -1,0 +1,101 @@
+My first move: use a free probe to learn a symbol's exact vector. This sets up a later EXPERIMENT on that same symbol to yield a fully interpretable bit of the law's truth table (since I'll know exactly which vector was tested).
+
+```json
+
+```
+Using the second free observation to get another known vector before committing to any experiments — this maximizes information density once formal (costly) actions start.
+
+```json
+
+```
+```json
+
+```
+EXPERIMENT(Bf)→0 with Bf=(0,1,0) eliminates every hypothesis that evaluates to 1 on that vector, leaving 15 consistent hypotheses: H00, H01, H03, H04, H05, H06, H08, H10, H11, H13, H16, H22, H25, H26, H29.
+
+For the next probe I'll reuse the already-known vector Hs=(1,1,0) (no need to spend a probe). Evaluating the 15 survivors on (1,1,0) splits them 6-vs-9 (predict 1: H00,H05,H13,H16,H25,H26; predict 0: H01,H03,H04,H06,H08,H10,H11,H22,H29), a good discriminating split.
+
+```json
+
+```
+```json
+
+```
+PROBE(Ok) reveals its vector as (1,0,1), which doesn't touch the law directly but lets me now target EXPERIMENT(Ok) for a clean discriminating test. Evaluating my 6 surviving hypotheses on (1,0,1):
+
+- H00 (p0∧p1) = 1∧0 = 0
+- H05 (p0∧¬p2) = 1∧0 = 0
+- H13 (p0∨¬p1) = 1∨1 = 1
+- H16 (p0∨p2) = 1∨1 = 1
+- H25 (p0 XOR ¬p1) = 1 XOR 1 = 0
+- H26 (p0 XOR p2) = 1 XOR 1 = 0
+
+Split: 2 predict outcome=1 (H13,H16), 4 predict outcome=0 (H00,H05,H25,H26).
+
+```json
+
+```
+```json
+
+```
+On Nd = (0,1,1), evaluating the four survivors:
+- H00 (p0∧p1) = 0∧1 = 0
+- H05 (p0∧¬p2) = 0∧0 = 0
+- H25 (p0 XNOR p1) = 0==1? = 0
+- H26 (p0 XOR p2) = 0 XOR 1 = 1
+
+Split: 1 predicts outcome=1 (H26), 3 predict outcome=0 (H00,H05,H25). This is informative in both branches — if 1, we're basically done; if 0, the remaining two symbols (Xp,Vx, holding vectors (0,0,1) and (1,0,0)) fully separate H00/H05/H25 in subsequent steps.
+
+```json
+
+```
+```json
+
+```
+On Xp = (0,0,1), evaluating the three survivors:
+- H00 (p0∧p1) = 0∧0 = 0
+- H05 (p0∧¬p2) = 0∧0 = 0
+- H25 (p0 XNOR p1) = (0==0) = 1
+
+This cleanly isolates H25 from {H00,H05}. Since Xp's vector is already known from the free probe, I can go straight to EXPERIMENT(Xp) without spending an extra probe.
+
+```json
+
+```
+Two hypotheses remain: H00 (p0∧p1) and H05 (p0∧¬p2), both eliminated on Xp check as expected (H25 dropped).
+
+All 5 other symbols' vectors are now known (Bf=(0,1,0), Hs=(1,1,0), Ok=(1,0,1), Nd=(0,1,1), Xp=(0,0,1)), so by elimination from the declared vector list, Vx must hold the only remaining vector: (1,0,0). No probe needed.
+
+Evaluating on Vx=(1,0,0): H00 = 1∧0 = 0; H05 = 1∧1 = 1. Clean discriminator.
+
+```json
+
+```
+All six experiments are consistent with exactly one hypothesis. Checking H00 (p0∧p1) against every result:
+
+- Bf(0,1,0): 0∧1=0 ✓ (got 0)
+- Hs(1,1,0): 1∧1=1 ✓ (got 1)
+- Ok(1,0,1): 1∧0=0 ✓ (got 0)
+- Nd(0,1,1): 0∧1=0 ✓ (got 0)
+- Xp(0,0,1): 0∧0=0 ✓ (got 0)
+- Vx(1,0,0): 1∧0=0 ✓ (got 0)
+
+H05 is eliminated by the last result (predicted 1, got 0). H00 is the unique surviving hypothesis, fully consistent with all six independent experiments.
+
+```json
+
+```
+H00 (p0 AND p1) was uniquely consistent with all six experiments, so I'll apply it directly — outcome depends only on p0,p1 (p2 irrelevant).
+
+- Rc(1,0,1): 1∧0=0
+- Zn(0,1,0): 0∧1=0
+- Ly(1,1,0): 1∧1=1
+- Ea(1,0,0): 1∧0=0
+- Tg(0,0,1): 0∧0=0
+- Um(0,1,1): 0∧1=0
+- Wt(1,1,1): 1∧1=1
+- Qz(0,0,0): 0∧0=0
+
+```json
+
+```

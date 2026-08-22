@@ -1,0 +1,1 @@
+Wt's vector is now known ([1,1,0]), and among the 6 surviving hypotheses this vector gives the best available split (4 vs 2) — better than any unprobed vector would (best is also 4-2, but costs an extra probe). So I'll experiment on Wt directly rather than spend a probe first.
