@@ -90,7 +90,7 @@ class LLMAgentB1:
     GEN_PARAMS = {"temperature": "provider_default", "top_p": "provider_default",
                   "max_tokens_main": 1400, "max_tokens_blind": 1500}
 
-    def __init__(self, seed=0, client=None, model=MODEL_B1, endpoint=None):
+    def __init__(self, seed=0, client=None, model=MODEL_B1, endpoint=None, budget=15):
         if client is None:
             import anthropic
             client = anthropic.Anthropic()
@@ -103,7 +103,7 @@ class LLMAgentB1:
         self.stop_reasons = []
         self.truncated = 0
         self.free_total = 2
-        self.budget = 15
+        self.budget = budget
         self.started_ts = time.time()
 
     def execution_identity(self):

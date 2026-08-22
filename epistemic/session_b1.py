@@ -175,7 +175,7 @@ class VerifierB1:
 
 
 class SessionB1:
-    def __init__(self, world, agent, log_path, side_path):
+    def __init__(self, world, agent, log_path, side_path, budget=None):
         self.world, self.agent = world, agent
         self.catalog_ids = set(world.catalog)
         meta = {"schema_version": SCHEMA_VERSION_B1,
@@ -184,11 +184,15 @@ class SessionB1:
                 "blind_schema_hash": blind_schema_hash(),
                 "grammar_version": GRAMMAR_VERSION_B1, "grammar_hash": grammar_hash_b1(),
                 "declared": world.phase_zero_packet()["declared_primitives"],
+                "declared_budget": (PROTOCOL_SPEC_B1["intervention_budget"]
+                                    if budget is None else budget),
                 "hidden_note": "true law, true symbol->vector assignment, blind truth sealed oracle-side"}
         self.arch = Archivist(log_path, meta)
         self.verifier = VerifierB1(world)
         self.side = open(side_path, "a", encoding="utf-8")
-        self.budget = PROTOCOL_SPEC_B1["intervention_budget"]
+        # A-008: الميزانية قابلة للضبط لكل حلقة (stratification)؛ الافتراضي هو المجمّد
+        self.budget = PROTOCOL_SPEC_B1["intervention_budget"] if budget is None else budget
+        self.declared_budget = self.budget
         self.N_free = self.N_probe = self.N_experiment = self.N_refused = 0
         self.ev = Evidence(world.n_syms, world.n_syms)     # حالة الأدلة المرجعية (oracle-side)
         self.sym_index = {s: k for k, s in enumerate(world.train_symbols)}
