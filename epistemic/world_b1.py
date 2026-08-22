@@ -331,6 +331,85 @@ def d_floor_pair_b1(hyps, n_syms, true_vectors_idx, true_id, emask, ctx, blind_v
     return task, strict, task_set
 
 
+def attainable_within(hyps, n_syms, emask, ctx, ev0, blind_vectors, tau, budget):
+    """A-007: هل توجد سياسة **مقبولة** تبلغ معيار المهمة من هذه الحالة ضمن هذه الميزانية؟
+
+    نفس منطق d_robust_b1 لكن انطلاقًا من حالة أدلة قائمة وبميزانية متبقية. الضمان
+    counterfactual-correct: لا يُسمح للسياسة بمعرفة القانون الحقيقي — يجب أن تنجح ضد أي
+    عضو في الـ support لو كان هو الصحيح. هذا يجعل "هل كان بإمكانه الاستمرار؟" سؤالًا
+    أوراكليًا حتميًا لا حكمًا على نية الوكيل.
+
+    يرجع (attainable: bool, best_action_ig: أعلى IG_law متاح, n_informative_actions).
+    """
+    acts = all_actions(n_syms)
+    term_memo = {}
+
+    def terminal(support):
+        if not support:
+            return True
+        key = tuple(support)
+        if key in term_memo:
+            return term_memo[key]
+        members = [hyps[k] for k in support]
+        ok = True
+        for m in members:
+            agree = 0
+            for v in blind_vectors:
+                ones = sum(x.eval(v) for x in members)
+                pred = 1 if 2 * ones >= len(members) else 0
+                agree += (pred == m.eval(v))
+            if agree / len(blind_vectors) < tau:
+                ok = False
+                break
+        term_memo[key] = ok
+        return ok
+
+    fail_upto, ok_from = {}, {}
+
+    def solvable(ev, support, b):
+        if terminal(support):
+            return True
+        if b == 0:
+            return False
+        ek = ev.key()
+        f = fail_upto.get(ek)
+        if f is not None and b <= f:
+            return False
+        o = ok_from.get(ek)
+        if o is not None and b >= o:
+            return True
+        for a in acts:
+            branches, useful, changed = [], False, False
+            for out in action_outcomes(ev, a):
+                e2 = apply_action(ev, a, out)
+                if e2.key() != ev.key():
+                    changed = True
+                s2 = support_of(hyps, e2, emask, ctx)
+                if not s2:
+                    continue
+                if len(s2) != len(support):
+                    useful = True
+                branches.append((e2, s2))
+            if not (useful or changed):
+                continue
+            if all(solvable(e2, s2, b - 1) for e2, s2 in branches):
+                if o is None or b < o:
+                    ok_from[ek] = b
+                return True
+        if f is None or b > f:
+            fail_upto[ek] = b
+        return False
+
+    sup0 = support_of(hyps, ev0, emask, ctx)
+    best_ig, n_inf = 0.0, 0
+    for a in acts:
+        _, igh = information_gain(hyps, ev0, emask, ctx, a)
+        if igh > 1e-9:
+            n_inf += 1
+            best_ig = max(best_ig, igh)
+    return solvable(ev0, sup0, max(budget, 0)), round(best_ig, 4), n_inf
+
+
 def d_robust_b1(hyps, n_syms, emask, ctx, blind_vectors, tau, cap=8, start=0):
     """تكلفة السياسة المثلى التي لا تعرف القانون مسبقًا وتضمن المعيار في أسوأ حالة.
 

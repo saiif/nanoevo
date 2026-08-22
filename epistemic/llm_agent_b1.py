@@ -39,7 +39,13 @@ CONTRACT (non-negotiable):
   FREE_OBS:    {"type":"FREE_OBS","action":"PROBE(Xy)"}     (free-observation phase only)
   COMMITMENT:  {"type":"COMMITMENT","hypotheses":{"H03":0.5,"H11":0.5},"action":"EXPERIMENT(Xy)","predictions":{"outcome=1":0.5},"update_kind":"REWEIGHT"}
   SUFFICIENCY: {"type":"SUFFICIENCY","final_hypothesis":"H07","confidence":0.95}
-  INCOMPLETE:  {"type":"INCOMPLETE","remaining_hypotheses":["H03","H11"],"reason":"..."}
+  INCOMPLETE:  {"type":"INCOMPLETE","remaining_hypotheses":["H03","H11"],"reason":"...","claim":"insufficient_evidence_now"}
+               claim MUST be exactly one of:
+                 "insufficient_evidence_now"    - the evidence so far does not determine the law
+                 "no_decisive_action_remains"   - no remaining action within budget could resolve it
+               Both claims are CHECKED against the world. Claiming that no decisive action remains
+               while one does is a distinct, recorded error: your belief about the world may be
+               right while your belief about your own remaining options is wrong.
   INADEQUACY:  {"type":"INADEQUACY","reason":"...","requested_family":"..."}   (consumes one attempt)
 - update_kind: INITIAL | REWEIGHT | REVISE | EXPAND.
 - Before every formal action you MUST commit your current hypothesis distribution and your

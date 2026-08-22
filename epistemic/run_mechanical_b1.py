@@ -20,7 +20,9 @@ from world_b1 import (generate_accepted_world_b1, Evidence, exp_masks, Ctx,
                       support_of, all_actions, apply_action, grammar_hash_b1, ALL_VECTORS)
 from session_b1 import (SessionB1, PROTOCOL_SPEC_B1, PROTOCOL_VERSION_B1, validate_b1,
                         ACTION_RE_B1)
-from agents_b1 import (LearnerB1, NoProbeAgent, UnknownIdAgent, BadActionB1, NonUniformAgent)
+from agents_b1 import (LearnerB1, NoProbeAgent, UnknownIdAgent, BadActionB1,
+                       NonUniformAgent, ClaimExhaustionAgent,
+                       HonestPrematureAgent, ExhaustThenIncompleteAgent)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 PROV = os.path.join(HERE, "provenance")
@@ -273,6 +275,48 @@ def main():
     check("B1-Q11 every PROBE_RESULT traces to a sealed commitment receipt",
           all(any(x["hash"] == r["payload"]["receipt"] for x in recs)
               for r in recs if r["payload"]["kind"] == "PROBE_RESULT"))
+
+    # ---------- B1-Q12: A-007 — الحكم الثلاثي على إعلان النقص ----------
+    print("\n[B1-Q12] A-007: incompleteness is verified, not accepted as self-report")
+    _, s_ex, r_ex, _ = run_one(ClaimExhaustionAgent(9), 3001, "claim_exhaustion", world=w2)
+    v_ex = [x["payload"] for x in s_ex.arch.records("INCOMPLETENESS_VERIFIED")]
+    check("B1-Q12 false no-decisive-action-remains -> INCORRECT_ACTION_EXHAUSTION",
+          r_ex["outcome"] == "INCORRECT_ACTION_EXHAUSTION" and bool(v_ex)
+          and v_ex[0]["attainable_within_remaining_budget"],
+          str(r_ex["outcome"])
+          + (f" best_remaining_IG_law={v_ex[0]['best_remaining_IG_law']}" if v_ex else ""))
+
+    _, s_hp, r_hp, _ = run_one(HonestPrematureAgent(9), 3001, "honest_premature", world=w2)
+    check("B1-Q12 honest insufficient-evidence while resolvable -> ACTIONABLE_INCOMPLETENESS",
+          r_hp["outcome"] == "ACTIONABLE_INCOMPLETENESS", f"outcome={r_hp['outcome']}")
+
+    import session_b1 as _sb
+    _ob = _sb.PROTOCOL_SPEC_B1["intervention_budget"]
+    _sb.PROTOCOL_SPEC_B1["intervention_budget"] = 0
+    try:
+        _, s_ci, r_ci, _ = run_one(ExhaustThenIncompleteAgent(9), 3001, "correct_incomplete",
+                                   world=w2)
+    finally:
+        _sb.PROTOCOL_SPEC_B1["intervention_budget"] = _ob
+    check("B1-Q12 same claim under a genuinely exhausted budget is not an error outcome",
+          r_ci["outcome"] != "INCORRECT_ACTION_EXHAUSTION", f"outcome={r_ci['outcome']}")
+    check("B1-Q12 the verdicts are distinct outcomes",
+          len({r_ex["outcome"], r_hp["outcome"], r_ci["outcome"]}) >= 2,
+          f"{r_ex['outcome']} / {r_hp['outcome']} / {r_ci['outcome']}")
+
+    try:
+        validate_b1({"type": "INCOMPLETE", "remaining_hypotheses": ["H01"],
+                     "reason": "x", "claim": "i think i am done"}, ids)
+        bad_claim = False
+    except SchemaError:
+        bad_claim = True
+    try:
+        validate_b1({"type": "INCOMPLETE", "remaining_hypotheses": ["H01"], "reason": "x"}, ids)
+        miss_claim = False
+    except SchemaError:
+        miss_claim = True
+    check("B1-Q12 claim is a structured required field (Verifier never parses free text)",
+          bad_claim and miss_claim)
 
     print("\n" + "=" * 66)
     passed = sum(ok for _, ok in CHECKS)

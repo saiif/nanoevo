@@ -207,3 +207,56 @@ class NonUniformAgent(LearnerB1):
             dep["hypotheses"] = skew
             return dep, "deliberately skewed weights (belief defect, not representation)"
         return dep, th
+
+
+# ----------------------- A-007: بوتات الحالات الثلاث للـ INCOMPLETE -----------------------
+
+class ClaimExhaustionAgent(LearnerB1):
+    """يستكشف قليلًا ثم يدّعي "لا فعل حاسم متبقٍ" بينما الأفعال متاحة.
+
+    هذا هو نمط 4015/4018: اعتقاد صحيح عن العالم مع اعتقاد **خاطئ عن أفعاله المتبقية**.
+    المتوقع: INCORRECT_ACTION_EXHAUSTION.
+    """
+
+    def __init__(self, seed=0, after=4):
+        super().__init__(seed)
+        self.after = after
+        self.n = 0
+
+    def deposit(self):
+        self.n += 1
+        if self.n <= self.after:
+            return super().deposit()
+        _, _, _, sup = self._post()
+        return ({"type": "INCOMPLETE",
+                 "remaining_hypotheses": [self.ids[k] for k in sup][:8],
+                 "reason": "believes no further useful action exists",
+                 "claim": "no_decisive_action_remains"}, "false exhaustion claim")
+
+
+class HonestPrematureAgent(ClaimExhaustionAgent):
+    """نفس التوقيت لكن بادعاء صادق: "الأدلة لا تكفي الآن" (بلا ادعاء نفاد الأفعال).
+    المتوقع: ACTIONABLE_INCOMPLETENESS — توقف مبكر موصوف بصدق."""
+
+    def deposit(self):
+        dep, th = super().deposit()
+        if dep["type"] == "INCOMPLETE":
+            dep = dict(dep)
+            dep["claim"] = "insufficient_evidence_now"
+            dep["reason"] = "evidence does not determine the law yet"
+        return dep, th
+
+
+class ExhaustThenIncompleteAgent(LearnerB1):
+    """يستنفد الميزانية فعلًا ثم يعلن النقص — المتوقع: CORRECT_INCOMPLETENESS."""
+
+    def __init__(self, seed=0, declare_at=1):
+        super().__init__(seed)
+        self.declare_at = declare_at
+
+    def deposit(self):
+        _, _, _, sup = self._post()
+        return ({"type": "INCOMPLETE",
+                 "remaining_hypotheses": [self.ids[k] for k in sup][:8],
+                 "reason": "declared under an exhausted budget",
+                 "claim": "no_decisive_action_remains"}, "incomplete at exhausted budget")

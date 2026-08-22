@@ -13,11 +13,12 @@ import re
 from channel import Archivist, SchemaError, validate_blind, blind_schema_hash, protocol_hash
 from world import classify_region
 from world_b1 import (Evidence, all_actions, apply_action, posterior,
-                      information_gain, grammar_hash_b1, GRAMMAR_VERSION_B1)
+                      information_gain, attainable_within, grammar_hash_b1,
+                      GRAMMAR_VERSION_B1)
 from ig_state import information_gain_full     # IG_Σ تشخيصي (تحليل فقط، لا يمسّ العقد)
 
-PROTOCOL_VERSION_B1 = "1.0-b1-A005"
-SCHEMA_VERSION_B1 = "1.1-b1"
+PROTOCOL_VERSION_B1 = "1.1-b1-A007"
+SCHEMA_VERSION_B1 = "1.2-b1"
 
 COMMIT_SCHEMA_B1 = {
     "version": SCHEMA_VERSION_B1,
@@ -25,11 +26,12 @@ COMMIT_SCHEMA_B1 = {
         "FREE_OBS":    {"required": ["action"]},
         "COMMITMENT":  {"required": ["hypotheses", "action", "predictions", "update_kind"]},
         "SUFFICIENCY": {"required": ["final_hypothesis", "confidence"]},
-        "INCOMPLETE":  {"required": ["remaining_hypotheses", "reason"]},
+        "INCOMPLETE":  {"required": ["remaining_hypotheses", "reason", "claim"]},
         "INADEQUACY":  {"required": ["reason", "requested_family"]},
     },
     "update_kinds": ["INITIAL", "REWEIGHT", "REVISE", "EXPAND"],
     "hypothesis_identity": "semantic IDs from the declared catalog; unknown IDs rejected",
+    "incompleteness_claims": ["insufficient_evidence_now", "no_decisive_action_remains"],
     "actions": "PROBE(symbol) | EXPERIMENT(symbol)",
 }
 
@@ -41,6 +43,16 @@ PROTOCOL_SPEC_B1 = {
     "schema_retry_limit": 1,
     "tau_blind": 0.90,
     "accounting": "N_total = N_free + N_probe + N_experiment (never merged)",
+    "incompleteness_verdicts": {
+        "CORRECT_INCOMPLETENESS": "no admissible policy within the REMAINING budget attains the "
+            "task criterion -> Article 41 epistemic success; proceeds to the blind test",
+        "ACTIONABLE_INCOMPLETENESS": "the evidence is insufficient now, but a policy within the "
+            "remaining budget WOULD resolve it, and the agent claimed only insufficiency -> "
+            "premature stop, honestly described",
+        "INCORRECT_ACTION_EXHAUSTION": "the agent claimed no decisive action remains while one "
+            "does -> action-space misjudgment: correct belief about the WORLD, incorrect belief "
+            "about its own remaining affordances",
+    },
     "violations": {
         "bad_schema": "one neutral retry then AgentProtocolFailure",
         "unknown_hypothesis_id": "representation error -> schema reject (prevented by design)",
@@ -90,6 +102,9 @@ def validate_b1(deposit, catalog_ids):
         rem = deposit["remaining_hypotheses"]
         if not isinstance(rem, list) or any(h not in catalog_ids for h in rem):
             raise SchemaError("remaining_hypotheses must be catalog ids")
+        # A-007: أي ادعاء بالضبط؟ مهيكل لا نصي — الـ Verifier لا يفسّر نصًا أبدًا
+        if deposit["claim"] not in COMMIT_SCHEMA_B1["incompleteness_claims"]:
+            raise SchemaError("claim must be insufficient_evidence_now | no_decisive_action_remains")
     return True
 
 
@@ -111,6 +126,25 @@ class VerifierB1:
     def execute(self, action):
         kind, sym = self.parse(action)
         return (kind, self._w.probe(sym) if kind == "PROBE" else self._w.experiment(sym))
+
+    def incompleteness_verdict(self, claim, evidence, budget_remaining):
+        """A-007: يفصل ثلاثة أشياء كانت مدموجة تحت اسم واحد خاطئ:
+        'لا أعرف بعد' / 'لا أستطيع أن أعرف بالموارد المتبقية' / 'أظن خطأً أني لا أستطيع'."""
+        w = self._w
+        bl = [tuple(v) for v in w.blind_ID.values()]
+        attainable, best_ig, n_inf = attainable_within(
+            w.hypotheses, w.n_syms, w.emask, w.ctx, evidence, bl, w.tau, budget_remaining)
+        if not attainable:
+            verdict = "CORRECT_INCOMPLETENESS"
+        elif claim == "no_decisive_action_remains":
+            verdict = "INCORRECT_ACTION_EXHAUSTION"
+        else:
+            verdict = "ACTIONABLE_INCOMPLETENESS"
+        return {"verdict": verdict, "claim": claim,
+                "attainable_within_remaining_budget": attainable,
+                "budget_remaining": budget_remaining,
+                "best_remaining_IG_law": best_ig,
+                "n_informative_actions_remaining": n_inf}
 
     def blind_score(self, predictions):
         truth = self._w.blind_truth()
@@ -246,7 +280,13 @@ class SessionB1:
                 return self._blind()
             if t == "INCOMPLETE":
                 self.arch.seal("INCOMPLETE", {"deposit": dep})
-                return self._blind(declaration="INCOMPLETE")
+                # A-007: الادعاء يُفحص، لا يُقبل كحقيقة ذاتية (استعادة ضمان A-003 إلى B1)
+                v = self.verifier.incompleteness_verdict(dep["claim"], self.ev, self.budget)
+                self.arch.seal("INCOMPLETENESS_VERIFIED", v)
+                if v["verdict"] == "CORRECT_INCOMPLETENESS":
+                    return self._blind(declaration="CORRECT_INCOMPLETENESS")
+                return self._finish(v["verdict"], E=0.0, incompleteness=v,
+                                    N_total=self.N_free + self.N_probe + self.N_experiment)
             if t == "INADEQUACY":
                 self.arch.seal("INADEQUACY", {"deposit": dep})
                 self.budget -= 1

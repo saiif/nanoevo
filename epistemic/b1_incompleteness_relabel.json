@@ -1,0 +1,32 @@
+[
+ {
+  "seed": 4015,
+  "run": "pilot_b1_replication",
+  "original_label": "FALSE_CERTAINTY",
+  "analytic_relabel": "INCORRECT_ACTION_EXHAUSTION",
+  "posterior_correct": true,
+  "support_at_declaration": 4,
+  "P_truth_at_declaration": 0.25,
+  "budget_remaining": 7,
+  "attainable_within_remaining_budget": true,
+  "best_remaining_IG_law": 1.0,
+  "n_informative_actions_remaining": 4,
+  "claimed_exhaustion_text": true,
+  "reason_excerpt": "All 6 symbols have been experimented on; no symbols or free probes remain. Exact joint likelihood (accounting "
+ },
+ {
+  "seed": 4018,
+  "run": "pilot_b1_replication",
+  "original_label": "FALSE_CERTAINTY",
+  "analytic_relabel": "INCORRECT_ACTION_EXHAUSTION",
+  "posterior_correct": true,
+  "support_at_declaration": 4,
+  "P_truth_at_declaration": 0.25,
+  "budget_remaining": 8,
+  "attainable_within_remaining_budget": true,
+  "best_remaining_IG_law": 2.0,
+  "n_informative_actions_remaining": 4,
+  "claimed_exhaustion_text": true,
+  "reason_excerpt": "After EXPERIMENT results Zn=0,Jm=0,Kr=0,Ly=0,Tg=0, exactly four hypotheses survive (H03,H04,H07,H11), each pos"
+ }
+]
