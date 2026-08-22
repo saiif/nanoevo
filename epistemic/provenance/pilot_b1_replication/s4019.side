@@ -1,0 +1,75 @@
+This is a text-based protocol game — I respond with reasoning and a single JSON deposit each turn, not actual tool invocations.
+
+I'll use my first free observation to probe a symbol and start anchoring known vectors, since probes are free and cost nothing toward the 15-budget.
+
+```json
+
+```
+I'll continue the game reasoning directly — no file access needed here.
+
+I have one free observation left. I'll spend it probing another symbol to build up known vectors before committing formal experiments, since Hs already gives a maximally-informative split (15/15) for later use.
+
+```json
+
+```
+```json
+
+```
+That tool call was accidental noise from the system reminder — not relevant here. Back to the actual task: fixing the malformed deposit. The issue was that my probabilities summed to 0.999991, not exactly 1.0 (arithmetic slip). Correcting that now.
+
+```json
+
+```
+Continuing the epistemic agent protocol with the analysis already computed.
+
+```json
+
+```
+I don't need any tools for this — it's a pure reasoning/protocol game where I respond with JSON deposits as text. Committing to probe the next symbol.
+
+```json
+
+```
+That tool search was unnecessary noise — ignore it. Here's my deposit:
+
+```json
+
+```
+Ignoring the tool-availability system notice — it's unrelated to this reasoning game. Continuing the protocol.
+
+Let me work through the surviving hypotheses given Xp=[1,1,1]→law=0, Hs=[1,1,0]→law=1, Bf=[0,0,1]→law=1.
+
+Checking all 9 remaining hypotheses against these three data points, only four remain consistent: H19 (NOT p0 OR NOT p2), H23 (NOT p1 OR NOT p2), H26 (p0 XOR p2), H28 (p1 XOR p2) — each equally likely at 0.25.
+
+The three unassigned vectors [0,1,0], [1,0,1], [0,0,0] belong to Rc, Tg, Ea in unknown order. I need to probe one to learn its vector before an experiment can discriminate between the remaining hypotheses (vector [1,0,1] gives a clean 2-2 split between {H23,H28} vs {H19,H26}).
+
+```json
+
+```
+```json
+
+```
+Now that Tg's vector is known ([1,0,1]), I can compute how it splits the remaining hypotheses: H19 (¬p0∨¬p2) and H26 (p0 XOR p2) both predict 0 on Tg; H23 (¬p1∨¬p2) and H28 (p1 XOR p2) both predict 1. This is the discriminating experiment.
+
+```json
+
+```
+Ignoring the tool/skill notice — irrelevant to this task. Continuing the reasoning game.
+
+With Tg=[1,0,1]→law=1: H19 and H26 predicted 0 (eliminated), H23 and H28 predicted 1 (survive), now each at 0.5.
+
+Since 5 of 6 vectors are now assigned (Hs, Bf, Xp, Rc, Tg), the last vector [0,0,0] must belong to Ea by elimination — no probe needed. Checking Ea=[0,0,0]: H23 (¬p1∨¬p2) → 1; H28 (p1 XOR p2) → 0. This cleanly discriminates the two survivors, so I'll experiment directly on Ea without probing first.
+
+```json
+
+```
+Ignoring the tool-availability system reminder — it's irrelevant to this task, which is a pure reasoning/protocol exercise with no external tools needed.
+
+With Ea=[0,0,0] and outcome=1: H23 (¬p1∨¬p2) predicts 1 ✓; H28 (p1 XOR p2) predicts 0 ✗ — eliminated. Only H23 survives, consistent with all six observed data points (Hs=1, Bf=1, Xp=0, Tg=1, Ea=1). This is deductively certain given the closed hypothesis space.
+
+```json
+
+```
+```json
+
+```

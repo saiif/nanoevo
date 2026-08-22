@@ -1,0 +1,48 @@
+Probing Wt first to establish a known vector anchor.
+
+```json
+
+```
+```json
+
+```
+```json
+
+```
+```json
+
+```
+```json
+
+```
+```json
+
+```
+```json
+
+```
+```json
+
+```
+```json
+
+```
+That tool call was unnecessary — disregard it. Proceeding with the actual deposit.
+
+```json
+
+```
+Applying the confirmed law H25 = (p0 XOR NOT p1), which simplifies to "outcome = 1 iff p0 == p1" (independent of p2):
+
+- Ly [1,1,0]: p0=p1=1 → 1
+- Xp [0,1,0]: p0≠p1 → 0
+- Jm [1,0,1]: p0≠p1 → 0
+- Qz [1,1,1]: p0=p1=1 → 1
+- Nd [0,0,1]: p0=p1=0 → 1
+- Vx [0,1,1]: p0≠p1 → 0
+- Ok [0,0,0]: p0=p1=0 → 1
+- Um [1,0,0]: p0≠p1 → 0
+
+```json
+
+```

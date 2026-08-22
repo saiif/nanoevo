@@ -1,0 +1,82 @@
+I'll begin by using my free observations to learn the actual property vectors of two symbols — probes are free and give ground truth, which I'll need before experiments become interpretable.
+
+**Deposit:**
+
+```json
+
+```
+Vx has vector (0,0,0). I'll use my second free observation to learn another symbol's vector before moving to formal commitments — this gives me two known-vector anchors, which I can later use for maximally interpretable EXPERIMENT calls.
+
+**Deposit:**
+
+```json
+
+```
+Both probes are done. Vx=(0,0,0), Nd=(1,0,0) are known ground truth. Now I move to formal commitments. I'll start with a uniform prior across all 30 hypotheses (no evidence yet about the law) and run my first EXPERIMENT on Vx, since (0,0,0) splits the hypothesis catalog exactly 15/15 on predicted outcome — a maximally informative first probe of the law.
+
+**Deposit:**
+
+```json
+
+```
+Vx=(0,0,0) gave outcome=1, narrowing the 30 hypotheses to the 15 consistent with law(0,0,0)=1: H03, H07, H11, H13, H14, H15, H17, H18, H19, H21, H22, H23, H25, H27, H29.
+
+I'll now spend an experiment on Nd — its vector (1,0,0) is already known from the free probe, so this costs only one intervention and directly tests the law with no vector ambiguity. Among the 15 surviving hypotheses, (1,0,0) splits them 9 predict outcome=1 (H11,H13,H15,H17,H19,H21,H22,H23,H29) vs 6 predict outcome=0 (H03,H07,H14,H18,H25,H27).
+
+```json
+
+```
+```json
+
+```
+```json
+
+```
+Um=(0,1,0). Evaluating the 8 surviving hypotheses at this vector: H15,H17,H19,H21,H23 predict outcome=1; H13,H22,H29 predict outcome=0. The observed EXPERIMENT(Um)=1 confirms the former group and eliminates H13,H22,H29.
+
+Renormalized weights over {H15,H17,H19,H21,H23}: 0.15,0.15,0.10,0.15,0.10 → /0.65 = 0.2308,0.2308,0.1538,0.2308,0.1538.
+
+Remaining unknown vectors {(1,0,1),(0,1,1),(1,1,1)} are unassigned among Ly,Rc,Jm. I'll probe one of them next to pin down its vector before spending an experiment, since each of the three possible vectors gives a solid 3-2 split among the surviving hypotheses — probing first keeps the following experiment maximally interpretable.
+
+```json
+
+```
+Ly=(1,1,1). Evaluating the 5 surviving hypotheses at this vector:
+- H15 (NOT p0 OR NOT p1) = 0 OR 0 = 0
+- H17 (p0 OR NOT p2) = 1 OR 0 = 1
+- H19 (NOT p0 OR NOT p2) = 0 OR 0 = 0
+- H21 (p1 OR NOT p2) = 1 OR 0 = 1
+- H23 (NOT p1 OR NOT p2) = 0 OR 0 = 0
+
+This splits {H17,H21} (predict 1) vs {H15,H19,H23} (predict 0). Since Ly's vector is already known, an EXPERIMENT here is fully interpretable and cheap (no extra probe needed).
+
+```json
+
+```
+Ly=(1,1,1) with EXPERIMENT=1 splits the remaining 5 hypotheses: H17,H21 predict outcome=1 at this vector; H15,H19,H23 predict outcome=0. The observed outcome=1 eliminates the latter three, leaving H17 and H21 tied at 0.5 each.
+
+These two agree on every vector probed so far (0,0,0),(1,0,0),(0,1,0),(1,1,1) — they only diverge at the two remaining unassigned vectors (1,0,1) and (0,1,1), held by Rc and Jm in unknown order. Since EXPERIMENT on an unknown vector would be ambiguous (outcome=1 could mean either H17 with (1,0,1) or H21 with (0,1,1)), I need to PROBE first to fix the vector, which will then make an EXPERIMENT there fully decisive.
+
+```json
+
+```
+```json
+
+```
+H17 uniquely survives. Evaluating both remaining hypotheses at Rc=(0,1,1): H17 (p0 OR NOT p2) = 0 OR 0 = 0; H21 (p1 OR NOT p2) = 1 OR 0 = 1. The observed outcome=0 matches H17 exactly and eliminates H21.
+
+Cross-checking H17 against all five experiments collected:
+- Vx(0,0,0): 0 OR 1 = 1 ✓ (observed 1)
+- Nd(1,0,0): 1 OR 1 = 1 ✓ (observed 1)
+- Um(0,1,0): 0 OR 1 = 1 ✓ (observed 1)
+- Ly(1,1,1): 1 OR 0 = 1 ✓ (observed 1)
+- Rc(0,1,1): 0 OR 0 = 0 ✓ (observed 0)
+
+All five outcomes are perfectly consistent with H17 = (p0 OR NOT p2), and no other catalog hypothesis remains. This is a unique, fully corroborated fit.
+
+```json
+
+```
+```json
+
+```
