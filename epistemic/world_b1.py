@@ -418,6 +418,89 @@ def attainable_within(hyps, n_syms, emask, ctx, ev0, blind_vectors, tau, budget)
     return (d_remaining is not None), d_remaining, round(best_ig, 4), n_inf
 
 
+def optimistic_reach(hyps, n_syms, emask, ctx, ev0, blind_vectors, tau, cap=10):
+    """D_lower(belief_t): أقل عدد أفعال يبلغ المعيار على **أوفر الفروع حظًا**، مشتقًا من
+    حالة الاعتقاد وحدها — لا من W* ولا من القانون الحقيقي.
+
+    لماذا هذا ضروري: الحكم على الوكيل بأن العالم "غير قابل للحل" اعتمادًا على
+    D_floor^task(W*) يحاكمه على حقيقة لا يملك إليها سبيلًا — وهو نفس خطأ 4015/4018 لكن
+    معكوسًا. الكمية القابلة للاستنتاج من تاريخه هي: هل يوجد **أي** فرع متسق مع أدلتي
+    يبلغ المعيار خلال k فعلًا؟
+
+    بحث بالعرض (BFS) على حالات الأدلة: الفرع = (فعل، نتيجة ممكنة تحت الاعتقاد الحالي).
+    يرجع أقل k، أو None إذا تجاوز cap. دائمًا: D_lower ≤ D_robust(belief).
+    """
+    from collections import deque
+
+    def met(support):
+        if not support:
+            return True
+        members = [hyps[k] for k in support]
+        for m in members:
+            agree = 0
+            for v in blind_vectors:
+                ones = sum(x.eval(v) for x in members)
+                agree += ((1 if 2 * ones >= len(members) else 0) == m.eval(v))
+            if agree / len(blind_vectors) < tau:
+                return False
+        return True
+
+    start = support_of(hyps, ev0, emask, ctx)
+    if met(start):
+        return 0
+    seen = {ev0.key()}
+    q = deque([(ev0, 0)])
+    acts = all_actions(n_syms)
+    while q:
+        ev, d = q.popleft()
+        if d >= cap:
+            continue
+        for a in acts:
+            for out in action_outcomes(ev, a):
+                e2 = apply_action(ev, a, out)
+                k2 = e2.key()
+                if k2 in seen:
+                    continue
+                s2 = support_of(hyps, e2, emask, ctx)
+                if not s2:                       # فرع غير متسق مع الأدلة — غير قابل للبلوغ
+                    continue
+                if met(s2):
+                    return d + 1
+                seen.add(k2)
+                q.append((e2, d + 1))
+    return None
+
+
+def decision_state(hyps, n_syms, emask, ctx, ev, blind_vectors, tau, budget, cap=10):
+    """A-008: الحالة التحكمية الحقيقية عند نقطة قرار — **كلها من حالة الاعتقاد**.
+
+        MET                     المعيار متحقق الآن                       الصواب: STOP
+        GUARANTEED_REACHABLE    توجد سياسة تضمنه ضمن B                   الصواب: CONTINUE
+        POSSIBLE_UNGUARANTEED   يوجد فرع محظوظ يبلغه، بلا ضمان           لا يُسجَّل صوابًا/خطأً
+        UNREACHABLE             لا يبلغه حتى أوفر الفروع حظًا ضمن B      الصواب: INCOMPLETE
+
+    الغموض في المنطقة الوسطى ليس في العالم بل في **قاعدة القرار التي لم تُحدَّد بعد**،
+    فتُفرد بتحليل مستقل بدل أن تُحتسب خطأً على سلوك معقول.
+    """
+    sup = support_of(hyps, ev, emask, ctx)
+    guaranteed, d_rob, _, _ = attainable_within(hyps, n_syms, emask, ctx, ev,
+                                                blind_vectors, tau, budget)
+    d_low = optimistic_reach(hyps, n_syms, emask, ctx, ev, blind_vectors, tau, cap)
+    if d_low == 0:
+        state = "MET"
+    elif guaranteed:
+        state = "GUARANTEED_REACHABLE"
+    elif d_low is not None and d_low <= budget:
+        state = "POSSIBLE_UNGUARANTEED"
+    else:
+        state = "UNREACHABLE"
+    return {"state": state, "support_size": len(sup), "budget": budget,
+            "D_robust_belief": d_rob, "D_lower_belief": d_low,
+            "scored": state != "POSSIBLE_UNGUARANTEED",
+            "correct_decision": {"MET": "STOP", "GUARANTEED_REACHABLE": "CONTINUE",
+                                 "UNREACHABLE": "INCOMPLETE"}.get(state)}
+
+
 def d_robust_b1(hyps, n_syms, emask, ctx, blind_vectors, tau, cap=8, start=0):
     """تكلفة السياسة المثلى التي لا تعرف القانون مسبقًا وتضمن المعيار في أسوأ حالة.
 
