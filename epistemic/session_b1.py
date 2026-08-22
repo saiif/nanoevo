@@ -333,8 +333,7 @@ class SessionB1:
                 if v["verdict"] in ("CORRECT_INCOMPLETENESS", "UNGUARANTEED_INCOMPLETENESS"):
                     # لا ضمان في الحالتين ⇒ نفس المسار؛ والتمييز محفوظ في الـ verdict
                     return self._blind(declaration=v["verdict"])
-                return self._finish(v["verdict"], E=0.0, incompleteness=v,
-                                    N_total=self.N_free + self.N_probe + self.N_experiment)
+                return self._finish(v["verdict"], E=0.0, incompleteness=v)
             if t == "INADEQUACY":
                 self.arch.seal("INADEQUACY", {"deposit": dep})
                 self.budget -= 1
@@ -417,7 +416,7 @@ class SessionB1:
                                           "note": "below the task floor: leakage/accounting/oracle bug"})
         return self._finish("SOLVED" if success else "FALSE_CERTAINTY", E=E,
                             blind_ID=sc["score_ID"], conf_ID=sc["conf_ID"], success=success,
-                            N_total=N_total, region=region,
+                            region=region,
                             true_audit=1 if (success and region == "TRUE_AUDIT") else 0,
                             declaration=declaration)
 
@@ -427,13 +426,18 @@ class SessionB1:
 
     def _finish(self, outcome, **kw):
         w = self.world
+        # المصدر الوحيد للحقيقة: N_total يُحسب هنا لكل outcome بلا استثناء.
+        # كان يُمرَّر يدويًا من بعض المسارات فقط، فيغيب عن BUDGET_EXHAUSTED وغيره
+        # ويظهر N=None في التقارير — نقص إبلاغ لا نتيجة معرفية.
         res = {"outcome": outcome,
                "N_free": self.N_free, "N_probe": self.N_probe,
                "N_experiment": self.N_experiment, "N_refused": self.N_refused,
                "D_floor_task": w.D_floor_task, "D_floor_strict": w.D_floor_strict,
                "D_robust": w.D_robust,
                "n_blind_ID": len(w.blind_ID), "n_blind_X": len(w.blind_X),
-               "belief_metrics": self.metrics, **kw}
+               "belief_metrics": self.metrics, **kw,
+               # بعد **kw عمدًا: الـ invariant غير قابل للتجاوز من أي مسار
+               "N_total": self.N_free + self.N_probe + self.N_experiment}
         if hasattr(self.agent, "execution_identity"):
             self.arch.seal("EXEC_IDENTITY_END", {"identity": self.agent.execution_identity()})
         self.arch.seal("SESSION_END", {"result": res})

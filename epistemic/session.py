@@ -351,7 +351,9 @@ class Session:
                   "D_inst_full_identification": self.world.D_inst,
                   "D_greedy_ref": self.world.D_greedy_ref,
                   "n_blind_ID": len(self.world.blind_ID),
-                  "n_blind_X": len(self.world.blind_X), **kw}
+                  "n_blind_X": len(self.world.blind_X), **kw,
+                  # المصدر الوحيد للحقيقة، بعد **kw فلا يتجاوزه أي مسار (A-009 addendum)
+                  "N_total": self.N_interventions + self.free_used}
         self._seal_exec_end()
         self.arch.seal("SESSION_END", {"result": result})
         self._close()

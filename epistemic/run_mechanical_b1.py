@@ -333,6 +333,18 @@ def main():
     for _n, _ok, _d in contract_checks():
         check("ADV " + _n, _ok, _d)
 
+    # B1-Q14: N_total موجود ومتسق في **كل** outcome (كان يغيب عن BUDGET_EXHAUSTED)
+    _seen_outcomes, _bad = {}, []
+    for _res in (r_l, r_u, r_nu, r_b, r_np, r_ex, r_hp, r_ci):
+        _o = _res.get("outcome")
+        _seen_outcomes[_o] = _res.get("N_total")
+        if _res.get("N_total") is None:
+            _bad.append((_o, "missing"))
+        elif _res["N_total"] != _res["N_free"] + _res["N_probe"] + _res["N_experiment"]:
+            _bad.append((_o, "inconsistent"))
+    check("B1-Q14 N_total present and equal to free+probe+experiment for every outcome",
+          not _bad, "outcomes: " + str(_seen_outcomes) + (" BAD: " + str(_bad) if _bad else ""))
+
     print("\n" + "=" * 66)
     passed = sum(ok for _, ok in CHECKS)
     print(f"PILOT-B1 MECHANICAL VALIDATION: {passed}/{len(CHECKS)} checks passed")
