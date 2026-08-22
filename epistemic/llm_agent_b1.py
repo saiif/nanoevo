@@ -14,6 +14,8 @@ import json
 import re
 import time
 
+from channel import strict_loads, SchemaError
+
 MODEL_B1 = "claude-sonnet-5"
 
 CONTRACT_PROMPT_B1 = """You are an epistemic agent inside a hidden-law world, bound by a strict commitment contract.
@@ -71,8 +73,8 @@ def _extract(text, key):
     cands, spans = [], []
     for m in JSON_RE.finditer(text):
         try:
-            obj = json.loads(m.group(0))
-        except json.JSONDecodeError:
+            obj = strict_loads(m.group(0))     # يرفض المفاتيح المكررة و NaN
+        except (json.JSONDecodeError, SchemaError):
             continue
         if isinstance(obj, dict) and key in obj:
             cands.append(obj)
@@ -131,6 +133,7 @@ class LLMAgentB1:
                          + json.dumps(packet, ensure_ascii=False, indent=1)}]
 
     def _call(self, extra_user=None, max_tokens=1400):
+        self.last_raw = None          # لا يبقى خام الطلب السابق لو فشل هذا
         msgs = list(self.history)
         if extra_user:
             msgs.append({"role": "user", "content": extra_user})

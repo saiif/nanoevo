@@ -43,23 +43,23 @@ def analyze(seed):
             hi_joint += 1
         kind_c, sym = s["act"].split(":")
         (probed if kind_c == "P" else experimented).add(sym)
-    n_paid = len(steps)                   # كل الأفعال المسجَّلة (تشمل الحرّة)
+    n_actions = len(steps)   # يشمل الاستطلاعات الحرة — ليست 'مدفوعة'                   # كل الأفعال المسجَّلة (تشمل الحرّة)
     both = probed & experimented          # رمز جُهِّز بالكامل (بروب + تجربة)
     exp_only = experimented - probed      # قانونٌ استُخرج بتجربة على رمز لم يُبرَب (synergy)
     probe_only = probed - experimented    # بروب لم يُتبَع بتجربة = هدر صريح
     return {
         "seed": seed, "N": res.get("N_total"), "seq": seq,
-        "n_actions": n_paid, **counts,
+        "n_actions": n_actions, **counts,
         "fully_instrumented": len(both), "exp_only_symbols": len(exp_only),
         "probe_only_waste": len(probe_only),
         "cost_identity": 2 * len(both) + len(exp_only) + len(probe_only),
         "n_probed": len(probed), "n_experimented": len(experimented),
-        "synergy_frac": round(counts["synergy"] / n_paid, 3),
+        "synergy_frac": round(counts["synergy"] / n_actions, 3),
         "redund_n": counts["redund"],
         "coupling_harvested": round(coupling_pos, 2),
         "coupling_wasted": round(coupling_neg, 2),
-        "ig_per_action": round(ig_joint_sum / n_paid, 3),
-        "hi_joint_frac": round(hi_joint / n_paid, 3),
+        "ig_per_action": round(ig_joint_sum / n_actions, 3),
+        "hi_joint_frac": round(hi_joint / n_actions, 3),
     }
 
 

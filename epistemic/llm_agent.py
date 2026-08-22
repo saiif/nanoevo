@@ -18,6 +18,8 @@ import json
 import re
 import time
 
+from channel import strict_loads, SchemaError
+
 MODEL = "claude-sonnet-4-6"
 
 CONTRACT_PROMPT = """You are an epistemic agent inside a hidden-law world, bound by a strict commitment contract.
@@ -56,8 +58,8 @@ def _extract_deposit(text, key="type"):
     candidates, spans = [], []
     for m in JSON_RE.finditer(text):
         try:
-            obj = json.loads(m.group(0))
-        except json.JSONDecodeError:
+            obj = strict_loads(m.group(0))     # يرفض المفاتيح المكررة و NaN
+        except (json.JSONDecodeError, SchemaError):
             continue
         if isinstance(obj, dict) and key in obj:
             candidates.append(obj)

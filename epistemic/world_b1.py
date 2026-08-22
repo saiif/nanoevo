@@ -260,6 +260,15 @@ def information_gain(hyps, evidence, emask, ctx, action):
     ملاحظة مجمدة في الـ spec: قد يكون IG_law = 0 وprobe مع ذلك ضروري (يمهّد لتجربة
     مفيدة لاحقًا) — لذلك القياس على المشترك، وIG_law تشخيصي منفصل.
     """
+    # فعل معاد: تجربة على رمز نتيجته مسجَّلة سلفًا = إعادة رصد كمية محدَّدة ⇒ صفر معلومة.
+    # apply_action يكتب فوق exp[x] فيولّد فرعًا مضادًّا للواقع وهميًّا يكسر Σ p_out = 1،
+    # فتُسعَّر المعلومة خطأً. تُصفَّر هنا حتى تبقى **دلالة واحدة للـ IG** في المشروع كله
+    # (كانت information_gain و information_gain_full تختلفان على هذه الحالة بالضبط).
+    kind, x, _ = action
+    if kind == "EXPERIMENT" and evidence.exp[x] is not None:
+        return 0.0, 0.0
+    if kind == "PROBE" and _POPCOUNT_SMALL(evidence.pmask[x]) == 1:
+        return 0.0, 0.0          # المتجه معروف بالكامل — إعادة الاستكشاف لا تضيف شيئًا
     P0, Z0, H0, _ = posterior(hyps, evidence, emask, ctx)
     if Z0 == 0:
         return 0.0, 0.0
@@ -273,6 +282,10 @@ def information_gain(hyps, evidence, emask, ctx, action):
         exp_H += p_out * H2
         exp_H_law += p_out * _entropy(P2)
     return H0 - exp_H, H0_law - exp_H_law
+
+
+def _POPCOUNT_SMALL(m):
+    return bin(m).count("1")
 
 
 def _entropy(P):

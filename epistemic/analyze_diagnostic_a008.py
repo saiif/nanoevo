@@ -24,7 +24,7 @@ import re
 import sys
 from collections import Counter, defaultdict
 
-from world_b1 import (generate_accepted_world_b1, Evidence, apply_action, support_of,
+from world_b1 import (generate_accepted_world_b1, Evidence, apply_action,
                       decision_state)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -158,6 +158,42 @@ def main():
         ok = sum(1 for p in sp if p["agent_decision"] == SCORED[p["true_state"]])
         print(f"  stratum {stratum}: worlds={len(es)}  scored points={len(sp)}  "
               f"correct={ok}" + (f" ({ok/len(sp):.0%})" if sp else ""))
+
+    # ---- طبقة U: كل حلقة منفردة (n=4، فالمتوسط يخفي أكثر مما يظهر) ----
+    us = [e for e in episodes if e["stratum"] == "U"]
+    if us:
+        print()
+        print("=" * 100)
+        print("STRATUM U — every episode individually (the metric that matters most here)")
+        print("=" * 100)
+        for e in us:
+            r = by_seed.get(e["seed"], {}).get("result", {})
+            print()
+            print(f"seed {e['seed']}  B={e['budget']}  outcome={r.get('outcome')}  "
+                  f"N={r.get('N_total')}  blindID={r.get('blind_ID')}")
+            for p in e["points"]:
+                flag = ""
+                if p["true_state"] in SCORED:
+                    flag = "  OK" if p["agent_decision"] == SCORED[p["true_state"]] else "  <-- WRONG"
+                print(f"    step {p['step']}: state={p['true_state']:<22} "
+                      f"decision={p['agent_decision']:<11} B_left={p['budget_left']} "
+                      f"D_lower={p['D_lower']} |sup|={p['support']}{flag}")
+        pat = Counter()
+        for e in us:
+            r = by_seed.get(e["seed"], {}).get("result", {})
+            last = e["points"][-1]["agent_decision"] if e["points"] else "?"
+            if last == "INCOMPLETE":
+                pat["declared INCOMPLETE (epistemic control)"] += 1
+            elif r.get("outcome") == "BUDGET_EXHAUSTED":
+                pat["ran to budget exhaustion (future-knowability failure)"] += 1
+            elif last == "STOP":
+                pat["declared SUFFICIENCY (belief/stopping problem, not actionability)"] += 1
+            else:
+                pat[f"other: {r.get('outcome')}"] += 1
+        print()
+        print("U-stratum patterns (the three are diagnostically distinct):")
+        for k, v in pat.items():
+            print(f"    {v}/{len(us)}  {k}")
 
     out = os.path.join(HERE, "diagnostic_a008_decisions.json")
     json.dump({"episodes": episodes, "excluded": [e["seed"] for e in excluded]},

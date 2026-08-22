@@ -82,11 +82,24 @@ def main():
     print("\n" + "-"*100)
     print("F1 CAPABILITY (p=0.85) — pred: success >= 8/10, median blindID = 1.0, success NOT primary axis")
     print(f"   success rate = {n_solved}/10 ; median blindID = {median_blind}")
-    f1 = (n_solved >= 6) and (median_blind == 1.0)         # falsifies if <6/10 or capability dominates
-    f1_note = "HELD" if f1 else "FALSIFIED"
-    if n_solved < 8:
-        f1_note += " (but <8/10: a capability tail emerged that 4000-4009 lacked)"
-    print(f"   verdict: {f1_note}   [falsify iff success<6/10 or blindID variance > N variance as the main axis]")
+    # التصحيح: عتبة التنبؤ ليست حدّ الدحض. النسخة السابقة استعملت (n_solved >= 6) — وهو
+    # **حدّ الدحض** — بوصفه شرط HELD، فكان التنبؤ المعلن (>=8/10) يستطيع أن "ينجح" عند 6/10،
+    # ثم يدخل هذا الـ boolean في الـ Brier. الـ Brier يجب أن يُسجَّل على التنبؤ لا على حدّ الموت.
+    f1_predicted = (n_solved >= 8) and (median_blind == 1.0)      # التنبؤ المسجَّل حرفيًا
+    f1_falsified = (n_solved < 6)                                  # حدّ الدحض المسجَّل
+    f1 = f1_predicted                                              # ما يدخل الـ Brier
+    print(f"   prediction (>=8/10 and median 1.0): {'MET' if f1_predicted else 'NOT MET'}")
+    print(f"   death boundary (<6/10):             {'TRIGGERED' if f1_falsified else 'not triggered'}")
+    print("   NOTE: the sealed clause 'blind_ID variance explains more spread than N' was never")
+    print("   operationalized in the pre-registration (no estimator, no threshold). It is therefore")
+    print("   NOT computed here and NOT used to flip the verdict; operationalizing it now would be")
+    print("   a post-hoc definition and requires its own amendment.")
+    bl = [a["blindID"] for a in S if a.get("blindID") is not None]
+    ns = [a["N"] for a in S if a.get("N") is not None]
+    if len(bl) > 1 and len(ns) > 1:
+        import statistics as _st
+        print(f"   (descriptive only, not scored: var(blind_ID)={_st.pvariance(bl):.4f} "
+              f"var(N)={_st.pvariance(ns):.4f})")
 
     print("\nF2 EFFICIENCY (p=0.80) — pred: rho(F,N)>=0.7 ; fast higher E_only frac ; |IG/act gap|<0.15")
     print(f"   rho(F,N) = {rho_FN:.3f} ; E_only frac fast={eonly_fast:.3f} vs slow={eonly_slow:.3f} ; "
@@ -103,6 +116,7 @@ def main():
 
     # Brier علينا نحن (احتمال متوقّع مقابل نتيجة ثنائية held=1)
     preds = [("F1", 0.85, f1), ("F2", 0.80, bool(f2)), ("F3", 0.75, f3)]
+    # يُسجَّل على تحقّق **التنبؤات** لا على تجاوز حدود الدحض
     brier = sum((p - (1 if held else 0))**2 for _, p, held in preds)/len(preds)
     print("\n" + "-"*100)
     print("SELF-SCORING (Brier on R-001 probabilities; outcome=1 if held):")

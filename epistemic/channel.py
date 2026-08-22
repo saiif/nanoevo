@@ -9,13 +9,23 @@ A-003: الاختبار الأعمى له schema مستقل (BLIND_SCHEMA) بن�
 
 import hashlib
 import json
+import math
 import os
 import time
 
-SCHEMA_VERSION = "1.0"
+SCHEMA_VERSION = "1.1"
 
 COMMIT_SCHEMA = {
     "version": SCHEMA_VERSION,
+    # A-009: الصرامة جزء من معنى الـ schema، فيجب أن تنعكس في الـ hash.
+    # (شُدِّد الـ validator أولًا بينما بقي الـ hash ثابتًا — وذلك يخالف التجميد الثلاثي
+    #  الذي يقول إن تغيّر المعنى يوجب إصدارًا جديدًا حتى لو ظل شكل الـ JSON نفسه.)
+    "strictness": {
+        "probabilities": "each value must be a finite real in [0,1]; bool rejected; "
+                         "NaN/Infinity rejected value-by-value, not merely via the sum",
+        "json": "duplicate keys rejected at every level; NaN/Infinity literals rejected",
+        "fields": "exact: no field outside type+required is accepted",
+    },
     "types": {
         "FREE_OBS":     {"required": ["action"]},
         "COMMITMENT":   {"required": ["hypotheses", "action", "predictions", "update_kind"]},
@@ -36,7 +46,8 @@ BLIND_SCHEMA = {
 
 
 def _canon(obj):
-    return json.dumps(obj, sort_keys=True, separators=(",", ":"))
+    # allow_nan=False: NaN/Infinity ليست JSON قياسيًا ولا يجوز أن تدخل سجلًا مختومًا
+    return json.dumps(obj, sort_keys=True, separators=(",", ":"), allow_nan=False)
 
 
 def schema_hash():
@@ -55,6 +66,45 @@ class SchemaError(Exception):
     pass
 
 
+class DuplicateKeyError(SchemaError):
+    """مفتاح JSON مكرر — الانهيار الصامت إلى آخر قيمة غير مقبول في قناة الالتزام."""
+
+
+def _no_duplicates(pairs):
+    seen = set()
+    for k, _ in pairs:
+        if k in seen:
+            raise DuplicateKeyError(f"duplicate JSON key: {k}")
+        seen.add(k)
+    return dict(pairs)
+
+
+def strict_loads(text):
+    """json.loads صارم: يرفض المفاتيح المكررة و NaN/Infinity.
+
+    السبب: json.loads القياسي يُبقي **آخر** قيمة عند التكرار، فـ
+        {"H07": 0.2, "H07": 1.0}  ->  {"H07": 1.0}
+    يصير إيداعًا صالحًا تمامًا رغم أن النص المُودَع لم يكن توزيعًا واحدًا. حفظ الخام
+    يوثّق الواقعة لكنه لا يمنعها من قيادة الجلسة — فالمنع يجب أن يكون في الـ parser.
+    """
+    return json.loads(text, object_pairs_hook=_no_duplicates, parse_constant=_reject_constant)
+
+
+def _reject_constant(name):
+    raise SchemaError(f"non-finite JSON constant not allowed: {name}")
+
+
+def _finite_prob(x, where):
+    """قيمة احتمال مقبولة: عدد حقيقي منتهٍ في [0,1]، وليست bool."""
+    if isinstance(x, bool) or not isinstance(x, (int, float)):
+        raise SchemaError(f"{where}: probability must be a number")
+    if not math.isfinite(x):
+        raise SchemaError(f"{where}: probability must be finite (got {x})")
+    if not (0.0 <= x <= 1.0):
+        raise SchemaError(f"{where}: probability out of range [0,1] (got {x})")
+    return float(x)
+
+
 def validate(deposit):
     """يرفض أي إيداع خارج الصيغة. الاحتمالات يجب أن تجمع إلى 1.0 (المادة 36)."""
     if not isinstance(deposit, dict) or "type" not in deposit:
@@ -65,14 +115,20 @@ def validate(deposit):
     for field in COMMIT_SCHEMA["types"][t]["required"]:
         if field not in deposit:
             raise SchemaError(f"{t} missing field {field}")
+    # exact schema: لا حقول خارج المعلَن (العقد يدّعي بنية محددة، فليكن كذلك)
+    allowed = set(COMMIT_SCHEMA["types"][t]["required"]) | {"type"}
+    extra = set(deposit) - allowed
+    if extra:
+        raise SchemaError(f"unknown field(s) for {t}: {sorted(extra)}")
     if t == "COMMITMENT":
         probs = deposit["hypotheses"]
         if not isinstance(probs, dict) or not probs:
             raise SchemaError("hypotheses must be a non-empty object")
-        try:
-            total = sum(probs.values())
-        except TypeError:
-            raise SchemaError("hypothesis probabilities must be numbers")
+        # كل قيمة تُفحص منفردة: NaN/Inf/bool لا تُكتشف من المجموع وحده
+        # (abs(nan - 1.0) > 1e-6 تساوي False فيمر التوزيع الفاسد)
+        total = 0.0
+        for h, p in probs.items():
+            total += _finite_prob(p, f"hypothesis {h}")
         if abs(total - 1.0) > 1e-6:
             raise SchemaError("hypothesis probabilities must sum to 1.0")
         if deposit["update_kind"] not in COMMIT_SCHEMA["update_kinds"]:
@@ -81,8 +137,7 @@ def validate(deposit):
         if not isinstance(preds, dict):
             raise SchemaError("predictions must be an object")
         for h, p in preds.items():
-            if isinstance(p, bool) or not isinstance(p, (int, float)) or not (0.0 <= p <= 1.0):
-                raise SchemaError(f"prediction prob out of range for {h}")
+            _finite_prob(p, f"prediction {h}")
     if t == "INCOMPLETE" and not isinstance(deposit["remaining_hypotheses"], list):
         raise SchemaError("remaining_hypotheses must be a list")
     return True
@@ -97,12 +152,41 @@ def validate_blind(predictions, cases):
     for s, p in predictions.items():
         if not isinstance(p, dict):
             return f"{s}: entry must be an object"
+        extra = set(p) - {"pred", "conf"}
+        if extra:
+            return f"{s}: unknown field(s) {sorted(extra)}"
         pred, conf = p.get("pred"), p.get("conf")
         if isinstance(pred, bool) or pred not in (0, 1):
             return f"{s}: pred must be integer 0 or 1"
-        if isinstance(conf, bool) or not isinstance(conf, (int, float)) or not (0.0 <= conf <= 1.0):
-            return f"{s}: conf must be a number in [0,1]"
+        try:
+            _finite_prob(conf, f"{s} conf")
+        except SchemaError as e:
+            return str(e)
     return None
+
+
+try:                                    # قفل ملفات محمول
+    import fcntl
+
+    def _lock(f):
+        fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+
+    def _unlock(f):
+        fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+except ImportError:                     # Windows
+    import msvcrt
+
+    def _lock(f):
+        try:
+            msvcrt.locking(f.fileno(), msvcrt.LK_LOCK, 1)
+        except OSError:
+            pass
+
+    def _unlock(f):
+        try:
+            msvcrt.locking(f.fileno(), msvcrt.LK_UNLCK, 1)
+        except OSError:
+            pass
 
 
 class Archivist:

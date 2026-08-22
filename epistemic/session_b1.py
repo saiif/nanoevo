@@ -10,18 +10,24 @@
 
 import re
 
-from channel import Archivist, SchemaError, validate_blind, blind_schema_hash, protocol_hash
+from channel import (Archivist, SchemaError, validate_blind, blind_schema_hash,
+                     protocol_hash, _finite_prob)
 from world import classify_region
 from world_b1 import (Evidence, all_actions, apply_action, posterior,
-                      information_gain, attainable_within, grammar_hash_b1,
-                      GRAMMAR_VERSION_B1)
+                      information_gain, attainable_within, optimistic_reach,
+                      grammar_hash_b1, GRAMMAR_VERSION_B1)
 from ig_state import information_gain_full     # IG_Σ تشخيصي (تحليل فقط، لا يمسّ العقد)
 
 PROTOCOL_VERSION_B1 = "1.1-b1-A007"
-SCHEMA_VERSION_B1 = "1.2-b1"
+SCHEMA_VERSION_B1 = "1.3-b1"
 
 COMMIT_SCHEMA_B1 = {
     "version": SCHEMA_VERSION_B1,
+    "strictness": {
+        "probabilities": "finite real in [0,1]; bool rejected; NaN/Infinity rejected per value",
+        "json": "duplicate keys rejected at every level; non-finite literals rejected",
+        "fields": "exact: no field outside type+required is accepted",
+    },
     "types": {
         "FREE_OBS":    {"required": ["action"]},
         "COMMITMENT":  {"required": ["hypotheses", "action", "predictions", "update_kind"]},
@@ -52,6 +58,9 @@ PROTOCOL_SPEC_B1 = {
         "ACTIONABLE_INCOMPLETENESS": "the evidence is insufficient now, but a policy within the "
             "remaining budget WOULD resolve it, and the agent claimed only insufficiency -> "
             "premature stop, honestly described",
+        "UNGUARANTEED_INCOMPLETENESS": "A-009: D_lower <= B < D_robust — a lucky branch reaches "
+            "the criterion but no policy guarantees it. RECORDED, NOT SCORED, matching A-008; "
+            "the ambiguity is in a decision rule not yet fixed, not in the world",
         "INCORRECT_ACTION_EXHAUSTION": "the agent claimed no decisive action remains while one "
             "does -> action-space misjudgment: correct belief about the WORLD, incorrect belief "
             "about its own remaining affordances",
@@ -78,6 +87,10 @@ def validate_b1(deposit, catalog_ids):
     for f in COMMIT_SCHEMA_B1["types"][t]["required"]:
         if f not in deposit:
             raise SchemaError(f"{t} missing field {f}")
+    allowed = set(COMMIT_SCHEMA_B1["types"][t]["required"]) | {"type"}
+    extra = set(deposit) - allowed
+    if extra:
+        raise SchemaError(f"unknown field(s) for {t}: {sorted(extra)}")
     if t == "COMMITMENT":
         probs = deposit["hypotheses"]
         if not isinstance(probs, dict) or not probs:
@@ -85,10 +98,9 @@ def validate_b1(deposit, catalog_ids):
         for hid in probs:
             if hid not in catalog_ids:
                 raise SchemaError(f"unknown hypothesis id {hid}")
-        try:
-            total = sum(probs.values())
-        except TypeError:
-            raise SchemaError("hypothesis probabilities must be numbers")
+        total = 0.0
+        for hid, p in probs.items():
+            total += _finite_prob(p, f"hypothesis {hid}")
         if abs(total - 1.0) > 1e-6:
             raise SchemaError("hypothesis probabilities must sum to 1.0")
         if deposit["update_kind"] not in COMMIT_SCHEMA_B1["update_kinds"]:
@@ -97,8 +109,9 @@ def validate_b1(deposit, catalog_ids):
         if not isinstance(preds, dict):
             raise SchemaError("predictions must be an object")
         for k, p in preds.items():
-            if isinstance(p, bool) or not isinstance(p, (int, float)) or not (0.0 <= p <= 1.0):
-                raise SchemaError(f"prediction prob out of range for {k}")
+            _finite_prob(p, f"prediction {k}")
+    if t == "SUFFICIENCY":
+        _finite_prob(deposit["confidence"], "confidence")
     if t == "SUFFICIENCY" and deposit["final_hypothesis"] not in catalog_ids:
         raise SchemaError("final_hypothesis must be a catalog id")
     if t == "INCOMPLETE":
@@ -137,13 +150,23 @@ class VerifierB1:
         bl = [tuple(v) for v in w.blind_ID.values()]
         attainable, d_rem, best_ig, n_inf = attainable_within(
             w.hypotheses, w.n_syms, w.emask, w.ctx, evidence, bl, w.tau, budget_remaining)
-        if not attainable:
+        # A-009: يطابق تصنيف A-008. النسخة السابقة كانت تسأل عن الضمان وحده، فتسمّي
+        # النطاق الأوسط CORRECT_INCOMPLETENESS بينما A-008 لا يسجّله صوابًا ولا خطأً —
+        # فكان الـ provenance يقول شيئًا والـ endpoint العلمي يقول آخر.
+        d_low = optimistic_reach(w.hypotheses, w.n_syms, w.emask, w.ctx, evidence,
+                                 bl, w.tau, cap=12)
+        truly_unreachable = (d_low is None) or (d_low > budget_remaining)
+        if truly_unreachable:
             verdict = "CORRECT_INCOMPLETENESS"
+        elif not attainable:
+            verdict = "UNGUARANTEED_INCOMPLETENESS"      # النطاق الأوسط: يُسجَّل ولا يُحتسب
         elif claim == "no_decisive_action_remains":
             verdict = "INCORRECT_ACTION_EXHAUSTION"
         else:
             verdict = "ACTIONABLE_INCOMPLETENESS"
         return {"verdict": verdict, "claim": claim,
+                "scored": verdict != "UNGUARANTEED_INCOMPLETENESS",
+                "D_lower_belief": d_low,
                 "attainable_within_remaining_budget": attainable,
                 "budget_remaining": budget_remaining,
                 "D_remaining": d_rem,
@@ -307,8 +330,9 @@ class SessionB1:
                 # A-007: الادعاء يُفحص، لا يُقبل كحقيقة ذاتية (استعادة ضمان A-003 إلى B1)
                 v = self.verifier.incompleteness_verdict(dep["claim"], self.ev, self.budget)
                 self.arch.seal("INCOMPLETENESS_VERIFIED", v)
-                if v["verdict"] == "CORRECT_INCOMPLETENESS":
-                    return self._blind(declaration="CORRECT_INCOMPLETENESS")
+                if v["verdict"] in ("CORRECT_INCOMPLETENESS", "UNGUARANTEED_INCOMPLETENESS"):
+                    # لا ضمان في الحالتين ⇒ نفس المسار؛ والتمييز محفوظ في الـ verdict
+                    return self._blind(declaration=v["verdict"])
                 return self._finish(v["verdict"], E=0.0, incompleteness=v,
                                     N_total=self.N_free + self.N_probe + self.N_experiment)
             if t == "INADEQUACY":

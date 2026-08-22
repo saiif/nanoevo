@@ -328,6 +328,11 @@ def main():
           bool(sa) and "D_remaining" in sa[0] and "slack" in sa[0],
           str(sa[0]) if sa else "no record"),
 
+    # فحوص عدائية على العقد (A-009): كل واحدة كانت ثغرة حقيقية في مراجعة الكود
+    from adversarial_contract import contract_checks
+    for _n, _ok, _d in contract_checks():
+        check("ADV " + _n, _ok, _d)
+
     print("\n" + "=" * 66)
     passed = sum(ok for _, ok in CHECKS)
     print(f"PILOT-B1 MECHANICAL VALIDATION: {passed}/{len(CHECKS)} checks passed")

@@ -287,6 +287,11 @@ def main():
               f"{fmt(rc.get('E'))} {fmt(rc.get('blind_ID'))} {fmt(rc.get('blind_X'))}{ov}")
 
     # ---------- الحصيلة ----------
+    # فحوص عدائية على العقد (A-009): كل واحدة كانت ثغرة حقيقية في مراجعة الكود
+    from adversarial_contract import contract_checks
+    for _n, _ok, _d in contract_checks():
+        check("ADV " + _n, _ok, _d)
+
     print("\n" + "=" * 62)
     passed = sum(ok for _, ok in CHECKS)
     print(f"MECHANICAL VALIDATION: {passed}/{len(CHECKS)} checks passed")
