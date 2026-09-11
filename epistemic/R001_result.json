@@ -1,0 +1,20 @@
+{
+  "kind": "RESEARCHER_FORECAST_RESULT",
+  "forecast_id": "R-001",
+  "batch": "seeds 4010-4019 (base model claude-sonnet-5, frozen path via run_pilot_b1_replication.py; no change to Session/prompt/adapter semantics)",
+  "order_followed": "provenance gate -> F1/F2/F3 with pinned defs @2441332 -> Brier -> verdict; exploratory kept strictly after the verdict",
+  "provenance_gate": "PASS on all 10: hash chains valid, adapter_hash 6ef3655f8e50333a, protocol_hash 7b7734e4132ea64d + grammar_hash 08ba105fb5fa5d14 unchanged, no per-symbol leak, RAW_PROPOSAL present, no TRUE_AUDIT, batch did not halt.",
+  "results": {
+    "F1_capability": {"held": true, "success": "8/10 SOLVED", "median_blindID": 1.0, "prob": 0.85,
+      "caveat": "two FALSE_CERTAINTY (4015 blindID 0.375, 4018 blindID 0.875) — a capability tail absent in 4000-4009; met the >=8/10 bar exactly"},
+    "F2_efficiency": {"held": true, "strength": "strong", "spearman_F_N": 0.910,
+      "E_only_frac_fast": 0.187, "E_only_frac_slow": 0.091, "IG_per_action_gap": 0.044, "prob": 0.80},
+    "F3_mechanism": {"held": true, "R2_N_from_F": 0.876, "R2_N_from_IG_per_action": 0.075,
+      "sessions_opening_with_probe": "10/10", "prob": 0.75}
+  },
+  "self_score": {"mean_brier": 0.0417, "baseline_p0.5": 0.25, "note": "well-calibrated, mildly underconfident"},
+  "verdict": "SUPPORTED (F1, F2, F3 all held)",
+  "replication_meaning": "The cost identity N = 2F + E_only + P_only and, more importantly, the claim that F (fully-instrumented symbols) — not mean IG/action and not probe-before-experiment order — drives realized cost, replicated on fresh seeds. First genuine replication of the knowledge-acquisition-economy explanation.",
+  "exploratory_lead_post_verdict": "Both failures had P=0 paid probes (only the 2 free), F=2, high E_only: they leaned entirely on coupling and under-acquired state, then declared sufficiency wrongly. This is a counterexample to a naive 'probe less' target and directly motivates the preregistered-but-deferred AvoidableFullInstrumentation diagnostic: the target is avoiding UNNECESSARY decomposition, not minimizing probes. Recorded as exploratory, not part of the R-001 verdict.",
+  "anchor": {"forecast_head": "23b9064e51e8dd81", "pinned_defs_commit": "2441332", "reference_batch": "4000-4009 (exploratory, where the explanation was derived)"}
+}

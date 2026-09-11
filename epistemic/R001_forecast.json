@@ -1,0 +1,63 @@
+{
+  "kind": "RESEARCHER_FORECAST",
+  "forecast_id": "R-001",
+  "title": "Knowledge-acquisition economy forecast for B1-small replication",
+  "time_rule": "Sealed BEFORE sessions 4010+ were generated or run (A.1). No s4010+ logs exist at seal time; the git commit anchoring this ledger head is the external timestamp proving precommitment.",
+  "anchor": {
+    "git_commit": "244133287bbdc007437be3ce18690e9a153e697c",
+    "analysis_pipeline": ["audit_b1_small.py", "audit_b1_efficiency.py", "ig_state.py"],
+    "note": "predictions are pinned to THESE metric definitions at THIS commit; post-hoc redefinition of the categories is not permitted"
+  },
+  "batches": {
+    "reference_exploratory": "seeds 4000-4009 (already run, base model claude-sonnet-5). The explanation below was DERIVED here; per project discipline this batch does NOT count as confirmation of its own explanation.",
+    "target_replication": "seeds 4010+ (S_pilot extension, >=2000, base model, no training). A small genuine replication of the explanation, not a search for a new one.",
+    "confirmatory": "S_confirmatory stays SEALED and untouched."
+  },
+  "metric_definitions": {
+    "F_fully_instrumented": "count of distinct symbols that received BOTH a PROBE and an EXPERIMENT in the session (free-phase probes count as probes)",
+    "E_only": "count of symbols EXPERIMENTED but never PROBED (law resolved via H<->Sigma coupling)",
+    "P_only": "count of symbols PROBED but never EXPERIMENTED (state bought, never used)",
+    "N": "N_total = N_free + N_probe + N_experiment (never merged)",
+    "IG_per_action": "mean per-commitment IG_joint from the frozen oracle (information_gain_full)"
+  },
+  "non_falsifiable_identity": {
+    "statement": "N = 2*F + E_only + P_only  (holds exactly on all 10 reference sessions)",
+    "status": "ACCOUNTING IDENTITY given the category definitions, NOT an empirical claim. It is scaffolding, not a forecast. The falsifiable content is entirely in the three forecasts below."
+  },
+  "forecasts": [
+    {
+      "id": "F1_capability",
+      "claim": "Blind-ID success stays very high on 4010+; final capability is NOT the primary axis of between-session variance.",
+      "quantitative_prediction": "success rate (blind_ID = 1.0) >= 8/10 sessions; median blind_ID = 1.0",
+      "probability": 0.85,
+      "falsifies_if": "success rate < 6/10, OR blind_ID variance explains more between-session spread than N does (capability, not cost, turns out to be the main axis)"
+    },
+    {
+      "id": "F2_efficiency",
+      "claim": "Cost variance tracks how many symbols are fully instrumented; efficient paths exploit experiment-only (coupling) more.",
+      "quantitative_prediction": "Spearman rho(F, N) >= +0.7 across 4010+; below-median-N sessions have strictly higher mean E_only fraction than above-median; |mean IG_per_action(fast) - mean IG_per_action(slow)| < 0.15 bits",
+      "probability": 0.80,
+      "falsifies_if": "rho(F, N) < 0.3, OR fast sessions do NOT use more experiment-only, OR IG_per_action differs by >= 0.15 bits between cohorts (i.e. info-density IS the discriminator)"
+    },
+    {
+      "id": "F3_mechanism",
+      "claim": "Fast-vs-slow is better explained by avoidable decomposition of acquisition (F) than by mean IG/action or by a surface rule like probe-before-experiment.",
+      "quantitative_prediction": "variance in N explained by F exceeds that explained by mean IG_per_action (R2(N~F) > R2(N~IG/action)); probe-before-experiment is near-universal (>= 9/10 sessions open with probes) and therefore cannot explain the N-spread",
+      "probability": 0.75,
+      "falsifies_if": "IG_per_action explains N better than F does, OR probe-before-experiment ordering itself correlates with N"
+    }
+  ],
+  "meta_prediction_training_horizon": {
+    "claim": "Under future epistemic training, improvement lands on efficiency, not on success rate (ceiling effect: base model already ~10/10).",
+    "formal": "Delta_Efficiency (reduction in F and/or avoidable acquisition) > Delta_BlindID",
+    "status": "NOT tested by 4010+ (still base model). Recorded now as a separate longer-horizon precommitment.",
+    "target_statement": "Teach the agent not to know more, but to pay less for what it needs to know: avoid buying STATE information when the task-relevant uncertainty is resolvable through H<->Sigma coupling more cheaply."
+  },
+  "planned_diagnostic_preregistered_not_implemented": {
+    "name": "AvoidableFullInstrumentation / UnnecessaryDecompositionRate",
+    "definition": "For each symbol x that got PROBE then a later EXPERIMENT, take the evidence state E_minus immediately BEFORE the probe. Counterfactually substitute a single direct EXPERIMENT(x) from E_minus (dropping the probe). x is AVOIDABLE decomposition iff the terminal support/task-sufficiency the agent actually reached is still reachable with that substitution at strictly lower N. AvoidableF = count of such symbols; UnnecessaryDecompositionRate = AvoidableF / F.",
+    "purpose": "separate NECESSARY full instrumentation from AVOIDABLE. The sharper claim it will test: the fast/slow gap is driven by AvoidableF (unnecessary decomposition), not by necessary probing. This makes the training target specific and prevents rewarding a reckless probe-less agent.",
+    "why_deferred": "R-001 is sealed now and not delayed for it; the definition is fixed here so its later implementation is itself preregistered."
+  },
+  "scoring_plan": "After running 4010+ (base model): compute F, E_only, P_only, N, IG_per_action per session; report rho(F,N), cohort IG/action gap, success rate; grade F1/F2/F3 pass/fail against the falsification conditions; compute a self Brier/log score on the three probabilities. R-001 head hash is anchored in git before any 4010+ log exists."
+}

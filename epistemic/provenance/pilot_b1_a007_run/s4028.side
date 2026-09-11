@@ -1,0 +1,22 @@
+I'll use my second free observation on another symbol to establish a second known vector, which will let me interpret future EXPERIMENT results directly.
+Now that I know two vectors — Kr=[0,1,0] and Nd=[0,0,1] — I can compute, for every catalog hypothesis, what outcome it predicts on each. Running EXPERIMENT(Kr) first is maximally informative: across the 30 hypotheses, exactly 15 predict outcome=1 and 15 predict outcome=0 on vector (0,1,0), a perfect bisection.
+Continuing the analysis: with Kr and Nd both experimented (outcome=1 each), the surviving hypothesis set is {H14, H15, H18, H19, H20, H23, H28}, each at 1/7. To break this tie efficiently I want to know a third symbol's vector before spending an experiment — vector [1,0,0] among the remaining unassigned vectors gives the best split (3 true / 4 false) across these 7 hypotheses, so I'll probe a new symbol to find out what it has.
+All five experiments (Kr, Nd, Rc, Wt, Jm) returned outcome=1, and now that the vector assignment is fully pinned down (Jm must hold the only remaining unassigned vector [1,1,0], since Kr=[0,1,0], Nd=[0,0,1], Rc=[0,1,1], Wt=[1,0,1], Ea=[1,0,0] account for the other five), I can check H20 = (p1 OR p2) against every experimented symbol:
+
+- Kr [0,1,0]: p1=1 → 1 ✓
+- Nd [0,0,1]: p2=1 → 1 ✓
+- Rc [0,1,1]: p1=1 → 1 ✓
+- Wt [1,0,1]: p2=1 → 1 ✓
+- Jm [1,1,0]: p1=1 → 1 ✓
+
+H15 and H18, the other two survivors from the prior step, both predicted 0 on Jm and are falsified by the actual result of 1. H20 uniquely fits all five outcomes perfectly, so the law is determined.
+Applying H20 = (p1 OR p2) to each case:
+
+- Qz [0,1,0]: p1=1 → 1
+- Um [1,1,0]: p1=1 → 1
+- Xp [1,0,0]: p1=0, p2=0 → 0
+- Vx [0,0,1]: p2=1 → 1
+- Zn [0,0,0]: p1=0, p2=0 → 0
+- Tg [0,1,1]: p1=1 → 1
+- Ly [1,0,1]: p2=1 → 1
+- Hs [1,1,1]: p1=1 → 1

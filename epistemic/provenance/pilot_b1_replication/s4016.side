@@ -1,0 +1,104 @@
+Probing Tg first to anchor a known vector before committing to any formal hypothesis distribution.
+
+```json
+
+```
+Apologies for that stray tool call — this task just needs a reasoning + JSON deposit, no tools required.
+
+```json
+
+```
+That tool call was unnecessary — this is a reasoning/JSON deposit task, no tools needed.
+
+```json
+
+```
+Tg=(1,0,0) with EXPERIMENT(Tg)=1. Evaluating all 30 hypotheses against this vector eliminates any predicting 0, leaving 15 survivors: H01,H05,H11,H12,H13,H15,H16,H17,H19,H21,H22,H23,H24,H26,H29 (each now 1/15).
+
+Since Bf=(0,0,1) is already known, EXPERIMENT(Bf) is a pure law-test with no confound. Checking predictions of the 15 survivors on (0,0,1): 8 predict 0 (H01,H05,H11,H12,H17,H21,H24,H29), 7 predict 1 (H13,H15,H16,H19,H22,H23,H26) — a near-even, maximally informative split.
+
+```json
+
+```
+That tool call was unnecessary — this task just needs a reasoning + JSON deposit, no tools required.
+
+```json
+
+```
+Ea's experiment result (=1) is already banked, but its vector is still unknown — probing Ea now converts that outcome into a fully clean, vector-resolved data point at the cost of just one probe, which is more efficient than running a fresh confounded experiment on a new symbol. Current posterior over the 7 surviving hypotheses (after H13,H15,H16,H19,H22,H23,H26 update from EXPERIMENT(Ea)=1, marginalizing over Ea's possible remaining vectors {A=(1,1,0),B=(1,0,1),C=(0,1,1),D=(0,1,0)}):
+
+H13:2/18, H15:3/18, H16:3/18, H19:3/18, H22:2/18, H23:3/18, H26:2/18.
+
+```json
+
+```
+Ea's probe confirms vector [1,0,1] (p0=1,p1=0,p2=1). Testing this against the remaining 7 hypotheses from the last commitment against EXPERIMENT(Ea)=1:
+
+- H13: 1 OR NOT0 = 1 ✓
+- H15: NOT1 OR NOT0 = 1 ✓
+- H16: 1 OR 1 = 1 ✓
+- H19: NOT1 OR NOT1 = 0 ✗ eliminated
+- H22: NOT0 OR 1 = 1 ✓
+- H23: NOT0 OR NOT1 = 1 ✓
+- H26: 1 XOR 1 = 0 ✗ eliminated
+
+Survivors: H13, H15, H16, H22, H23 (uniform 0.2 each).
+
+Remaining vectors [1,1,0],[0,1,1],[0,1,0] are unassigned among Xp, Ly, Qz. Rather than run a confounded experiment on an unknown-vector symbol, I'll probe Xp next — this keeps the next experiment clean, matching the pattern that worked well for Tg/Bf/Ea. All three candidate vectors give decent splits of the 5 survivors (3-2 or 2-3), so whichever vector Xp turns out to hold, the following EXPERIMENT(Xp) will be maximally informative.
+
+```json
+
+```
+Xp's vector is now known: [1,1,0] (p0=1,p1=1,p2=0). Testing the 5 surviving hypotheses against this vector:
+
+- H13: p0 OR NOT p1 = 1 OR 0 = 1
+- H15: NOT p0 OR NOT p1 = 0 OR 0 = 0
+- H16: p0 OR p2 = 1 OR 0 = 1
+- H22: NOT p1 OR p2 = 0 OR 0 = 0
+- H23: NOT p1 OR NOT p2 = 0 OR 1 = 1
+
+That's a clean 3-2 split (H13,H16,H23 predict 1; H15,H22 predict 0). Since the vector is already resolved, EXPERIMENT(Xp) is now a pure, unconfounded law test — better than probing a fresh unknown symbol.
+
+```json
+
+```
+Xp's vector [1,1,0] with EXPERIMENT(Xp)=0 is decisive. Re-checking all four resolved data points (Tg=[1,0,0]→1, Bf=[0,0,1]→1, Ea=[1,0,1]→1, Xp=[1,1,0]→0) against the full catalog leaves exactly two survivors:
+
+- H15: NOT p0 OR NOT p1 — matches all four (1,1,1,0)
+- H22: NOT p1 OR p2 — matches all four (1,1,1,0)
+
+Every other hypothesis is eliminated by at least one data point. Posterior: H15=0.5, H22=0.5.
+
+The two remaining vectors [0,1,1] and [0,1,0] are split between Ly and Qz (unknown which). Checking which vector discriminates the two hypotheses:
+- [0,1,1]: H15→1, H22→1 (no discrimination)
+- [0,1,0]: H15→1, H22→0 (fully discriminating)
+
+So I need to know which symbol holds [0,1,0] before committing to an experiment there. Probing Ly first to resolve this — if Ly=[0,1,0] I can experiment on it directly next; if Ly=[0,1,1], Qz must hold the discriminating vector.
+
+```json
+
+```
+Ly's vector [0,1,0] fully discriminates the two remaining hypotheses: H15 (NOT p0 OR NOT p1) predicts 1 OR 0 = 1, while H22 (NOT p1 OR p2) predicts 0 OR 0 = 0. Since the vector is already known, EXPERIMENT(Ly) is a clean, unconfounded test that will fully resolve the law.
+
+```json
+
+```
+That tool call was a mistake — this task only needs a reasoning + JSON deposit.
+
+```json
+
+```
+Given my final law is H22 (NOT p1 OR p2) at 99% confidence, with H15 (NOT p0 OR NOT p1) as the residual 1% possibility, I checked each case against both hypotheses. They agree on 6 of 8 cases; they disagree on Jm and Rc, where confidence must drop to reflect the residual uncertainty.
+
+- Um [0,0,0]: H22=1, H15=1 → agree
+- Kr [1,1,0]: H22=0, H15=0 → agree
+- Wt [0,0,1]: H22=1, H15=1 → agree
+- Jm [1,1,1]: H22=1, H15=0 → disagree
+- Nd [1,0,1]: H22=1, H15=1 → agree
+- Zn [1,0,0]: H22=1, H15=1 → agree
+- Rc [0,1,0]: H22=0, H15=1 → disagree
+- Vx [0,1,1]: H22=1, H15=1 → agree
+
+```json
+
+```

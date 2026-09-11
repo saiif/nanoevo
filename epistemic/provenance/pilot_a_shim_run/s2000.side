@@ -1,0 +1,124 @@
+```json
+
+```
+```json
+
+```
+This is my third and final free observation. Let me pick the test that best discriminates among the surviving hypotheses.
+
+Given Kr=(1,0,0)→1 and Ea=(0,1,0)→1, I can enumerate all binary formulas (±p_i OP ±p_j) over pairs of {p0,p1,p2} consistent with both observations (collapsing logically-equivalent literal choices into distinct truth tables):
+
+- H1: p0 XOR p1
+- H2: p0 OR p1
+- H3: ¬p0 OR ¬p1 (NAND p0,p1)
+- H4: p0 OR ¬p2
+- H5: ¬p0 OR ¬p2
+- H6: p1 OR ¬p2
+- H7: ¬p1 OR ¬p2
+
+Checking predictions on the untested symbols (Xp, Hs, Ok, Zn), TEST(Ok) splits the 7 survivors most evenly (4 predict 0: H1,H2,H4,H6; 3 predict 1: H3,H5,H7), better than Xp/Hs/Zn which all split 5/2. Maximizing information gain on this last free look.
+
+```json
+
+```
+```json
+
+```
+```json
+
+```
+Cross-checking the full formula space (all pairs × signs × AND/OR/XOR) against all four observations: pairs involving only (p0,p1) are refuted outright since Kr=(1,0,0)→1 and Xp=(1,0,1)→0 share identical (p0,p1) values but differ in outcome. Pairs involving (p0,p2) are all refuted (Ok and Xp jointly eliminate every sign/op combination). Only one formula survives the full family: **p1 OR ¬p2**, verified consistent with all four sealed observations (Kr, Ea, Ok, Xp). No ambiguity remains — further testing would be unjustified per the contract.
+
+```json
+
+```
+Applying the sufficient hypothesis **p1 OR ¬p2** (verified against all 4 sealed observations, confidence 0.97) to each new symbol:
+
+- Vx [1,0,0]: p1=0,p2=0 → 0 OR ¬0=1 → **1**
+- Wt [1,1,1]: p1=1,p2=1 → 1 OR ¬1=1 → **1**
+- Qz [1,0,1]: p1=0,p2=1 → 0 OR ¬1=0 → **0**
+- Rc [1,1,0]: p1=1,p2=0 → 1 OR ¬0=1 → **1**
+- Nd [0,0,0]: p1=0,p2=0 → 0 OR ¬0=1 → **1**
+- Um [0,1,0]: p1=1,p2=0 → 1 OR ¬0=1 → **1**
+- Bf [0,0,1]: p1=0,p2=1 → 0 OR ¬1=0 → **0**
+- Ly [0,1,1]: p1=1,p2=1 → 1 OR ¬1=1 → **1**
+
+No hypothesis ambiguity remains (single surviving formula), so confidences reflect only residual uncertainty about whether this hypothesis is truly the law (matching my sealed 0.97 sufficiency confidence), not disagreement among competing hypotheses.
+
+```json
+
+```
+**Reasoning (free-observation phase, no commitment required yet):**
+
+The law is a formula over exactly 2 of the 3 properties, `(±p_i OP ±p_j)`, with OP ∈ {AND,OR,XOR}. To identify which pair of properties matters and their signs/operator as fast as possible, the most informative symbols are the "unit-vector" ones — those with exactly one property set to 1: **Kr** `[1,0,0]`, **Ea** `[0,1,0]`, **Ok** `[0,0,1]`. Together these three give me 3 of the 4 truth-table rows (missing only the "both 1" row) for *whichever* pair turns out to be the relevant one, since each isolates a single property while zeroing the others out. That's the best possible spend of my 3 free observations before I have to start committing.
+
+I'll start with `Kr`.
+
+```json
+
+```
+**Reasoning:** Still in the free-observation phase (used 1 of 3). Kr=[1,0,0]→1 tells us `f(p0=1,p1=0,p2=0)=1` for whichever pair is relevant, but doesn't yet distinguish the pair or operator. Continuing my planned sweep of unit vectors: next is `Ea` = [0,1,0], isolating p1 alone (p0=0,p2=0). Combined with Kr, this will start separating pair (0,1) hypotheses from pair (1,2) hypotheses.
+
+```json
+
+```
+**Reasoning:** This is my 3rd and final free observation. So far: Kr=[1,0,0]→1 and Ea=[0,1,0]→1. To complete my planned sweep of unit vectors and pin down the relevant pair/operator, I need Ok=[0,0,1], isolating p2 alone. After this I'll have f(1,0,0), f(0,1,0), f(0,0,1) all known, which lets me narrow down which two properties the law actually depends on (the property whose isolated test disagrees with the pattern of the other two is more likely irrelevant, though I'll need paired tests to fully pin the operator).
+
+```json
+
+```
+**Reasoning:** Free-observation phase complete (3/3 used: Kr=1, Ea=1, Ok=0). Now entering formal commitment phase.
+
+Analyzing which (pair, signs, operator) formulas over the 3 declared properties survive these three data points (Kr=[1,0,0]→1, Ea=[0,1,0]→1, Ok=[0,0,1]→0), treating each free-obs as isolating one property with the others at 0:
+
+- **Pair (p0,p1)**, ignoring p2: constraints f(1,0)=1, f(0,1)=1, f(0,0)=0 (from Ok, since p0=p1=0 there). Solutions: **(p0 OR p1)** and **(p0 XOR p1)**. AND is ruled out (no sign choice satisfies all three points).
+- **Pair (p0,p2)**, ignoring p1: constraints f(0,0)=1 (Ea), f(1,0)=1 (Kr), f(0,1)=0 (Ok). Only solution: **(p0 OR ¬p2)**.
+- **Pair (p1,p2)**, ignoring p0: same constraint shape as above. Only solution: **(p1 OR ¬p2)**.
+
+So exactly 4 hypotheses survive all free observations, each fitting perfectly (no partial matches to weight differently), so I'll treat them as equally likely: 0.25 each.
+
+For my next test I need to pick among the 3 untested symbols (Xp=[1,0,1], Hs=[1,1,0], Zn=[0,1,1]). Checking predictions:
+- **Hs**: H1(OR p0p1)=1, H2(XOR p0p1)=0, H3(p0 OR ¬p2)=1, H4(p1 OR ¬p2)=1 → isolates H2 cleanly.
+- Xp isolates H4; Zn isolates H3 — all three give a symmetric 1-vs-3 split, and the remaining two symbols suffice to fully resolve whichever 3-way tie remains afterward. I'll start with **Hs** to test the qualitatively distinct XOR hypothesis first.
+
+Predicted P(outcome=1) = P(H1)+P(H3)+P(H4) = 0.75; P(outcome=0) = P(H2) = 0.25.
+
+```json
+
+```
+```json
+
+```
+**Reasoning:** TEST(Hs)→1 refuted H2=(p0 XOR p1) (predicted 0), while H1=(p0 OR p1), H3=(p0 OR ¬p2), H4=(p1 OR ¬p2) all correctly predicted 1. Dropping H2 and renormalizing the remaining three equally-fitting hypotheses gives 1/3 each.
+
+Two symbols remain untested: Xp=[1,0,1], Zn=[0,1,1]. Checking predictions:
+- **Xp** (p0=1,p1=0,p2=1): H1=1, H3=1, H4=0 → splits off H4 alone.
+- **Zn** (p0=0,p1=1,p2=1): H1=1, H3=0, H4=1 → splits off H3 alone.
+
+Either choice cleanly separates one hypothesis from the other two, and the second remaining symbol would then resolve any leftover pair. I'll test **Xp** next.
+
+Predicted P(outcome=1) = P(H1)+P(H3) = 2/3; P(outcome=0) = P(H4) = 1/3.
+
+```json
+
+```
+```json
+
+```
+**Reasoning:** After TEST(Xp)→0, both H1=(p0 OR p1) and H3=(p0 OR ¬p2) are refuted (both predicted 1). Only **H4=(p1 OR ¬p2)** remains, and I've independently verified it's the *unique* survivor across the full 36-formula declared space (3 pairs × 4 sign combos × 3 operators), not just among my earlier shortlist:
+
+Checking all 5 sealed observations against H4=(p1 OR ¬p2):
+- Kr[1,0,0]: p1=0,¬p2=1 → 1 ✓
+- Ea[0,1,0]: p1=1 → 1 ✓
+- Ok[0,0,1]: p1=0,¬p2=0 → 0 ✓
+- Hs[1,1,0]: p1=1 → 1 ✓
+- Xp[1,0,1]: p1=0,¬p2=0 → 0 ✓
+
+All consistent, zero contradictions, and no other formula in the declared family fits all five points (verified by re-deriving each pair's constraint set from the raw observations rather than relying solely on incremental elimination). One untested symbol (Zn) remains, but since ambiguity is already resolved to a single hypothesis, further testing would violate the "don't keep testing after the law is determined" clause. Declaring sufficiency with high but non-unit confidence, reflecting the (small) residual risk of an enumeration slip rather than genuine remaining ambiguity.
+
+```json
+
+```
+```json
+
+```

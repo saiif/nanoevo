@@ -1,0 +1,30 @@
+{
+  "kind": "AMENDMENT",
+  "amendment_id": "A-006",
+  "title": "B1 interpretive clarifications + two-level raw-proposal provenance",
+  "confirmatory_seeds_opened": false,
+  "status": "sealed before B1-small replication (seeds 4010+); frozen so it cannot look like an explanation authored after the replication data",
+  "scope": "INTERPRETATION + PROVENANCE ONLY — no change to the hypothesis space, the success criterion, tau_ID, the law grammar, or the NUMERIC reference posterior. The frozen PILOT_B1_SPEC.md (spec_hash b720abb855b59b04) is NOT edited; its stale sections were already superseded by A-005 and this records further interpretation on top.",
+  "clarifications": {
+    "C1_posterior_is_normative_reference_not_ground_truth": "P*(h|E) is the NORMATIVE PREREGISTERED reference under the declared uniform-bijection prior P(h,sigma) proportional to 1. It is not 'the only rational belief' and not physical ground truth. A deviation (e.g. the Pilot-A 2006-type non-uniform weighting) is a DEVIATION FROM THE PREREGISTERED REFERENCE, not 'absolutely wrong belief'. An agent that declares a different prior before the session is judged as a different policy, not as an error. The frozen reference exists so measurements are comparable, not to deny alternative priors.",
+    "C2_permanent_tractability_limit": "The exact reference posterior counts consistent bijections = the permanent of a 0/1 matrix, which is #P-hard in general. Exact computation is tractable ONLY at the current small-world scale (n_train ~6). Scaling B1 requires approximation of the permanent or a differently-structured latent-assignment family. Recorded as a known limit; NOT solved now.",
+    "C3_ig_law_of_probe_operational_not_literal": "A-005's invariant 'IG_law(PROBE)=0' is OPERATIONALLY correct — probing ALONE never discriminates laws (verified by the probe-free adversarial bot that cannot reach the blind criterion). It is NOT literally true post-experiment: a PROBE on a symbol whose EXPERIMENT was already observed can have IG_law > 0, because it completes the H<->Sigma coupling. Empirically found in the B1-small audit (seed 4006, action P:Kr: IG_H=1.0 with negative interaction = redundancy). The PRESERVED invariant is the operational one; the literal marginal statement is hereby corrected."
+  },
+  "provenance_change_decision_3": {
+    "statement": "Two-level provenance RawProposal -> ValidatedCommitment. The model's raw output is sealed BEFORE any parse/validation and NEVER enters the official computation; only the validated semantic commitment moves the Session.",
+    "new_record_kinds": ["RAW_PROPOSAL (deposit path, sealed each attempt before validate_b1)", "RAW_BLIND (blind path, sealed before validate_blind)"],
+    "enables": "offline DuplicationRate, UnknownIDRate, malformed-structure rate, canonicalization distance, and repair/retry behaviour — measurable without letting any of these alter the official posterior. Rationale: json.loads silently collapses duplicate keys, so duplication is recoverable ONLY from the raw text.",
+    "reason_sealed_before_4010plus": "raw preservation changes only observability, not the world/oracle/success criterion; sealing it before the replication avoids a provenance asymmetry within the 4010+ batch."
+  },
+  "version_hashes": {
+    "protocol_hash": "7b7734e4132ea64d (UNCHANGED — PROTOCOL_SPEC_B1 not touched)",
+    "grammar_hash": "08ba105fb5fa5d14 (UNCHANGED)",
+    "system_prompt_hash": "6bc83940c249f37a (UNCHANGED — model behaviour identical)",
+    "adapter_hash_old": "58a6b44ad12f062f",
+    "adapter_hash_new": "6ef3655f8e50333a",
+    "adapter_change": "additive and behaviourally inert: llm_agent_b1._call now retains self.last_raw = model text for sealing; extraction, prompt, and deposit formation are byte-identical"
+  },
+  "mechanical_validation": "run_mechanical_b1 23/23 (bots emit no raw); check_raw_proposal 6/6; check_ig_state 4/4",
+  "retroactivity": "NONE. Seeds 4000-4009 logs, their recorded adapter_hash 58a6b44ad12f062f, and all prior provenance stay exactly as recorded. A-006 applies to seeds 4010+ onward.",
+  "anchor": {"git_commit": "342190a", "related": ["R-001 forecast sealed at forecasts.jsonl head 23b9064e51e8dd81", "analysis pipeline at commit 2441332"]}
+}

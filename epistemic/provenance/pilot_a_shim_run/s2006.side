@@ -1,0 +1,13 @@
+Apologies — that tool call was irrelevant to this task. Here is the actual deposit:
+Using the sole surviving law (p0 OR ¬p2), verified against all 5 sealed observations without exception:
+
+- Rc[0,0,0]: p0=0,¬p2=1 → 1
+- Ea[0,1,1]: p0=0,¬p2=0 → 0
+- Qz[1,1,1]: p0=1 → 1
+- Zn[1,0,0]: p0=1 → 1
+- Wt[0,0,1]: p0=0,¬p2=0 → 0
+- Bf[0,1,0]: p0=0,¬p2=1 → 1
+- Tg[1,0,1]: p0=1 → 1
+- Xp[1,1,0]: p0=1 → 1
+
+No hypothesis ambiguity remains (single surviving law), so confidences reflect only the residual 0.05 uncertainty from the SUFFICIENCY declaration, not disagreement.

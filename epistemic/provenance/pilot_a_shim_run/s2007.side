@@ -1,0 +1,62 @@
+That tool search wasn't needed for this task — proceeding with the deposit.
+
+```json
+
+```
+Third free observation — I'll pick the all-zero baseline symbol Wt to test, since it cleanly splits my 8 remaining candidate laws into two even groups of 4 (conjunctive/OR-type formulas predict 0, implication/XNOR-type formulas predict 1).
+
+```json
+
+```
+Free-observation phase is over (3 obs used: Ea→1, Vx→0, Wt→1). Time to move to formal commitments.
+
+**Analysis of the 3×3 pairs (formula = literal_i OP literal_j, OP∈{AND,OR,XOR}):**
+
+- Pair (p1,p2): Wt=(p1=0,p2=0)→1 and Vx=(p1=0,p2=0)→0 — identical inputs, different outputs. No formula over {p1,p2} can explain this. **Eliminated entirely.**
+- Pair (p0,p1) and pair (p0,p2) are structurally identical (p1 and p2 have the same values across Ea/Wt/Vx). Checking all sign/OP combos against the 3 observations, only two truth-table-distinct survivors per pair (AND-type formulas all fail):
+  - **H1:** (¬p0) XOR p1
+  - **H2:** (¬p0) OR p1
+  - **H3:** (¬p0) XOR p2
+  - **H4:** (¬p0) OR p2
+
+All four remain consistent with all three observations, and I have no basis yet to favor one — uniform prior.
+
+Predictions on remaining symbols (Kr=[0,1,1], Tg=[0,1,0], Um=[1,0,1]):
+
+| | Kr | Tg | Um |
+|---|---|---|---|
+|H1|0|0|0|
+|H2|1|1|0|
+|H3|0|1|1|
+|H4|1|1|1|
+
+TEST(Kr) splits evenly {H1,H3}=0 vs {H2,H4}=1, and critically, whichever way Kr resolves, a follow-up TEST(Um) will fully separate the remaining pair (0 vs 1 in both cases). This is the most efficient path to full determination.
+
+```json
+
+```
+Kr=0 eliminated the OR-type hypotheses. The two survivors, H1:(¬p0 XOR p1) and H3:(¬p0 XOR p2), remain tied since they agree on all three symbols observed so far. Um=[1,0,1] is the perfect discriminator: H1 predicts NOT(1) XOR 0 = 0, H3 predicts NOT(1) XOR 1 = 1 — a clean split.
+
+```json
+
+```
+All five observations (Ea, Vx, Wt, Kr, Um) are consistent with exactly one hypothesis, H3:(¬p0 XOR p2), and it uniquely fits — no other formula in the family survives. Sufficient evidence to conclude.
+
+```json
+
+```
+All 5 sealed observations uniquely determined H3: (¬p0) XOR p2, with no surviving alternative — so predictions are deterministic under that law, not a mixture.
+
+Computing (¬p0) XOR p2 for each:
+- Ly [0,0,1]: ¬0=1, 1 XOR 1 = 0
+- Jm [1,0,1]: ¬1=0, 0 XOR 1 = 1
+- Qz [1,1,1]: ¬1=0, 0 XOR 1 = 1
+- Zn [1,1,0]: ¬1=0, 0 XOR 0 = 0
+- Bf [0,0,0]: ¬0=1, 1 XOR 0 = 1
+- Hs [0,1,1]: ¬0=1, 1 XOR 1 = 0
+- Nd [0,1,0]: ¬0=1, 1 XOR 0 = 1
+- Rc [1,0,0]: ¬1=0, 0 XOR 0 = 0
+
+```json
+
+```

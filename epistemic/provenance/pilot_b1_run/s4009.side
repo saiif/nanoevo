@@ -1,0 +1,70 @@
+No tool call is needed here — this is a self-contained reasoning protocol where I just output the deposit as text. Let me proceed with the free-observation phase.
+
+I have no information yet about which symbol maps to which vector, so there's no basis to prefer one symbol over another for the first probe — I'll pick arbitrarily and use the second free probe (after seeing this result) to pick a complementary vector that maximizes hypothesis-splitting power once both vectors are known.
+
+```json
+
+```
+Since Bf=[1,0,1] removes that vector from the pool, the remaining five symbols share the remaining five vectors symmetrically — no information yet distinguishes them, so any choice for the second free probe is equally informative. I'll probe Xp.
+
+```json
+
+```
+Now that I know Bf=[1,0,1] and Xp=[0,0,1] exactly, the most efficient move is to run an EXPERIMENT on a symbol whose vector I already know — that turns the outcome into a clean bit about the *law* rather than the *state*. Probing a new symbol only tells me a vector, not the law, so I'll defer further probing until I've extracted value from what I already know.
+
+Checking all 30 hypotheses against Bf=(p0=1,p1=0,p2=1): exactly 15 predict outcome=1 and 15 predict outcome=0 — a maximally informative split. So EXPERIMENT(Bf) is my first formal action.
+
+```json
+
+```
+Bf's experiment result (0) is informative: I check all 30 hypotheses against Bf's known vector (1,0,1) and outcome=0 eliminates exactly half. Surviving (predict 0 at p0=1,p1=0,p2=1): H00, H02, H03, H05, H06, H07, H08, H09, H11, H14, H19, H21, H25, H26, H29 — 15 hypotheses remain, each equally likely.
+
+Since I also know Xp's vector exactly (0,0,1) without spending a probe, running EXPERIMENT there next gives another clean law-bit (no vector ambiguity). Checking the 15 survivors against (p0=0,p1=0,p2=1): predicts 1 → H03,H06,H14,H19,H25,H26 (6); predicts 0 → H00,H02,H05,H07,H08,H09,H11,H21,H29 (9). A solid 6/9 split, better than spending an intervention probing a fresh symbol whose vector I'd still need to combine with law uncertainty.
+
+```json
+
+```
+Xp's result (outcome=0) at vector (0,0,1) narrows the 15 survivors from before to the 9 hypotheses consistent with predicting 0 there: H00, H02, H05, H07, H08, H09, H11, H21, H29 (verified each against p0=0,p1=0,p2=1).
+
+To keep splitting this set, I need a new known vector to run a clean EXPERIMENT against — but I don't yet know any of the remaining four symbols' vectors (Ly, Hs, Wt, Rc hold [1,1,0], [0,0,0], [0,1,0], [1,1,1] in unknown order). Experimenting on an unprobed symbol would give an outcome I can't cleanly attribute to a specific vector, so it wouldn't reliably eliminate hypotheses. Better to PROBE first to fix the vector, then EXPERIMENT on that known vector next turn — the same two-step pattern that worked for Bf and Xp.
+
+I checked: whichever of the four remaining vectors turns out to belong to the probed symbol, the eventual EXPERIMENT there would produce a 4/5 split of the current 9 hypotheses — so which symbol I probe now doesn't matter informationally. I'll probe Ly.
+
+```json
+
+```
+```json
+
+```
+```json
+
+```
+```json
+
+```
+```json
+
+```
+```json
+
+```
+```json
+
+```
+```json
+
+```
+Based on the confirmed law H00 = (p0 AND p1), verified against all 6 observed symbols with zero contradictions (each alternative hypothesis was directly eliminated by an experiment):
+
+- Nd [0,0,0]: p0=0,p1=0 → 0
+- Ea [0,1,1]: p0=0,p1=1 → 0
+- Jm [1,1,0]: p0=1,p1=1 → 1
+- Vx [1,0,1]: p0=1,p1=0 → 0
+- Qz [1,0,0]: p0=1,p1=0 → 0
+- Kr [0,0,1]: p0=0,p1=0 → 0
+- Zn [1,1,1]: p0=1,p1=1 → 1
+- Tg [0,1,0]: p0=0,p1=1 → 0
+
+```json
+
+```

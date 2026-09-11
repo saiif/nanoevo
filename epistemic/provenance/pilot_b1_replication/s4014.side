@@ -1,0 +1,26 @@
+That tool call was unnecessary — ignoring it. Here's the corrected commitment deposit with a sum that resolves exactly to 1.0:
+That tool search was irrelevant to this task — ignoring it. Here's the corrected commitment deposit:
+That search was irrelevant — PROBE/EXPERIMENT are just action strings in the JSON deposit, not tools. Here's the actual commitment:
+That confirms PROBE/EXPERIMENT aren't callable tools — they're just action strings in the deposit JSON, as expected.
+That search was irrelevant — ignoring it. Deposit:
+With Ok(0,0,1)→0, Ly(0,1,1)→1, Bf(1,0,1)→0, Rc(1,1,0)→0, checking all 30 catalog formulas against these four data points leaves exactly three survivors: H02 (¬p0∧p1), H08 (p1∧p2), H29 (p1 XOR ¬p2). The remaining vectors (0,1,0) and (1,0,0) belong to Nd and Tg. Probing Nd will also fix Tg's vector by elimination (only two symbols, two vectors left), and an experiment on whichever vector we get will split the three survivors.
+That tool search was unnecessary — ignoring it. Deposit:
+That search was unnecessary — ignoring it. Deposit:
+All six symbols are now accounted for: Ok(0,0,1)→0, Ly(0,1,1)→1, Bf(1,0,1)→0, Rc(1,1,0)→0, Nd(1,0,0)→0, Tg(0,1,0)→1 (by elimination of the vector set, confirmed by the EXPERIMENT(Tg)→1 result).
+
+Checking the three surviving hypotheses against Tg:
+- H02 (¬p0∧p1) = ¬0∧1 = 1 ✓ matches outcome=1
+- H08 (p1∧p2) = 1∧0 = 0 ✗ contradicts outcome=1 → eliminated
+- H29 (p1 XOR ¬p2) = 1 XOR 1 = 0 ✗ contradicts outcome=1 → eliminated
+
+H02 alone survives, and it correctly predicts all six observed outcomes with zero exceptions.
+Applying H02 (¬p0 ∧ p1) to each vector:
+
+- Xp[1,1,1]: ¬1∧1=0
+- Zn[1,0,0]: ¬1∧0=0
+- Vx[1,1,0]: ¬1∧1=0
+- Um[0,1,1]: ¬0∧1=1
+- Jm[0,0,0]: ¬0∧0=0
+- Kr[1,0,1]: ¬1∧0=0
+- Hs[0,1,0]: ¬0∧1=1
+- Wt[0,0,1]: ¬0∧0=0

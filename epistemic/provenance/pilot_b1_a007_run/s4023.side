@@ -1,0 +1,41 @@
+I'll begin the free-observation phase by probing a symbol to learn its exact property vector.
+
+```json
+
+```
+```json
+
+```
+```json
+
+```
+```json
+
+```
+```json
+
+```
+Both experiments so far are consistent with a symmetric split of the remaining hypothesis space. Using Um=[0,0,1]→1 and Kr=[0,1,0]→0, I can eliminate 22 of 30 hypotheses, leaving exactly 8 consistent laws: H03, H06, H10, H13, H16, H22, H25, H26 — each still equally likely (1/8).
+
+For the four unprobed symbols (Jm, Qz, Xp, Ea), the remaining vectors are {[1,1,1],[1,0,1],[1,1,0],[0,0,0]} in unknown bijection. Averaging predictions across the 8 surviving hypotheses and the 4 possible vectors, an experiment on any of these symbols has exactly 0.5 prior probability of outcome=1, and the result will reweight the posterior toward whichever hypotheses are more consistent with that outcome across the vector uncertainty.
+
+```json
+
+```
+```json
+
+```
+```json
+
+```
+```json
+
+```
+```json
+
+```
+All eight cases depend only on whether p0 equals p1, per H25 (p0 XOR NOT p1, i.e., outcome=1 iff p0==p1). Since H25 was the unique hypothesis surviving all four experiments and the final probe, confidence is high across the board.
+
+```json
+
+```

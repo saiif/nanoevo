@@ -1,0 +1,48 @@
+Probing a symbol now costs nothing (free-observation phase) and tells me exactly which of the six declared vectors that symbol carries — pure state information, no law information yet. I'll grab two symbols' vectors before committing to any experiment, since knowing the vector is a prerequisite for an experiment result to mean anything.
+
+```json
+
+```
+```json
+
+```
+Both known vectors happen to split the 30-hypothesis catalog exactly 15/15 on predicted outcome, so an experiment on either is maximally informative right now. I'll commit to EXPERIMENT(Hs) since I already hold its full vector [1,0,1] — with a uniform prior over the whole catalog (no evidence yet), the outcome should be 50/50.
+
+```json
+
+```
+The result EXPERIMENT(Hs)=0 on vector [1,0,1] eliminates every hypothesis that predicts 1 there, leaving exactly 15 survivors (uniform posterior, since prior was uniform and this is a clean elimination):
+
+Survivors: H00, H02, H03, H05, H06, H07, H08, H09, H11, H14, H19, H21, H25, H26, H29 — each at weight 1/15.
+
+I already know Vx's vector [0,1,1] for free, so I'll spend the next intervention experimenting there instead of probing further. Evaluating the 15 survivors on (0,1,1): 7 predict 0 (H00,H03,H05,H07,H09,H11,H25), 8 predict 1 (H02,H06,H08,H14,H19,H21,H26,H29) — near-maximal split, so this is the most informative next experiment.
+
+```json
+
+```
+```json
+
+```
+```json
+
+```
+```json
+
+```
+```json
+
+```
+```json
+
+```
+```json
+
+```
+Bf's outcome resolves this cleanly. Both remaining unassigned vectors ([0,1,0] and [0,0,0], now known to belong to Bf/Jm in some order) share p0=0, so H08 (p1 AND p2) evaluates to 0 on *either* possible vector, while H14 (NOT p0 OR p1) evaluates to 1 on *either* possible vector — the experiment was fully informative even without probing Bf first. Result was 1, so H14 is confirmed with certainty regardless of which of the two remaining vectors Bf actually holds.
+
+```json
+
+```
+```json
+
+```

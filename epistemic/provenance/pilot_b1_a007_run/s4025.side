@@ -1,0 +1,80 @@
+I'll probe **Zn** first to learn its exact property vector at no cost.
+
+```json
+
+```
+```json
+
+```
+```json
+
+```
+```json
+
+```
+Both Zn (0,0,1)→0 and Tg (1,1,0)→1 are now known. Checking all 30 formulas against these two constraints leaves exactly 6 survivors: H00, H05, H09, H12, H17, H21.
+
+The four remaining vectors [1,0,0],[0,0,0],[1,1,1],[0,1,1] are unassigned among Wt/Nd/Qz/Hs, each equally likely marginally for any one unprobed symbol. Rather than spend an extra probe, I'll experiment directly on Wt — the outcome is still informative since these 6 hypotheses disagree sharply on P(outcome=1) marginalized over the 4 possible vectors (H09 always predicts 0, H21 always predicts 1, others sit at 0.25/0.75).
+
+```json
+
+```
+Zn=(0,0,1)→0 and Tg=(1,1,0)→1 leave 6 survivors; Wt→0 further narrows things. Checking all 6 against Wt's four possible unassigned vectors ([1,0,0],[0,0,0],[1,1,1],[0,1,1]):
+
+- H21 (p1 OR NOT p2) predicts 1 for *all four* possible Wt vectors → eliminated by Wt→0.
+- H09 (p1 AND NOT p2) predicts 0 for all four → survives with full weight, no vector info gained.
+- H00, H05 each consistent with 3 of 4 vectors (miss one each).
+- H12, H17 each consistent with only 1 of 4 vectors.
+
+Weighting by prior 1/6 each and fraction of vectors giving outcome=0:
+- H00: 1/6·3/4 → posterior 0.25
+- H05: 1/6·3/4 → posterior 0.25
+- H09: 1/6·1 → posterior 0.3333
+- H12: 1/6·1/4 → posterior 0.0833
+- H17: 1/6·1/4 → posterior 0.0833
+- H21: eliminated
+
+Surviving formulas: H00=p0∧p1, H05=p0∧¬p2, H09=p1∧¬p2, H12=p0∨p1, H17=p0∨¬p2.
+
+Working through the joint uncertainty over which of the remaining three vectors Nd holds (marginalizing over Wt's unknown exact identity, consistent with the posterior above), the predicted P(outcome=1) for EXPERIMENT(Nd) works out to 1/3.
+
+```json
+
+```
+Both Wt (unknown vector) → 0 and Nd (unknown vector) → 1 have now pruned the survivor set. Re-checking all 6 remaining hypotheses against every possible vector-assignment consistent with the data:
+
+- H21 (p1 OR NOT p2): true on all 4 remaining vectors → cannot explain Wt=0. Eliminated.
+- H09 (p1 AND NOT p2): false on all 4 remaining vectors → cannot explain Nd=1. Eliminated.
+- H00, H05, H12, H17 all survive, and working through every valid (Wt_vec, Nd_vec) assignment consistent with Wt=0, Nd=1, each of these four ends up with equal total weight → posterior is uniform 0.25 each.
+
+For the next probe, EXPERIMENT(Qz) is unusually clean here: since the vectors already consumed by Wt and Nd under H00/H05 exhaust their "0-outcome" set (forcing Qz into the remaining 0-vectors), and under H12/H17 they exhaust the "1-outcome" set (forcing Qz into the remaining 1-vectors), the outcome at Qz is *deterministic* given which pair is true — it will split {H00,H05} (→0) cleanly from {H12,H17} (→1), regardless of the exact unknown vector Qz holds.
+
+```json
+
+```
+Zn=(0,0,1)→0, Tg=(1,1,0)→1 narrowed to {H00,H05,H09,H12,H17,H21}. Wt→0 eliminated H21. Nd→1 eliminated H09 (both predicted the wrong constant outcome). Qz→0 was diagnostic: under H00 and H05 the entire remaining pool for Qz always yields 0 (since their sole "1"-vector was already consumed by Nd), while under H12 and H17 the remaining pool always yields 1. Qz=0 therefore cleanly kills H12 and H17.
+
+Remaining: **H00 (p0∧p1)** and **H05 (p0∧¬p2)**, each 0.5. Crucially, under H00 the vector giving outcome=1 among the unassigned pool was only [1,1,1], so Nd's actual vector is *forced* to be exactly [1,1,1] if H00 is true. Under H05, the sole outcome=1 vector was [1,0,0], so Nd is forced to be exactly [1,0,0] if H05 is true. A further EXPERIMENT on Wt/Qz/Hs would be uninformative (both hypotheses predict 0 there with certainty now), but a PROBE(Nd) will deterministically reveal which hypothesis holds.
+
+```json
+
+```
+Nd's vector [1,0,0] matches exactly what H05 (p0∧¬p2) predicted as its forced "outcome=1" vector, while H00 required Nd=[1,1,1] — contradicted. H05 is confirmed: p0=1,¬p2=1 → 1, consistent with all prior data (Zn:[0,0,1]→0, Tg:[1,1,0]→1, Wt→0, Nd→1, Qz→0).
+
+```json
+
+```
+H05 (p0 AND NOT p2) is confirmed with high confidence. Applying it directly:
+
+- Ok [1,1,1]: p0=1, p2=1 → NOT p2=0 → 0
+- Um [0,1,0]: p0=0 → 0
+- Kr [1,1,0]: p0=1, p2=0 → 1
+- Xp [0,1,1]: p0=0 → 0
+- Ea [0,0,1]: p0=0 → 0
+- Bf [1,0,0]: p0=1, p2=0 → 1
+- Rc [0,0,0]: p0=0 → 0
+- Jm [1,0,1]: p0=1, p2=1 → 0
+
+```json
+
+```

@@ -1,0 +1,126 @@
+Second free probe: I'll check another symbol to bank a known vector, which will let me interpret an EXPERIMENT result on it immediately in the formal phase.
+
+```json
+
+```
+```json
+
+```
+Reasoning: EXPERIMENT(Vx)→1 with Vx=(1,0,1) splits the 30 hypotheses exactly 15/15 by predicted outcome. Evaluating each formula on (1,0,1):
+
+- Predict 1 (survive): H01,H04,H10,H12,H13,H15,H16,H17,H18,H20,H22,H23,H24,H27,H28
+- Predict 0 (eliminated): H00,H02,H03,H05,H06,H07,H08,H09,H11,H14,H19,H21,H25,H26,H29
+
+Reweighting the 15 survivors uniformly. Next, I'll spend an EXPERIMENT on Bf, whose vector (1,1,0) I already know from the free probe — this lets me read the outcome directly as evidence about the law rather than about the symbol. Evaluating the 15 survivors on (1,1,0) gives a 7/8 split (7 predict 1, 8 predict 0), which is close to maximally informative.
+
+```json
+
+```
+Reasoning: Bf=(1,1,0), outcome=1 eliminates the hypotheses predicting 0 there. Evaluating the 15 survivors on (1,1,0):
+
+Predict 1 (survive): H12,H13,H16,H17,H20,H23,H28
+Predict 0 (eliminated): H01,H04,H10,H15,H18,H22,H24,H27
+
+7 hypotheses remain, each weight 1/7. No more free/known-vector symbols to cheaply test — Wt, Rc, Tg, Kr have unknown vectors (one of {[0,1,1],[0,1,0],[0,0,1],[1,0,0]} each). I'll experiment blindly on Wt and marginalize over its 4 possible vectors (uniform) to get each hypothesis's predicted P(outcome=1):
+
+- H12 (p0∨p1): 0.75
+- H13 (p0∨¬p1): 0.5
+- H16 (p0∨p2): 0.75
+- H17 (p0∨¬p2): 0.5
+- H20 (p1∨p2): 0.75
+- H23 (¬p1∨¬p2): 0.75
+- H28 (p1⊕p2): 0.5
+
+Weighted average prediction: (4×0.75 + 3×0.5)/7 = 4.5/7 ≈ 0.6429.
+
+```json
+
+```
+Reasoning: EXPERIMENT(Wt)=1 is a marginal (vector-unknown) observation, so it reweights rather than eliminates. Likelihoods P(outcome=1|H) marginalized uniformly over the 4 possible vectors for Wt were: H12=.75, H13=.5, H16=.75, H17=.5, H20=.75, H23=.75, H28=.5 (from prior turn). Bayes update on the uniform 1/7 prior:
+
+- H12, H16, H20, H23 → posterior 1/6 each (survive better, predicted the actual outcome)
+- H13, H17, H28 → posterior 1/9 each
+
+Next I'll continue probing the law with another unknown-vector symbol, Rc, marginalizing again over its 4 possible vectors under the updated weights: predicted P(outcome=1) = 4·(1/6)(0.75) + 3·(1/9)(0.5) = 2/3 ≈ 0.6667.
+
+```json
+
+```
+Reasoning: EXPERIMENT(Rc)=1 is another marginal (vector-unknown) observation on the same 4-vector pool {[0,1,1],[0,1,0],[0,0,1],[1,0,0]}. Using the same marginal likelihoods as Wt (H12=.75,H13=.5,H16=.75,H17=.5,H20=.75,H23=.75,H28=.5), Bayes update on the prior (H12,H16,H20,H23=1/6 each; H13,H17,H28=1/9 each):
+
+- H12,H16,H20,H23 → posterior 0.1875 each (sum 0.75)
+- H13,H17,H28 → posterior 0.08333 each (sum 0.25)
+
+Now, a key strategic pivot: I've already spent EXPERIMENT actions on Wt and Rc but never learned their vectors, so those results only gave probabilistic reweighting. If I now PROBE(Wt), I'll learn its exact vector and can retroactively treat the already-known EXPERIMENT(Wt)=1 result as a *deterministic* constraint, eliminating 2-4 of the remaining 7 hypotheses outright regardless of which vector it turns out to be (verified by checking all four possible vectors against the current 7 hypotheses). This is a much higher-value use of an intervention than another blind experiment.
+
+```json
+
+```
+Reasoning: Now that Wt's vector is known — (0,0,1) — I can treat the earlier EXPERIMENT(Wt)=1 result as a deterministic constraint rather than a marginal one. Checking all 7 surviving hypotheses against (0,0,1)→1:
+
+- H12 (p0∨p1): 0∨0=0 → contradicts outcome 1. **Eliminated.**
+- H17 (p0∨¬p2): 0∨0=0 → contradicts. **Eliminated.**
+- H16 (p0∨p2): 0∨1=1 ✓
+- H20 (p1∨p2): 0∨1=1 ✓
+- H23 (¬p1∨¬p2): 1∨0=1 ✓
+- H13 (p0∨¬p1): 0∨1=1 ✓
+- H28 (p1⊕p2): 0⊕1=1 ✓
+
+5 survivors remain. Renormalizing the prior weights (H16,H20,H23 were 0.1875 each; H13,H28 were 0.0833333333 each) over the surviving set gives H16=H20=H23≈0.257142857, H13=H28≈0.114285714.
+
+Same trick again: EXPERIMENT(Rc)=1 was banked earlier as a marginal result while Rc's vector was unknown. Rc's true vector is now constrained to one of the 3 leftover vectors {[0,1,1],[0,1,0],[1,0,0]} (since Vx, Bf, Wt have claimed the other three). If I PROBE(Rc) now, I can retroactively apply EXPERIMENT(Rc)=1 as a deterministic constraint too — checking the prediction table, each of the three possible vectors for Rc splits the remaining 5 hypotheses down to just 2-3 survivors. This is the highest-value move available.
+
+```json
+
+```
+Reasoning: PROBE(Rc) revealed Rc=(0,1,0)=v2. Applying the banked EXPERIMENT(Rc)=1 result as a now-deterministic constraint against the 5 survivors:
+
+- H13 (p0∨¬p1): 0∨0=0 → contradicts outcome 1. **Eliminated.**
+- H16 (p0∨p2): 0∨0=0 → contradicts. **Eliminated.**
+- H20 (p1∨p2): 1∨0=1 ✓
+- H23 (¬p1∨¬p2): 0∨1=1 ✓
+- H28 (p1⊕p2): 1⊕0=1 ✓
+
+3 survivors remain: H20, H23, H28. Renormalizing prior weights (H16=H20=H23≈0.257142857, H13=H28≈0.114285714) over the surviving set: H20=H23≈0.409090909, H28≈0.181818182.
+
+Only two vectors remain unassigned — v1=[0,1,1] and v4=[1,0,0] — split between Tg and Kr. Since it's a bijection over only 6 symbols/6 vectors, probing one of them (Tg) pins down both Tg's and Kr's vectors simultaneously (Kr gets whichever vector Tg didn't). That converts any future EXPERIMENT on either symbol into a fully deterministic law-test rather than a marginal one, which is more valuable than a blind EXPERIMENT here. Checking the three surviving hypotheses on both possible vectors confirms this will be decisive: H28 predicts 0 on both v1 and v4, while H20/H23 predict oppositely on each — so after probing, at most one more EXPERIMENT will fully resolve the three-way tie.
+
+```json
+
+```
+Reasoning: Tg=(1,0,0)=v4, which pins the last vector too — Kr must be [0,1,1] (v1), the only one left after Vx=[1,0,1], Bf=[1,1,0], Wt=[0,0,1], Rc=[0,1,0], Tg=[1,0,0]. No banked EXPERIMENT exists for Tg yet, so this probe alone doesn't eliminate anything — but it makes any future EXPERIMENT on Tg or Kr fully deterministic against the current 3-way tie (H20, H23, H28; weights 0.409091/0.409091/0.181818).
+
+Checking Tg=(1,0,0) against the survivors:
+- H20 (p1∨p2): 0∨0=0
+- H23 (¬p1∨¬p2): 1∨1=1
+- H28 (p1⊕p2): 0⊕0=0
+
+So EXPERIMENT(Tg) cleanly isolates H23 (predicts 1) from {H20,H28} (predict 0). If outcome=0, a follow-up EXPERIMENT(Kr) on the now-known Kr=(0,1,1) will fully separate H20 (predicts 1) from H28 (predicts 0), guaranteeing full resolution within two more interventions.
+
+```json
+
+```
+Reasoning: Tg=(1,0,0), outcome=1. Checking the three-way tie:
+- H20 (p1∨p2): 0∨0=0 → predicted 0, contradicts. **Eliminated.**
+- H28 (p1⊕p2): 0⊕0=0 → predicted 0, contradicts. **Eliminated.**
+- H23 (¬p1∨¬p2): 1∨1=1 → predicted 1, matches. **Survives.**
+
+Only H23 remains, consistent with all six observations (Vx=1,0,1→1; Bf=1,1,0→1; Wt=0,0,1→1; Rc=0,1,0→1; Tg=1,0,0→1 all satisfy ¬p1∨¬p2). This is a unique, fully-determined solution.
+
+```json
+
+```
+Applying H23 = (¬p1 ∨ ¬p2) to each vector:
+
+- Hs [0,0,1]: ¬p1=1 → 1
+- Qz [0,1,0]: ¬p2=1 → 1
+- Nd [1,0,1]: ¬p1=1 → 1
+- Ea [0,1,1]: ¬p1=0,¬p2=0 → 0
+- Ly [1,1,1]: ¬p1=0,¬p2=0 → 0
+- Zn [0,0,0]: ¬p1=1 → 1
+- Um [1,0,0]: ¬p1=1 → 1
+- Jm [1,1,0]: ¬p2=1 → 1
+
+```json
+
+```

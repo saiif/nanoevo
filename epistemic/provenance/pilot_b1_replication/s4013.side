@@ -1,0 +1,63 @@
+This is a text-based protocol game — the deposits are just JSON I write directly in my reply, not a tool call. Let me proceed.
+
+I'm in the free-observation phase (2 free PROBEs allowed before formal commitments begin). I'll use them to learn two symbols' actual property vectors, since only a PROBE'd symbol's later EXPERIMENT result can discriminate between hypotheses — an EXPERIMENT on an unprobed symbol yields a bit with unknown provenance.
+
+I'll probe Ea first.
+
+```json
+
+```
+I'll use my second free observation to learn another symbol's vector before entering the formal phase, since experiments are only cleanly interpretable on symbols whose vectors I know.
+
+```json
+
+```
+```json
+
+```
+Updating on EXPERIMENT(Ea)=0 against Ea's known vector (0,1,1): computing each hypothesis's predicted outcome on that vector and keeping only those predicting 0. Surviving 15 of 30: H00, H01, H03, H04, H05, H07, H09, H10, H11, H13, H17, H23, H25, H27, H28 — now uniform at 1/15 each.
+
+Next I'll experiment on Jm (known vector [1,1,0], my other probed symbol), which splits the surviving set 8/7 — a good discriminator.
+
+```json
+
+```
+```json
+
+```
+```json
+
+```
+```json
+
+```
+```json
+
+```
+That tool search was unnecessary — this game just needs a text deposit, not a coding tool. Continuing with the actual commitment:
+
+```json
+
+```
+```json
+
+```
+Updating on EXPERIMENT(Zn)=1 against Zn's known vector (1,0,0): H01 (p0 AND NOT p1) predicts 1·1=1 ✓; H10 (NOT p1 AND p2) predicts 1·0=0 ✗. H01 uniquely survives, and it's consistent with every prior result (Ea=0, Jm=0, Rc=0, Ok=0, Zn=1) with no exceptions.
+
+```json
+
+```
+Applying H01 = (p0 AND NOT p1) to each vector:
+
+- Nd [0,0,1]: p0=0 → 0
+- Tg [1,1,0]: p0=1,p1=1 → NOT p1=0 → 0
+- Bf [1,0,0]: p0=1,p1=0 → 1
+- Ly [1,0,1]: p0=1,p1=0 → 1
+- Um [0,1,1]: p0=0 → 0
+- Xp [0,1,0]: p0=0 → 0
+- Kr [1,1,1]: p0=1,p1=1 → 0
+- Vx [0,0,0]: p0=0 → 0
+
+```json
+
+```

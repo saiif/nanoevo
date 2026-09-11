@@ -1,0 +1,46 @@
+Both known symbols (Zn, Jm) split the 30 hypotheses exactly 15/15 on their predicted outcome, so either gives maximal information as the first formal experiment. I'll test Zn since its vector is already fully known, cleanly isolating law-uncertainty from vector-uncertainty. Prior stays uniform since no experiment has been run yet.
+EXPERIMENT(Zn)→0 eliminates every hypothesis that predicted 1 on vector (0,1,1) — 15 hypotheses survive: H00, H01, H03, H04, H05, H07, H09, H10, H11, H13, H17, H23, H25, H27, H28.
+
+Checking Jm's known vector (1,1,0) against these 15 survivors, it splits them 8/7 (predicts 1 for H00,H05,H09,H13,H17,H23,H25,H28; predicts 0 for H01,H03,H04,H07,H10,H11,H27) — nearly optimal and uses a symbol whose vector I already know exactly, avoiding compounding uncertainty from an unprobed symbol.
+Both known vectors are exhausted (retesting Zn/Jm gives no new information), so I need a fresh symbol. Rather than probe-then-experiment (which would cost 2 interventions), I'll experiment directly on an unprobed symbol and marginalize over its unknown vector — it's still uniform over the 4 remaining vectors [1,0,0],[0,0,1],[0,1,0],[1,0,1], since nothing yet distinguishes Kr from Ly/Tg/Nd.
+
+Surviving hypotheses after Jm=0: **H01, H03, H04, H07, H10, H11, H27** (7 total, each weight 1/7).
+
+Computing each hypothesis's prediction across the 4 candidate vectors (28 equally-likely law×vector pairs), 10/28 predict outcome=1, giving P(outcome=1)=0.357.
+Kr=0 eliminates the pairs (H,vector) predicting 1, leaving 18 of the 28 equally-likely (H, v_Kr) combinations. Marginalizing over Kr's unknown vector, the posterior over the 7 surviving hypotheses becomes uneven: H01,H10,H27 drop to 2/18 each, while H03,H04,H07,H11 rise to 3/18 each.
+
+For the next move, retesting Zn/Jm/Kr yields no new info (deterministic law, vectors already resolved or already tested). I need an unprobed symbol. Since Ly, Tg, Nd are symmetric in my current knowledge (all uniformly likely to hold any of the remaining 3 vectors given Kr's), experimenting on any of them is equally informative. Computing the joint prediction over (H, v_Kr, v_Ly) — properly accounting for the without-replacement correlation between Kr's and Ly's vectors — gives P(outcome=1 for Ly) = 24/54 ≈ 0.4444.
+Posterior update after EXPERIMENT(Ly)→0: this eliminates all (H, v_Kr, v_Ly) triples where Ly's vector predicted 1. Working through the full permutation space (7 hypotheses × 24 vector-assignments to Kr/Ly/Tg/Nd, filtered by both Kr=0 and Ly=0 constraints):
+
+Surviving weight per hypothesis (out of 60 total permutation-weight): H01=4, H03=12, H04=12, H07=12, H10=4, H11=12, H27=4 → posterior H01=H10=H27≈0.0667, H03=H04=H07=H11=0.2.
+
+For the next symbol (Tg, fully unprobed/untested), I computed P(Tg's law-outcome=1) by cases:
+- H01,H10,H27 (the |Z|=2 hypotheses): since Kr,Ly must exhaust the size-2 zero-set, Tg is forced into the one-set → predicts 1 with certainty.
+- H03,H04,H07,H11 (|Z|=3,|O|=1): Tg lands on the single "1" vector exactly half the time.
+
+Weighted: (4·1.0 + 12·0.5 + 12·0.5 + 12·0.5 + 4·1.0 + 12·0.5 + 4·1.0)/60 = 36/60 = 0.6.
+
+Notably, if Tg=0 is observed, H01/H10/H27 are eliminated entirely, collapsing cleanly to {H03,H04,H07,H11} — a strong potential information gain — so this is the best next probe.
+Working through the full permutation-weighted posterior after Tg=0: since Kr, Ly, Tg all tested law=0, and the 4 candidate vectors {C1=[1,0,0], C2=[0,0,1], C3=[0,1,0], C4=[1,0,1]} split 3-zero/1-one under each surviving hypothesis, H01/H10/H27 (which had 2 "one"-vectors among the four) become impossible — no way to fit 3 zero-observations among only 2 zero-vectors. Eliminated.
+
+Remaining: **H03, H04, H07, H11**, each posterior 0.25. Crucially, each of these formulas agrees with the others on all 6 present vectors *except* for exactly one vector, which each hypothesis uniquely assigns to Nd (the only untested symbol):
+- H03 → Nd = C2=[0,0,1] is the "1"-vector
+- H04 → Nd = C4=[1,0,1]
+- H07 → Nd = C3=[0,1,0]
+- H11 → Nd = C1=[1,0,0]
+
+Normally PROBE(Nd) would resolve this instantly — but PROBE is contractually restricted to the FREE_OBS phase, which I've already exhausted (2/2 used on Zn, Jm). The only remaining tool is EXPERIMENT(Nd). But since Kr/Ly/Tg (three of the four candidates) all tested law=0, by elimination Nd *must* hold the fourth vector — the one every surviving hypothesis independently designates as the "outcome=1" vector. So EXPERIMENT(Nd) is certain to return 1 under **all four** remaining hypotheses simultaneously: it would confirm consistency but cannot discriminate among them. No available action can break this tie — the hypotheses are observationally equivalent given this world's fixed vector set (which excludes [0,0,0] and [1,1,1], and now excludes ever learning Nd's specific identity).
+Using the four surviving hypotheses (H03, H04, H07, H11 — each posterior 0.25), I evaluated each formula against every given vector and weighted the outcomes:
+
+| Symbol | vector | H03 | H04 | H07 | H11 | P(1) |
+|---|---|---|---|---|---|---|
+| Qz | 0,0,1 | 1 | 0 | 0 | 0 | 0.25 |
+| Vx | 1,0,1 | 0 | 1 | 0 | 0 | 0.25 |
+| Ok | 1,1,0 | 0 | 0 | 0 | 0 | 0.00 |
+| Rc | 1,1,1 | 0 | 1 | 0 | 0 | 0.25 |
+| Ea | 0,1,1 | 0 | 0 | 0 | 0 | 0.00 |
+| Bf | 0,0,0 | 1 | 0 | 1 | 1 | 0.75 |
+| Hs | 1,0,0 | 0 | 0 | 0 | 1 | 0.25 |
+| Xp | 0,1,0 | 0 | 0 | 1 | 0 | 0.25 |
+
+Ok and Ea are unanimous (all four hypotheses agree → 0), so those get full confidence. Everywhere else the surviving hypotheses split 1-vs-3 (or 3-vs-1 for Bf), so confidence reflects that disagreement rather than false certainty.

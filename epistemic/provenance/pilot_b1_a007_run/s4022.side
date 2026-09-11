@@ -1,0 +1,113 @@
+That ToolSearch call was a mistake on my part — this task is a pure text/reasoning game and doesn't require any tools. Here's my actual deposit:
+
+```json
+
+```
+That tool search was unnecessary — this task needs no external tools, just reasoning. Ignoring the irrelevant tool results above. Here's my deposit:
+
+I'll spend my second (and last) free observation probing another symbol to learn a second property vector before I move to formal EXPERIMENT commitments.
+
+```json
+
+```
+Both free observations are used. Now I know:
+- Ea = [0,1,0]
+- Ly = [1,1,0]
+
+Since I have full knowledge of Ea's vector, I should run my first EXPERIMENT there — it's the only way to learn about the law itself, and knowing the vector lets me interpret the result precisely.
+
+Checking [0,1,0] against all 30 catalog formulas splits them exactly 15/15 (outcome=0 vs outcome=1), so this experiment is maximally informative regardless of outcome. Prior is uniform over all 30 hypotheses since I have no law-relevant evidence yet.
+
+```json
+
+```
+Ea = (0,1,0), outcome=0. Evaluating all 30 formulas at (p0=0,p1=1,p2=0), the ones equal to 0 survive:
+
+H00,H01,H03,H04,H05,H06,H08,H10,H11,H13,H16,H22,H25,H26,H29 — 15 hypotheses remain, each now weight 1/15.
+
+For the next action, I already know Ly=[1,1,0] for free. Evaluating these 15 survivors at (1,1,0):
+- Predict 1: H00,H05,H13,H16,H25,H26 (6)
+- Predict 0: H01,H03,H04,H06,H08,H10,H11,H22,H29 (9)
+
+A 6/9 split is informative and costs only one intervention (no need to spend an extra probe first since Ly's vector is already known). I'll experiment on Ly.
+
+```json
+
+```
+I'm disregarding these tool-loading artifacts entirely — they're irrelevant to this reasoning task and I won't call any more of them. Here is my actual deposit for this turn:
+
+**Reasoning:** Current survivors (9, weight 1/9 each): H01,H03,H04,H06,H08,H10,H11,H22,H29. I know Ea=[0,1,0] and Ly=[1,1,0]; the remaining four vectors [1,0,1],[0,0,0],[1,1,1],[0,0,1] are unassigned among Tg,Rc,Vx,Kr. To keep the next experiment's interpretation clean and unambiguous (rather than entangling an unknown vector with the law), I probe Tg first — this doesn't touch the law-hypothesis distribution, only reveals state, so no reweighting occurs.
+
+```json
+
+```
+That tool call was unintentional — disregarding it, no tools are needed for this task. Here is my actual deposit:
+
+```json
+
+```
+**Reasoning:** Evaluating survivors {H01,H03,H04,H06,H08,H10,H11,H22,H29} at Tg=[1,0,1] (p0=1,p1=0,p2=1):
+- H01=(p0∧¬p1)=1, H04=(p0∧p2)=1, H10=(¬p1∧p2)=1, H22=(¬p1∨p2)=1 → predict 1
+- H03,H06,H08,H11,H29 → predict 0
+
+Outcome was 1, so survivors collapse to **H01, H04, H10, H22** (weight 0.25 each), consistent with prior Ea/Ly outcomes (all predict 0 there, confirmed).
+
+Remaining unassigned vectors [0,0,0],[1,1,1],[0,0,1] belong to Rc,Vx,Kr in some order. Checking predictions of the 4 survivors on these:
+- [1,1,1]: H01=0,H04=1,H10=0,H22=1 (2-2 split)
+- [0,0,1]: H01=0,H04=0,H10=1,H22=1 (2-2 split)
+- [0,0,0]: H01=0,H04=0,H10=0,H22=1 (3-1 split)
+
+To get a maximally informative experiment I need to know which symbol has one of the good vectors first, so I'll probe Rc (state-only, no reweight) before committing to an experiment.
+
+```json
+
+```
+**Reasoning:** Current survivors: H01,H04,H10,H22 (weight 0.25 each). I already know Rc=[0,0,1] from the prior probe. Evaluating all four formulas at (p0=0,p1=0,p2=1):
+- H01=(p0∧¬p1)=0
+- H04=(p0∧p2)=0
+- H10=(¬p1∧p2)=1
+- H22=(¬p1∨p2)=1
+
+This is a clean 2-2 split — maximally informative for 4 remaining hypotheses — so I'll experiment on Rc directly rather than spending another probe on Vx/Kr.
+
+```json
+
+```
+**Reasoning:** After Rc outcome=1, survivors narrow to **H10, H22** (weight 0.5 each) — H01 and H04 both predicted 0, eliminated.
+
+H10=(¬p1∧p2), H22=(¬p1∨p2). Remaining unassigned vectors [0,0,0] and [1,1,1] go to Vx/Kr in some order. Checking both hypotheses on both remaining vectors:
+- [1,1,1]: H10=0, H22=1
+- [0,0,0]: H10=0, H22=1
+
+Both hypotheses give the *same* prediction regardless of which vector Vx or Kr actually has (H10→0 always, H22→1 always). So no probe is needed first — I can go straight to EXPERIMENT and it will be fully decisive either way.
+
+```json
+
+```
+**Reasoning:** Ignoring the tool-loading system reminder — irrelevant to this task, no tools needed.
+
+Before Vx: survivors H10=(¬p1∧p2), H22=(¬p1∨p2), weight 0.5 each. Vx's vector was either [0,0,0] or [1,1,1] (unknown which), but critically both hypotheses evaluate identically on *both* possible vectors:
+- On [1,1,1]: H10=0, H22=1
+- On [0,0,0]: H10=0, H22=1
+
+So regardless of which vector Vx actually holds, H10 always predicts 0 and H22 always predicts 1 on Vx. The sealed result was outcome=0, which matches H10 in both cases and contradicts H22 in both cases. This eliminates H22 unconditionally — no residual ambiguity from not knowing Vx's exact vector.
+
+Survivors collapse to **H10** alone, fully consistent with all prior evidence (Ea, Ly, Tg, Rc, Vx all confirmed). The law is determined.
+
+```json
+
+```
+**Reasoning:** Final law determined as H10 = (¬p1 ∧ p2), confirmed consistently across all 8 prior observations (Ea, Ly, Tg, Rc, Vx) with zero contradictions. Applying it to the new cases:
+
+- Hs [1,1,0]: p1=1 → ¬p1=0 → 0
+- Zn [0,0,0]: p2=0 → 0
+- Ok [1,0,1]: ¬p1=1,p2=1 → 1
+- Jm [1,0,0]: p2=0 → 0
+- Bf [0,1,1]: p1=1 → ¬p1=0 → 0
+- Xp [0,0,1]: ¬p1=1,p2=1 → 1
+- Qz [0,1,0]: p1=1 → 0
+- Nd [1,1,1]: p1=1 → 0
+
+```json
+
+```

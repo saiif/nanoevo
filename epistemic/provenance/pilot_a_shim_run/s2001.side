@@ -1,0 +1,88 @@
+Petite erreur de ma part (pas besoin d'outils ici, c'est un exercice de raisonnement pur). Voici mon dépôt :
+
+```json
+
+```
+Bien vu, on continue en phase d'observation libre. Um=(1,0,0) a donné 1. Un bon choix pour la 2ᵉ observation gratuite est Bf=(1,0,1), qui ne diffère de Um que sur p2 — ça isole directement l'effet de cette propriété tout en gardant p0=1, p1=0 fixes, et ça coupe l'espace d'hypothèses restant (18/36) en un groupe assez équilibré (10 vs 8).
+
+```json
+
+```
+Après les deux premières observations (Um→1, Bf→1), il reste 10 hypothèses cohérentes parmi les 36 possibles :
+- Paire (p0,p1) : p0∨p1, p0⊕p1, p0∧¬p1, p0∨¬p1, ¬p0∨¬p1, ¬p0⊕¬p1 (6)
+- Paire (p0,p2) : p0∨p2, p0∨¬p2 (2)
+- Paire (p1,p2) : ¬p1∨p2, ¬p1∨¬p2 (2)
+
+Il me reste une observation gratuite. J'ai testé chaque symbole restant (Rc, Nd, Wt, Tg) contre ces 10 hypothèses :
+- **Rc(0,0,1)** → scinde exactement 5/5
+- **Nd(1,1,0)** → scinde exactement 5/5
+- Wt et Tg → scindent seulement 6/4
+
+Rc et Nd sont les meilleurs discriminants. Je choisis Rc(0,0,1) car il isole proprement p2 (p0=p1=0), complétant l'information déjà obtenue sur p0 et p1 via Um et Bf.
+
+```json
+
+```
+Après les 3 observations gratuites (Um→1, Bf→1, Rc→0), je dois vérifier tout l'espace d'hypothèses (36 formules) :
+
+**Analyse clé** : Bf=(1,0,1) et Rc=(0,0,1) ont exactement les mêmes valeurs sur (p1,p2) = (0,1), mais donnent des sorties différentes (1 vs 0). Aucune formule utilisant uniquement (p1,p2) ne peut expliquer ça → **toute la paire (p1,p2) est éliminée** (2 hypothèses tombent d'un coup).
+
+Recalcul complet sur les 3 observations :
+- **Paire (p0,p1)** : survivent p0∨p1, p0⊕p1, p0∧¬p1 (plus ¬p0⊕¬p1, équivalent en table de vérité à p0⊕p1 — indiscernable par test, donc fusionné)
+- **Paire (p0,p2)** : survit seulement p0∨¬p2
+- **Paire (p1,p2)** : 0 survivant (éliminée ci-dessus)
+
+→ **4 hypothèses distinctes restantes** : H1=p0∨p1, H2=p0⊕p1, H3=p0∧¬p1, H4=p0∨¬p2. Toutes vérifiées cohérentes avec Um/Bf/Rc.
+
+Phase d'observation libre terminée (3/3 utilisées) → passage aux commitments formels.
+
+**Choix du test** : parmi les symboles restants (Nd(1,1,0), Wt(0,1,1), Tg(0,1,0)), Nd donne la meilleure coupure :
+- H1(p0∨p1)=1, H2(p0⊕p1)=0, H3(p0∧¬p1)=0, H4(p0∨¬p2)=1 → split net 2/2, et les tests de suivi (Wt notamment) restent capables de séparer chaque sous-paire résultante.
+
+Priors : aucune évidence ne favorise une hypothèse plutôt qu'une autre → uniforme 0.25 chacune.
+
+```json
+
+```
+Après TEST(Nd)=0, seules H2=(p0 XOR p1) et H3=(p0 AND NOT p1) restent cohérentes avec les 4 observations (Um, Bf, Rc, Nd) — vérifié point par point. Je renormalise leurs probabilités à 0.5/0.5 (elles prédisaient toutes deux outcome=0 pour Nd, donc pas de discrimination entre elles à cette étape).
+
+**Choix du test** : il reste Wt(0,1,1) et Tg(0,1,0). Aucune des deux hypothèses restantes n'utilise p2, donc les deux symboles sont équivalents pour la discrimination :
+- H2 (p0 XOR p1) sur (p0=0,p1=1) → 1
+- H3 (p0 AND NOT p1) sur (p0=0,p1=1) → 0
+
+Je choisis Tg(0,1,0), le plus simple (ne varie que sur p1 par rapport à Um/Rc), pour isoler proprement l'effet de p1.
+
+```json
+
+```
+Il ne reste qu'une seule hypothèse cohérente avec les 5 observations : **H3 = p0 AND (NOT p1)**. Vérification complète :
+
+| Symbole | p0,p1,p2 | H3 prédit | Observé |
+|---|---|---|---|
+| Um | 1,0,0 | 1 | 1 ✓ |
+| Bf | 1,0,1 | 1 | 1 ✓ |
+| Rc | 0,0,1 | 0 | 0 ✓ |
+| Nd | 1,1,0 | 0 | 0 ✓ |
+| Tg | 0,1,0 | 0 | 0 ✓ |
+
+Toutes les autres hypothèses de la famille déclarée (36 au total) ont été éliminées par les tests successifs (Rc a exclu la paire (p1,p2), Nd a exclu H1 et H4, Tg a exclu H2). Aucune ambiguïté résiduelle ne subsiste et aucun test discriminant supplémentaire n'est nécessaire — poursuivre serait une violation du protocole ("ne pas continuer à tester après détermination de la loi"). Je déclare donc suffisance, avec une confiance élevée mais non maximale (données finies, une seule observation par cellule pertinente de l'espace).
+
+```json
+
+```
+Une seule hypothèse survivante (H3 = p0 AND NOT p1), donc pas de désaccord de mixture — je propage la même confiance que ma déclaration de suffisance (0.95) à chaque prédiction, calculée directement depuis p0 et p1 de chaque vecteur.
+
+| Symbole | p0,p1,p2 | p0 AND NOT p1 |
+|---|---|---|
+| Zn | 1,1,0 | 0 |
+| Xp | 0,0,1 | 0 |
+| Ea | 1,1,1 | 0 |
+| Ok | 1,0,0 | 1 |
+| Jm | 0,0,0 | 0 |
+| Ly | 0,1,0 | 0 |
+| Kr | 1,0,1 | 1 |
+| Vx | 0,1,1 | 0 |
+
+```json
+
+```

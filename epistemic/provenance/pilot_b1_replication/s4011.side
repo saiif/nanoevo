@@ -1,0 +1,47 @@
+Ea=(1,1,0) gave outcome 0. Evaluating all 30 hypotheses at (1,1,0) eliminates every one predicting 1, leaving 15 consistent hypotheses: H01,H02,H03,H04,H06,H07,H08,H10,H11,H15,H18,H22,H24,H27,H29 — each now equally weighted at 1/15.
+
+Next I'll experiment on Um, whose vector (0,1,0) is already known, so the result directly discriminates among survivors. Evaluating the 15 hypotheses at (0,1,0): 6 predict 1 (H02,H07,H15,H18,H24,H27), 9 predict 0 (H01,H03,H04,H06,H08,H10,H11,H22,H29) — a good near-even split.
+
+```json
+
+```
+That tool search wasn't needed for this task — proceeding with the deposit.
+
+```json
+
+```
+```json
+
+```
+Zn=1 and Rc=1 both landed on unknown vectors, so I need to jointly marginalize over the two unassigned vectors (not just treat each experiment in isolation). Recomputing: both symbols must have vectors from the surviving "outcome=1" set for whichever hypothesis is true, and the two vectors must be distinct (bijection). Re-deriving the pair-counts per hypothesis:
+
+- H01,H06,H08,H11: each only has ONE vector giving outcome=1, so two *distinct* symbols both hitting outcome=1 is impossible → eliminated.
+- H03,H04,H10,H29: each has exactly 2 satisfying vectors → 2 ordered pairs survive → weight ∝ 2.
+- H22 (NOT p1 OR p2): true on all 4 vectors → 12 ordered pairs survive → weight ∝ 12.
+
+Total weight units = 2+2+2+2+12 = 20, giving posterior: H03=0.1, H04=0.1, H10=0.1, H22=0.6, H29=0.1.
+
+Checking EXPERIMENT(Kr) (still-unprobed symbol) against this posterior: for H03/H04/H10/H29, once Zn and Rc consume the two vectors where that hypothesis outputs 1, the two vectors left over for Kr/Ly both output 0 — so Kr=1 is *impossible* under those four. Only H22 (true everywhere) can produce Kr=1. So this experiment is maximally diagnostic: outcome=1 → certainty on H22; outcome=0 → H22 eliminated, remaining four collapse to uniform 0.25 each.
+
+```json
+
+```
+Kr=1 confirms the prediction exactly. Under H03, H04, H10, and H29 (each satisfied by only 2 of the 4 unassigned vectors), Zn=1 and Rc=1 already forced those symbols to occupy *both* satisfying vectors for that hypothesis (since vectors are distinct under the bijection). That leaves only non-satisfying vectors for Kr and Ly — so Kr=1 is strictly impossible under any of those four, not just unlikely. They're logically falsified, not merely downweighted. Only H22 (NOT p1 OR p2), which is true on all four remaining vectors, permits Kr=1. All posterior mass collapses to H22.
+
+```json
+
+```
+H22 = (NOT p1 OR p2). Evaluating each vector:
+
+- Vx [0,0,0]: p1=0 → NOT p1=1 → **1**
+- Wt [1,1,1]: p1=1,p2=1 → **1**
+- Ok [0,1,1]: p1=1,p2=1 → **1**
+- Hs [1,0,1]: p1=0 → **1**
+- Tg [1,0,0]: p1=0 → **1**
+- Qz [0,1,0]: p1=1,p2=0 → **0**
+- Xp [1,1,0]: p1=1,p2=0 → **0**
+- Nd [0,0,1]: p1=0 → **1**
+
+```json
+
+```

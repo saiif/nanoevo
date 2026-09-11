@@ -1,0 +1,7 @@
+I'll use my second free observation to learn another symbol's vector, which will let me pick maximally informative experiments afterward.
+That tool list is irrelevant to this task — ignoring it and returning to the epistemic-agent deposit.
+That tool search surfaced unrelated Gmail/Notion/messaging tools — irrelevant here, ignoring them and returning to the epistemic-agent deposit.
+All five experiments are now consistent with exactly one hypothesis. Tg's vector is deducible by elimination (bijection, 5 other vectors already known) as [0,1,1], so EXPERIMENT(Tg)→1 discriminates H04 vs H08 without needing a probe: H04=(p0∧p2)=0∧1=0 (wrong), H08=(p1∧p2)=1∧1=1 (matches). Checking H08 against every prior result — Vx(0,0,1)→0, Um(1,1,1)→1, Jm(1,1,0)→0, Rc(0,0,0)→0, Tg(0,1,1)→1 — all five match perfectly, no contradictions.
+All five experiments were fully consistent with exactly one surviving hypothesis, H08 = (p1 AND p2), so I'll apply it directly.
+
+Bf[1,0,0]: p1=0,p2=0→0 | Wt[0,1,1]: p1=1,p2=1→1 | Kr[1,1,1]: p1=1,p2=1→1 | Zn[0,0,1]: p1=0,p2=1→0 | Qz[0,1,0]: p1=1,p2=0→0 | Hs[1,1,0]: p1=1,p2=0→0 | Xp[1,0,1]: p1=0,p2=1→0 | Ly[0,0,0]: p1=0,p2=0→0
